@@ -7,7 +7,7 @@ from src.upgrade_step import UpgradeStep
 from .mother import LoggingStub, FileAccessStub
 
 
-class MyTestCase(unittest.TestCase):
+class TestUpgradeBase(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()

@@ -7,7 +7,7 @@ from test import mother
 from .mother import LoggingStub, FileAccessStub
 
 
-class MyTestCase(unittest.TestCase):
+class TestUpgradeStepFrom3p2p1(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()
