@@ -1,6 +1,5 @@
 from src.upgrade_step import UpgradeStep
 from file_access import FileAccess
-import xml.etree.ElementTree as ET
 from local_logger import LocalLogger
 
 

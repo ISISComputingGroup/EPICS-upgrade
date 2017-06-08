@@ -1,5 +1,4 @@
 import os
-import xml.etree.ElementTree as ET
 
 
 class FileAccess(object):
@@ -33,7 +32,6 @@ class FileAccess(object):
         with file(os.path.join(self._config_base, filename)) as f:
             lines = []
             for line in f:
-                print line
                 lines.append(line.rstrip("\n"))
             return lines
 

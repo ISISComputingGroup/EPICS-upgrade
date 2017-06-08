@@ -1,7 +1,8 @@
+import os
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 
-VERSION_FILENAME = "config_version.txt"
+VERSION_FILENAME = os.path.join("configurations", "config_version.txt")
 
 
 class UpgradeError(Exception):

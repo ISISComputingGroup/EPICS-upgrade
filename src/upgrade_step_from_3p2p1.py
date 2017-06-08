@@ -1,6 +1,6 @@
 from src.upgrade_step import UpgradeStep
 from file_access import FileAccess
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 from local_logger import LocalLogger
 
 IOC_FILENAME = "configurations\components\_base\iocs.xml"
@@ -49,7 +49,7 @@ class UpgradeStepFrom3p2p1(UpgradeStep):
         return 0
 
     def _check_final_file_contains_alarm_ioc(self, logger, modified_file_contents):
-        et = ET.fromstringlist(modified_file_contents)
+        et = ElementTree.fromstringlist(modified_file_contents)
         ns = {"ioc_ns": 'http://epics.isis.rl.ac.uk/schema/iocs/1.0'}
         node_count = len(et.findall(r".//ioc_ns:ioc[@name='ALARM']", ns))
         if node_count != 1:
@@ -61,8 +61,8 @@ class UpgradeStepFrom3p2p1(UpgradeStep):
 
     def _check_prerequisits_for_file(self, ioc_file, logger):
         try:
-            et = ET.fromstringlist(ioc_file)
-        except ET.ParseError:
+            et = ElementTree.fromstringlist(ioc_file)
+        except ElementTree.ParseError:
             logger.error("Can not parse the file as xml. File starts '{0}'".format(ioc_file[0:10]))
             return False
         ns = {"ioc_ns": 'http://epics.isis.rl.ac.uk/schema/iocs/1.0'}
