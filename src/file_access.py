@@ -96,4 +96,4 @@ class FileAccess(object):
             self._logger.info("Writing xml file {0}".format(filename))
             f.write('<?xml version="1.0" ?>\n')
             xml.firstChild.writexml(f)
-            f.write('\n'.format(os.linesep))
+            f.write('\n')
