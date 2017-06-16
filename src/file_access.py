@@ -1,5 +1,5 @@
 import os
-import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 
 class FileAccess(object):
@@ -34,7 +34,7 @@ class FileAccess(object):
             lines = []
             for line in f:
                 print line
-                lines.append(line.rstrip("\n"))
+                lines.append(line.rstrip())
             return lines
 
     def write_version_number(self, version, filename):
@@ -49,7 +49,7 @@ class FileAccess(object):
         """
         with file(os.path.join(self._config_base, filename), mode="w") as f:
             self._logger.info("Writing new version number {0}".format(version))
-            f.write("{0}\n".format(version))
+            f.write("{0}{1}".format(version, os.linesep))
 
     def write_file(self, filename, file_contents):
         """
@@ -65,4 +65,30 @@ class FileAccess(object):
         with file(os.path.join(self._config_base, filename), mode="w") as f:
             self._logger.info("Writing file {0}".format(filename))
             for line in file_contents:
-                f.write("{0}\n".format(line))
+                f.write("{0}{1}".format(line, os.linesep))
+
+    def open_xml_file(self, filename):
+        """
+
+        Open a file and returns the xml it contains
+
+        Args:
+            filename: filename to open
+
+        Returns:
+            contents of file as an xml tree
+        """
+        return minidom.parse(os.path.join(self._config_base, filename))
+
+    def write_xml_file(self, filename, xml):
+        """
+
+        Saves xml to a file
+
+        Args:
+            filename: filename to save
+            xml: xml to save
+
+        Returns:
+        """
+        self.write_file(filename, xml.toprettyxml())

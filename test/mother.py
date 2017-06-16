@@ -1,3 +1,5 @@
+from xml.dom import minidom
+
 
 class LoggingStub(object):
 
@@ -24,8 +26,16 @@ class FileAccessStub(object):
         self.write_filename = filename
         self.write_file_contents = contents
 
+    def open_file(self, filename):
+        pass
 
-CLEAN_COMPONENT_BASE_IOC_FILE_v1 = """<?xml version="1.0" ?>
+    def write_xml_file(self, filename, xml):
+        self.write_file(filename, xml.toprettyxml())
+
+    def open_xml_file(self, filename):
+        return minidom.parseString(self.open_file(filename))
+
+CLEAN_COMPONENT_BASE_IOC_FILE_v1 ="""<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
     <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
         <macros/>
@@ -39,7 +49,7 @@ CLEAN_COMPONENT_BASE_IOC_FILE_v1 = """<?xml version="1.0" ?>
     </ioc>
     <!-- Above this line only change in master branch -->
 </iocs>
-""".split("\n")
+"""
 
 CLEAN_COMPONENT_BASE_IOC_FILE_v2 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -60,7 +70,7 @@ CLEAN_COMPONENT_BASE_IOC_FILE_v2 = """<?xml version="1.0" ?>
     </ioc>
     <!-- Above this line only change in master branch -->
 </iocs>
-""".split("\n")
+"""
 
 ERROR_COMPONENT_BASE_IOC_FILE_NO_ISISDAE="""<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -76,7 +86,7 @@ ERROR_COMPONENT_BASE_IOC_FILE_NO_ISISDAE="""<?xml version="1.0" ?>
     </ioc>
     <!-- Above this line only change in master branch -->
 </iocs>
-""".split("\n")
+"""
 
 ERROR_COMPONENT_BASE_IOC_FILE_TWO_ALARMS = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -102,4 +112,4 @@ ERROR_COMPONENT_BASE_IOC_FILE_TWO_ALARMS = """<?xml version="1.0" ?>
     </ioc>
     <!-- Above this line only change in master branch -->
 </iocs>
-""".split("\n")
+"""

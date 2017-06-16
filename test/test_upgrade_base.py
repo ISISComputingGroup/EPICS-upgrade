@@ -4,7 +4,7 @@ from mock import MagicMock as Mock
 
 from src.upgrade import Upgrade, UpgradeError
 from src.upgrade_step import UpgradeStep
-from .mother import LoggingStub, FileAccessStub
+from mother import LoggingStub, FileAccessStub
 
 
 class TestUpgradeBase(unittest.TestCase):
