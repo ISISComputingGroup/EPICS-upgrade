@@ -1,3 +1,5 @@
+import os
+
 from src.upgrade_step import UpgradeStep
 from file_access import FileAccess
 from xml.dom import minidom
@@ -8,11 +10,12 @@ from local_logger import LocalLogger
 IOC_FILENAME = "configurations\components\_base\iocs.xml"
 
 XML_TO_ADD = """\
-<ioc autostart="true" name="ALARM" restart="true" simlevel="none">
-    <macros/>
-    <pvs/>
-    <pvsets/>
-</ioc>"""
+    <ioc autostart="true" name="ALARM" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+"""
 
 
 class UpgradeStepFrom3p2p1(UpgradeStep):
@@ -103,7 +106,10 @@ class UpgradeStepFrom3p2p1(UpgradeStep):
         """
         for ioc in ioc_xml.getElementsByTagName("ioc"):
             if ioc.getAttribute("name") == "ISISDAE_01":
-                ioc_xml.firstChild.insertBefore(minidom.parseString(XML_TO_ADD).firstChild, ioc.nextSibling)
+                alarm_ioc_node = minidom.parseString(XML_TO_ADD).firstChild
+                ioc_xml.firstChild.insertBefore(alarm_ioc_node, ioc.nextSibling)
+                # add some formatting to make it look nice
+                ioc_xml.firstChild.insertBefore(ioc_xml.createTextNode("\n    "), alarm_ioc_node)
                 return ioc_xml
 
         logger.error("Could not find ISISDAE_01 ioc in file so no alarm ioc added.")

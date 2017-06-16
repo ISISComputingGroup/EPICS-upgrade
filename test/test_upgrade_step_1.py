@@ -29,8 +29,8 @@ class TestUpgradeStepFrom3p2p1(unittest.TestCase):
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
         assert_that(result, is_(0), "result")
-        assert_that(self.file_access.write_file_contents,
-                    equal_to_ignoring_whitespace(mother.CLEAN_COMPONENT_BASE_IOC_FILE_v2))
+        assert_that(self.file_access.write_file_contents.replace('\n', ''),
+                    equal_to_ignoring_whitespace(mother.CLEAN_COMPONENT_BASE_IOC_FILE_v2.replace('\n', '')))
 
     def test_GIVEN_ioc_xml_file_has_alarm_ioc_in_already_WHEN_upgrade_THEN_error(self):
 

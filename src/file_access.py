@@ -90,4 +90,10 @@ class FileAccess(object):
 
         Returns:
         """
-        self.write_file(filename, xml.toprettyxml())
+
+        # this can not use pretty print because that will cause it to gain tabs and newlines
+        with file(os.path.join(self._config_base, filename), mode="w") as f:
+            self._logger.info("Writing xml file {0}".format(filename))
+            f.write('<?xml version="1.0" ?>\n')
+            xml.firstChild.writexml(f)
+            f.write('\n'.format(os.linesep))

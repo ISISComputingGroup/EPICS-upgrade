@@ -40,7 +40,8 @@ class FileAccessStub(object):
         pass
 
     def write_xml_file(self, filename, xml):
-        self.write_file(filename, xml.toprettyxml())
+        self.write_filename = filename
+        self.write_file_contents = xml.toxml()
 
     def open_xml_file(self, filename):
         return minidom.parseString(self.open_file(filename))
