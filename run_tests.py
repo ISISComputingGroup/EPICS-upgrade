@@ -42,12 +42,12 @@ if __name__ == '__main__':
     suite1 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeBase)
     suite2 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1)
 
-    print "\n\n------ BEGINNING CONFIG VERSION CONTROL UNIT TESTS ------"
+    print "\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------"
 
     ret_vals = list()
     ret_vals.append(xmlrunner.XMLTestRunner(output=xml_dir).run(suite1).wasSuccessful())
     ret_vals.append(xmlrunner.XMLTestRunner(output=xml_dir).run(suite2).wasSuccessful())
 
-    print "------ CONFIG VERSION CONTROL UNIT TESTS COMPLETE ------\n\n"
+    print "------ UPGRADE STEPS UNIT TESTS COMPLETE ------\n\n"
     # Return failure exit code if a test failed
     sys.exit(False in ret_vals)
