@@ -33,7 +33,6 @@ class FileAccess(object):
         with file(os.path.join(self._config_base, filename)) as f:
             lines = []
             for line in f:
-                print line
                 lines.append(line.rstrip())
             return lines
 

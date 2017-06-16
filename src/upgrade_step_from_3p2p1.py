@@ -8,7 +8,7 @@ from local_logger import LocalLogger
 IOC_FILENAME = "configurations\components\_base\iocs.xml"
 
 XML_TO_ADD = """\
-<ioc autostart="true" name="ALARM" restart="true" simlevel="none" >
+<ioc autostart="true" name="ALARM" restart="true" simlevel="none">
     <macros/>
     <pvs/>
     <pvsets/>

@@ -1,11 +1,18 @@
+"""
+Mother for test objects
+"""
+
 from xml.dom import minidom
 
 
 class LoggingStub(object):
-
+    """
+    Stub for logging
+    """
     def __init__(self):
         self.log = []
         self.log_err = []
+
     def error(self, message):
         self.log_err.append(message)
 
@@ -14,6 +21,9 @@ class LoggingStub(object):
 
 
 class FileAccessStub(object):
+    """
+    Stub for file access
+    """
     def __init__(self):
         self.wrote_version = None
         self.write_filename = None
