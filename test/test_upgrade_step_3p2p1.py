@@ -24,17 +24,17 @@ class TestUpgradeStepFrom3p2p1(unittest.TestCase):
 
     def test_GIVEN_ioc_xml_file_WHEN_standard_THEN_file_changed(self):
 
-        self.file_access.open_file = Mock(return_value=mother.CLEAN_COMPONENT_BASE_IOC_FILE_v1)
+        self.file_access.open_file = Mock(return_value=mother.CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1)
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
         assert_that(result, is_(0), "result")
         assert_that(self.file_access.write_file_contents.replace('\n', ''),
-                    equal_to_ignoring_whitespace(mother.CLEAN_COMPONENT_BASE_IOC_FILE_v2.replace('\n', '')))
+                    equal_to_ignoring_whitespace(mother.CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1p1.replace('\n', '')))
 
     def test_GIVEN_ioc_xml_file_has_alarm_ioc_in_already_WHEN_upgrade_THEN_error(self):
 
-        self.file_access.open_file = Mock(return_value=mother.CLEAN_COMPONENT_BASE_IOC_FILE_v2)
+        self.file_access.open_file = Mock(return_value=mother.CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1p1)
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
