@@ -25,7 +25,7 @@ import unittest
 import xmlrunner
 import argparse
 
-from test.test_upgrade_step_1 import TestUpgradeStepFrom3p2p1
+from test.test_upgrade_step_3p2p1 import TestUpgradeStepFrom3p2p1
 from test.test_upgrade_base import TestUpgradeBase
 
 DEFAULT_DIRECTORY = os.path.join('..', '..', '..', '..', 'test-reports')

@@ -2,12 +2,10 @@ from src.common_upgrades import AddToBaseIOCs
 from src.upgrade_step import UpgradeStep
 from file_access import FileAccess
 
-
 from local_logger import LocalLogger
 
-
 XML_TO_ADD = """\
-    <ioc autostart="true" name="ALARM" restart="true" simlevel="none">
+    <ioc autostart="true" name="ARACCESS" restart="true" simlevel="none">
         <macros/>
         <pvs/>
         <pvsets/>
@@ -15,7 +13,7 @@ XML_TO_ADD = """\
 """
 
 
-class UpgradeStepFrom3p2p1(UpgradeStep):
+class UpgradeStepFrom3p2p1p1(UpgradeStep):
     """
     Add the Alarm server to the _base ioc so that it autostarts
     """
@@ -31,4 +29,4 @@ class UpgradeStepFrom3p2p1(UpgradeStep):
         Returns: exit code 0 success; anything else fail
 
         """
-        return AddToBaseIOCs("ALARM", "ISISDAE_01", XML_TO_ADD).perform(file_access, logger)
+        return AddToBaseIOCs("ARACCESS", "ALARM", XML_TO_ADD).perform(file_access, logger)

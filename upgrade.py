@@ -4,6 +4,7 @@ from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
 from src.upgrade_step_from_3p2p1 import UpgradeStepFrom3p2p1
+from src.upgrade_step_from_3p2p1p1 import UpgradeStepFrom3p2p1p1
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -13,7 +14,8 @@ from src.upgrade_step_noop import UpgradeStepNoOp
 # configuration to the latest production configuration
 UPGRADE_STEPS = [
     ("3.2.1", UpgradeStepFrom3p2p1()),
-    ("3.2.1.1", None),
+    ("3.2.1.1", UpgradeStepFrom3p2p1p1()),
+    ("3.2.1.2", None),
 ]
 
 if __name__ == "__main__":

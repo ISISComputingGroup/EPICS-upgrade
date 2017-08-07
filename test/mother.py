@@ -46,7 +46,7 @@ class FileAccessStub(object):
     def open_xml_file(self, filename):
         return minidom.parseString(self.open_file(filename))
 
-CLEAN_COMPONENT_BASE_IOC_FILE_v1 ="""<?xml version="1.0" ?>
+CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
     <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
         <macros/>
@@ -62,7 +62,7 @@ CLEAN_COMPONENT_BASE_IOC_FILE_v1 ="""<?xml version="1.0" ?>
 </iocs>
 """
 
-CLEAN_COMPONENT_BASE_IOC_FILE_v2 = """<?xml version="1.0" ?>
+CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1p1 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
     <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
         <macros/>
@@ -79,6 +79,32 @@ CLEAN_COMPONENT_BASE_IOC_FILE_v2 = """<?xml version="1.0" ?>
         <pvs/>
         <pvsets/>
     </ioc>
+    <!-- Above this line only change in master branch -->
+</iocs>
+"""
+
+CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1p2 = """<?xml version="1.0" ?>
+<iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+    <ioc autostart="true" name="ISISDAE_01" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+    <ioc autostart="true" name="ALARM" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+    <ioc autostart="true" name="ARACCESS" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>    
     <!-- Above this line only change in master branch -->
 </iocs>
 """
@@ -121,6 +147,37 @@ ERROR_COMPONENT_BASE_IOC_FILE_TWO_ALARMS = """<?xml version="1.0" ?>
         <pvs/>
         <pvsets/>
     </ioc>
+    <!-- Above this line only change in master branch -->
+</iocs>
+"""
+
+ERROR_COMPONENT_BASE_IOC_FILE_TWO_ARACCESS = """<?xml version="1.0" ?>
+<iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+    <ioc autostart="true" name="ISISDAE_01" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+    <ioc autostart="true" name="ALARM" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+     <ioc autostart="true" name="ARACCESS" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc>
+     <ioc autostart="true" name="ARACCESS" restart="true" simlevel="none">
+        <macros/>
+        <pvs/>
+        <pvsets/>
+    </ioc> 
     <!-- Above this line only change in master branch -->
 </iocs>
 """
