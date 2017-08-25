@@ -19,6 +19,20 @@ class FileAccess(object):
         self._config_base = config_root
         self._logger = logger
 
+    def iterate_directory(directory, extension=".xml"):
+        """
+        Filter a directory for file names matching an extension
+
+        Args:
+            directory (str): the path to the directory to search in relative to config base
+            extension (str): the file extension to search for (default: .xml)
+
+        Returns: yields filenames found that match the extension
+        """
+        for filename in os.listdir(os.path.join(directory)):
+            if filename.endswith(".asm") or filename.endswith(".py"):
+                yield filename
+
     def open_file(self, filename):
         """
 

@@ -112,3 +112,89 @@ class AddToBaseIOCs():
         logger.error("Could not find {0} ioc in file so no {1} ioc added.".format(
             self._add_after_ioc, self._ioc_to_add))
         return ioc_xml
+
+
+SYNOPTICS_DIRECTORY = "configurations\synoptics"
+
+class RenameOPIInSynoptics():
+    """
+    Rename an OPI in the synoptics config folder
+
+    This operation will iterate over all synoptics & find all
+    targets matching a given name. The old name will then be
+    overwritten with a new name.
+    """
+
+    def __init__(self, old_name, new_name):
+        """
+        Create a new OPI rename operation
+
+        Args:
+            old_name (str): the old name of the opi to change.
+            new_name (str): the new name of the opi.
+        """
+        self._old_name = old_name
+        self._new_name = new_name
+
+    def _open_xml_file(self, file_access, filename, logger):
+        """
+        Open an XML file and read the contents.
+
+        If the file cannot be read this will throw an IOError.
+        If the XML is invalid this will throw an ExpatError.
+
+        Args:
+            file_access (FileAccess): an instance of a FileAccess object
+            filename (str): the path of the file to read from.
+            logger (Logging): the logging object to use.
+
+        Returns: a minidom instance with the parsed XML from the file.
+        """
+        try:
+            return file_access.open_xml_file(filename=filename)
+        except IOError:
+            logger.error("Can not open file to modify in config.")
+            logger.error("Filename in configuration: {0}".format(filename))
+            return None
+        except ExpatError as ex:
+            logger.error("IOC file appears not be valid XML, error '{0}'".format(ex))
+            logger.error("Filename in configuration: {0}".format(filename))
+            return None
+
+    def _rename_target_name(self, xml_contents):
+        """
+        Rename any references to the old name in the loaded XML.
+
+        Args:
+            xml_contents (minidom): An XML object to replace names in.
+
+        Returns: a copy of the XML object with the name replaced
+        """
+        components = xml_contents.getElementsByTagName("target")
+        for component in components:
+            component_type = component.getElementsByTagName("name")[0]
+            text = component_type.firstChild.nodeValue
+            if text == self._old_name:
+                component_type.firstChild.nodeValue = self._new_name
+        return xml_contents
+
+    def perform(self, file_access, logger):
+        """
+        Perform the rename operation on the configuration directories
+
+        Args:
+            file_access (FileAccess): an instance of the FileAccess object
+            logger (Logger): a logger instance to use for logging
+        """
+        for filename in file_access.iterate_directory(SYNOPTICS_DIRECTORY):
+            xml_contents = self._open_xml_file(file_access, filename, logger)
+
+            if xml_contents is None:
+                return -1
+
+            xml_contents = self._rename_target_name(xml_contents)
+            file_access.write_xml_file(filename, xml_contents)
+
+        return 0
+
+

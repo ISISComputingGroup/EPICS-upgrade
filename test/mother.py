@@ -29,6 +29,9 @@ class FileAccessStub(object):
         self.write_filename = None
         self.write_file_contents = None
 
+    def iterate_directory(self, directory, extension=".xml"):
+        pass
+
     def write_version_number(self, version, filename):
         self.wrote_version = version
 
@@ -104,7 +107,7 @@ CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1p2 = """<?xml version="1.0" ?>
         <macros/>
         <pvs/>
         <pvsets/>
-    </ioc>    
+    </ioc>
     <!-- Above this line only change in master branch -->
 </iocs>
 """
@@ -177,7 +180,89 @@ ERROR_COMPONENT_BASE_IOC_FILE_TWO_ARACCESS = """<?xml version="1.0" ?>
         <macros/>
         <pvs/>
         <pvsets/>
-    </ioc> 
+    </ioc>
     <!-- Above this line only change in master branch -->
 </iocs>
+"""
+
+RENAME_SYNOPTIC_PRE4P0P0 = """<?xml version="1.0" ?>
+<instrument xmlns="http://www.isis.stfc.ac.uk//instrument">
+	<name>Test</name>
+	<components>
+		<component>
+			<name>Beamstop1</name>
+			<type>BEAMSTOP</type>
+			<target>
+				<name>Beamstop</name>
+				<type>OPI</type>
+				<properties/>
+			</target>
+			<pvs/>
+			<components/>
+		</component>
+		<component>
+			<name>Beamstop2</name>
+			<type>BEAMSTOP</type>
+			<target>
+				<name>Beamstop</name>
+				<type>OPI</type>
+				<properties/>
+			</target>
+			<pvs/>
+			<components/>
+		</component>
+		<component>
+			<name>Other</name>
+			<type>UNKNOWN</type>
+			<target>
+				<name>NONE</name>
+				<type>OPI</type>
+				<properties/>
+			</target>
+			<pvs/>
+			<components/>
+		</component>
+	</components>
+</instrument>
+"""
+
+RENAME_SYNOPTIC_POST4P0P0 = """<?xml version="1.0" ?>
+<instrument xmlns="http://www.isis.stfc.ac.uk//instrument">
+	<name>Test</name>
+	<components>
+		<component>
+			<name>Beamstop1</name>
+			<type>BEAMSTOP</type>
+			<target>
+				<name>XY Beam-stop</name>
+				<type>OPI</type>
+				<properties/>
+			</target>
+			<pvs/>
+			<components/>
+		</component>
+		<component>
+			<name>Beamstop2</name>
+			<type>BEAMSTOP</type>
+			<target>
+				<name>XY Beam-stop</name>
+				<type>OPI</type>
+				<properties/>
+			</target>
+			<pvs/>
+			<components/>
+		</component>
+		<component>
+			<name>Other</name>
+			<type>UNKNOWN</type>
+			<target>
+				<name>NONE</name>
+				<type>OPI</type>
+				<properties/>
+			</target>
+			<pvs/>
+			<components/>
+		</component>
+	</components>
+</instrument>
 """

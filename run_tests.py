@@ -26,6 +26,7 @@ import xmlrunner
 import argparse
 
 from test.test_upgrade_step_3p2p1 import TestUpgradeStepFrom3p2p1
+from test.test_upgrade_step_4p0p0 import TestUpgradeStepFrom4p0p0
 from test.test_upgrade_base import TestUpgradeBase
 
 DEFAULT_DIRECTORY = os.path.join('..', '..', '..', '..', 'test-reports')
@@ -41,6 +42,7 @@ if __name__ == '__main__':
     # Load tests from test suites
     suite1 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeBase)
     suite2 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1)
+    suite2 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom4p0p0)
 
     print "\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------"
 
