@@ -58,9 +58,9 @@ class Synoptics(object):
             if ".opi" in name:
                 try:
                     name_element.firstChild.nodeValue = paths_to_update[name]
-                    self.logger.info("Synoptic upgrade: OPI name {0} replaced with {1}".
+                    self.logger.info("OPI name '{0}' replaced with corresponding key '{1}'".
                                      format(name, paths_to_update[name]))
                 except KeyError:
-                    raise KeyError("Unknown direct opi path encountered, {0}. Replace with corresponding <key> from"
+                    raise KeyError("Unknown opi path encountered, '{0}'. Replace with corresponding <key> from"
                                    " opi_info.xml".format(name))
         self.file_access.write_xml_file(filename, xml)
