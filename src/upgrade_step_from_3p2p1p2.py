@@ -4,7 +4,7 @@ from src.common_upgrades.synoptics import Synoptics
 from src.upgrade_step import UpgradeStep
 from data.target_details_release_4p0p0 import OPI_PATH_KEYS as OPI_PATH_KEYS_4P0P0
 from data.target_details_release_3p2p1 import OPI_PATH_KEYS as OPI_PATH_KEYS_3P2P1
-from data.target_details_release_3p2p1 import OPI_PATH_KEYS as OPI_PATH_KEYS_2P0P0
+from data.target_details_release_2p0p0 import OPI_PATH_KEYS as OPI_PATH_KEYS_2P0P0
 
 
 class UpgradeStepFrom3p2p1p2(UpgradeStep):
