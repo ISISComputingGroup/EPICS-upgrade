@@ -21,7 +21,7 @@ class Synoptics(object):
             return [filename for filename in self.file_access.listdir(SYNOPTICS_PATH) if filename.endswith('.xml')]
         except WindowsError:
             self.logger.error("Unable to find the synoptics directory")
-            raise IOError
+            raise WindowsError
 
     def update_opi_paths(self, paths_to_update):
         """
@@ -38,7 +38,7 @@ class Synoptics(object):
         result = 0
         try:
             filenames = self._get_synoptic_files()
-        except IOError:
+        except WindowsError:
             result = -1
         else:
             for filename in filenames:

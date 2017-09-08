@@ -46,6 +46,9 @@ class FileAccessStub(object):
     def open_xml_file(self, filename):
         return minidom.parseString(self.open_file(filename))
 
+    def listdir(self, dir):
+        return []
+
 CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
     <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
