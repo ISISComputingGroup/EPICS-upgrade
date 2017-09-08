@@ -5,7 +5,7 @@ from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
 from src.upgrade_step_from_3p2p1 import UpgradeStepFrom3p2p1
 from src.upgrade_step_from_3p2p1p1 import UpgradeStepFrom3p2p1p1
-from src.upgrade_step_noop import UpgradeStepNoOp
+from src.upgrade_step_from_3p2p1p2 import UpgradeStepFrom3p2p1p2
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
 # The last step should have an upgrade class of None (this is how it knows it has reached the end)
