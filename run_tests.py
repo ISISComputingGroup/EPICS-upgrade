@@ -39,14 +39,14 @@ if __name__ == '__main__':
     xml_dir = args.output_dir[0]
 
     # Load tests from test suites
-    suite1 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeBase)
-    suite2 = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1)
+    base_suite = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeBase)
+    v3p2p1_suite = unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1)
 
     print "\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------"
 
     ret_vals = list()
-    ret_vals.append(xmlrunner.XMLTestRunner(output=xml_dir).run(suite1).wasSuccessful())
-    ret_vals.append(xmlrunner.XMLTestRunner(output=xml_dir).run(suite2).wasSuccessful())
+    ret_vals.append(xmlrunner.XMLTestRunner(output=xml_dir).run(base_suite).wasSuccessful())
+    ret_vals.append(xmlrunner.XMLTestRunner(output=xml_dir).run(v3p2p1_suite).wasSuccessful())
 
     print "------ UPGRADE STEPS UNIT TESTS COMPLETE ------\n\n"
     # Return failure exit code if a test failed
