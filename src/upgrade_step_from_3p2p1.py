@@ -1,10 +1,7 @@
-from src.common_upgrades import AddToBaseIOCs
-from src.upgrade_step import UpgradeStep
 from file_access import FileAccess
-
-
 from local_logger import LocalLogger
-
+from src.common_upgrades.add_to_base_iocs import AddToBaseIOCs
+from src.upgrade_step import UpgradeStep
 
 XML_TO_ADD = """\
     <ioc autostart="true" name="ALARM" restart="true" simlevel="none">

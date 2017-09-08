@@ -97,3 +97,15 @@ class FileAccess(object):
             f.write('<?xml version="1.0" ?>\n')
             xml.firstChild.writexml(f)
             f.write('\n')
+
+    def listdir(self, dir):
+        """
+        Returns a list of files in a directory
+        
+        Args:
+            dir (String): The directory to list
+            
+        Return:
+            List of file paths (strings)
+        """
+        return [os.path.join(dir, f) for f in os.listdir(os.path.join(self._config_base, dir))]
