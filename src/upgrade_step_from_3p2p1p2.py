@@ -21,4 +21,4 @@ class UpgradeStepFrom3p2p1p2(UpgradeStep):
         Returns: exit code 0 success; anything else fail
 
         """
-        return Synoptics().update_opi_paths(file_access, logger, OPI_PATH_KEYS)
+        return Synoptics(file_access, logger).update_opi_paths(OPI_PATH_KEYS)

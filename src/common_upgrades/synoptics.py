@@ -1,5 +1,3 @@
-import os
-
 SYNOPTICS_PATH = "configurations\synoptics"
 
 
@@ -8,8 +6,11 @@ class Synoptics(object):
     Manipulate an instrument's synoptics
     """
 
-    @staticmethod
-    def _get_synoptic_files(logger):
+    def __init__(self, file_access, logger):
+        self.file_access = file_access
+        self.logger = logger
+
+    def _get_synoptic_files(self):
         """
         Get a list of synoptic files associated with this instrument
         
@@ -17,12 +18,12 @@ class Synoptics(object):
             List(String): A list of file paths associated with instrument synoptics
         """
         try:
-            return [file for file in os.listdir(SYNOPTICS_PATH) if file.endswith('.xml')]
-        except WindowsError as e:
-            logger.error("Unable to find the synoptics directory")
-            return []
+            return [filename for filename in self.file_access.listdir(SYNOPTICS_PATH) if filename.endswith('.xml')]
+        except WindowsError:
+            self.logger.error("Unable to find the synoptics directory")
+            raise IOError
 
-    def update_opi_paths(self, file_access, logger, paths_to_update):
+    def update_opi_paths(self, paths_to_update):
         """
         Update the paths to OPIs in all synoptics
 
@@ -34,15 +35,32 @@ class Synoptics(object):
             exit code 0 success; anything else fail
 
         """
-        for filename in Synoptics._get_synoptic_files():
-            xml = file_access.open_xml_file(filename)
-            for target_element in xml.findElementsByTag("target"):
-                name_element = target_element.findElementsByTag("name")[0]
-                name = name_element.firstChild.nodeValue
-                if ".opi" in name:
-                    try:
-                        name_element.firstChild.nodeValue = paths_to_update[name]
-                    except:
-                        return -1
-            file_access.write_xml_file(filename, xml)
-        return 0
+        result = 0
+        try:
+            filenames = self._get_synoptic_files()
+        except IOError:
+            result = -1
+        else:
+            for filename in filenames:
+                try:
+                    self._update_opi_paths_in_file(filename, paths_to_update)
+                except KeyError as e:
+                    self.logger.error("Cannot upgrade synoptic {0}: {1}".format(filename, e.message))
+                    result = -2
+                    break
+        return result
+
+    def _update_opi_paths_in_file(self, filename, paths_to_update):
+        xml = self.file_access.open_xml_file(filename)
+        for target_element in xml.getElementsByTagName("target"):
+            name_element = target_element.getElementsByTagName("name")[0]
+            name = name_element.firstChild.nodeValue
+            if ".opi" in name:
+                try:
+                    name_element.firstChild.nodeValue = paths_to_update[name]
+                    self.logger.info("Synoptic upgrade: OPI name {0} replaced with {1}".
+                                     format(name, paths_to_update[name]))
+                except KeyError:
+                    raise KeyError("Unknown direct opi path encountered, {0}. Replace with corresponding <key> from"
+                                   " opi_info.xml".format(name))
+        self.file_access.write_xml_file(filename, xml)
