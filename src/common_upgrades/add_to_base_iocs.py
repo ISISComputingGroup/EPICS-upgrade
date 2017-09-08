@@ -1,11 +1,7 @@
-import os
-
-from src.upgrade_step import UpgradeStep
-from file_access import FileAccess
 from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 
-from local_logger import LocalLogger
+from src.local_logger import LocalLogger
 
 IOC_FILENAME = "configurations\components\_base\iocs.xml"
 
@@ -22,13 +18,14 @@ class AddToBaseIOCs():
 
     def perform(self, file_access, logger):
         """
-        Add the autostart of the given
+        Add the autostart of the given.
 
         Args:
-            file_access (FileAccess): file access
-            logger (LocalLogger): logger
+            file_access (FileAccess): file access.
+            logger (LocalLogger): logger.
 
-        Returns: exit code 0 success; anything else fail
+        Returns: 
+            exit code 0 success; anything else fail.
 
         """
         try:
@@ -56,10 +53,14 @@ class AddToBaseIOCs():
 
     def _check_final_file_contains_one_of_added_ioc(self, logger, xml):
         """
-        Check the file to make sure it now contains one and only one ioc added entry
-        :param logger: logger to write to
-        :param xml: xml to check
-        :return: True if ok, False otherwise
+        Check the file to make sure it now contains one and only one ioc added entry.
+        
+        Args:
+            logger (Logger): Logger to write to.
+            xml: XML to check.
+            
+        Returns:
+            True if ok, else False.
         """
         ioc_names = []
         for ioc in xml.getElementsByTagName("ioc"):
@@ -75,10 +76,14 @@ class AddToBaseIOCs():
 
     def _check_prerequisits_for_file(self, xml, logger):
         """
-        Check the file can be modified
-        :param xml: xml to check
-        :param logger: logger to write errors to
-        :return: True everything is ok; False on error
+        Check the file can be modified.
+        
+        Args:
+            xml: XML to check
+            logger (Logger): logger to write errors to.
+            
+        Returns:
+            True if everything is ok, else False.
         """
         ioc_names = []
         for ioc in xml.getElementsByTagName("ioc"):
@@ -97,9 +102,13 @@ class AddToBaseIOCs():
 
     def _add_ioc(self, ioc_xml, logger):
         """
-        Add IOC entry after add after ioc specified if it exists
-        :param ioc_xml: xml to add to
-        :return: the xml with the added node
+        Add IOC entry after add after ioc specified if it exists.
+        
+        Args:
+            ioc_xml: XML to add to.
+            
+        Returns:
+            The XML with the added note.
         """
         for ioc in ioc_xml.getElementsByTagName("ioc"):
             if ioc.getAttribute("name") == self._add_after_ioc:

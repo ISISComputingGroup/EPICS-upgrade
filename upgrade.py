@@ -15,6 +15,7 @@ from src.upgrade_step_noop import UpgradeStepNoOp
 UPGRADE_STEPS = [
     ("3.2.1", UpgradeStepFrom3p2p1()),
     ("3.2.1.1", UpgradeStepFrom3p2p1p1()),
+    ("3.2.1.2", UpgradeStepFrom3p2p1p2()),
     ("4.0.0", None),
 ]
 
