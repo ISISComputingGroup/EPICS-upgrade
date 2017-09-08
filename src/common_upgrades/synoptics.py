@@ -51,6 +51,16 @@ class Synoptics(object):
         return result
 
     def _update_opi_paths_in_file(self, filename, paths_to_update):
+        """
+        Replaces an opi path with the relevant key in a given file
+        
+        Args:
+            filename (String): file to update
+            paths_to_update (Dict): A dictionary whose keys are OPI paths and values are the keys used by the IBEX gui
+            
+        Returns:
+            None
+        """
         xml = self.file_access.open_xml_file(filename)
         for target_element in xml.getElementsByTagName("target"):
             name_element = target_element.getElementsByTagName("name")[0]
