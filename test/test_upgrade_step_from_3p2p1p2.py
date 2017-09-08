@@ -24,7 +24,7 @@ class TestUpgradeStepFrom3p2p1p2(unittest.TestCase):
 
     def test_GIVEN_synoptic_xml_file_has_no_opi_path_WHEN_upgrade_THEN_no_error(self):
 
-        self.file_access.open_xml_file = Mock(return_value=mother.CLEAN_SYNOPTIC_v3p2p1p2)
+        self.file_access.open_file = Mock(return_value=mother.CLEAN_SYNOPTIC_v3p2p1p2)
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
@@ -32,7 +32,7 @@ class TestUpgradeStepFrom3p2p1p2(unittest.TestCase):
 
     def test_GIVEN_synoptic_xml_file_has_old_opi_path_WHEN_upgrade_THEN_no_error(self):
 
-        self.file_access.open_xml_file = Mock(return_value=mother.DIRECT_PATH_SYNOPTIC_v3p2p1p2)
+        self.file_access.open_file = Mock(return_value=mother.DIRECT_PATH_SYNOPTIC_v3p2p1p2)
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
@@ -40,7 +40,7 @@ class TestUpgradeStepFrom3p2p1p2(unittest.TestCase):
 
     def test_GIVEN_synoptic_xml_file_has_new_opi_path_WHEN_upgrade_THEN_no_error(self):
 
-        self.file_access.open_xml_file = Mock(return_value=mother.DIRECT_PATH_SYNOPTIC_v4p0p0)
+        self.file_access.open_file = Mock(return_value=mother.DIRECT_PATH_SYNOPTIC_v4p0p0)
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
@@ -48,7 +48,7 @@ class TestUpgradeStepFrom3p2p1p2(unittest.TestCase):
 
     def test_GIVEN_synoptic_xml_file_has_unknown_opi_path_WHEN_upgrade_THEN_error(self):
 
-        self.file_access.open_xml_file = Mock(return_value=mother.UNKNOWN_SYNOPTIC_v3p2p1p2)
+        self.file_access.open_file = Mock(return_value=mother.UNKNOWN_SYNOPTIC_v3p2p1p2)
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
