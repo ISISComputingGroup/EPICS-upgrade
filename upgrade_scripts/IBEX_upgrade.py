@@ -10,7 +10,7 @@ import subprocess
 
 import shutil
 import stat
-
+from time import sleep
 
 INSTRUMENT_BASE_DIR = os.path.join(r"c:\Instrument")
 APPS_BASE_DIR = os.path.join(INSTRUMENT_BASE_DIR, "Apps")
@@ -174,6 +174,15 @@ class FileUtils(object):
             """
             if exc_info[0] is WindowsError:
                 try:
+                    try:
+                        # try remove second time (doesn't always work first time)
+                        if func == os.rmdir:
+                            sleep(0.1)
+                            os.rmdir(path)
+                            return
+                    except WindowsError:
+                        pass
+
                     os.chmod(path, stat.S_IRWXU)
                     os.remove(path)
                     return
