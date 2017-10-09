@@ -46,6 +46,9 @@ class FileAccessStub(object):
     def open_xml_file(self, filename):
         return minidom.parseString(self.open_file(filename))
 
+    def listdir(self, dir):
+        return ["file1.xml", "README.txt", "file2.xml"]
+
 CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
     <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
@@ -181,3 +184,27 @@ ERROR_COMPONENT_BASE_IOC_FILE_TWO_ARACCESS = """<?xml version="1.0" ?>
     <!-- Above this line only change in master branch -->
 </iocs>
 """
+
+SYOPTIC_WITH_TEMPLATE_TARGET_NAME = """<?xml version="1.0" ?>
+<instrument xmlns="http://www.isis.stfc.ac.uk//instrument">
+    <name>Goniometer</name>
+    <components>
+        <component>
+            <name>New Component</name>
+            <type>GONIOMETER</type>
+            <target>
+                <name>{0}</name>
+                <type>OPI</type>
+                <properties/>
+            </target>
+            <pvs/>
+            <components/>
+        </component>
+    </components>
+</instrument>
+"""
+
+CLEAN_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("Goniometer")
+UNKNOWN_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("unknown\path\gonio.opi")
+DIRECT_PATH_SYNOPTIC_v4p0p0 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("jaws/Jaws.opi")
+DIRECT_PATH_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("Jaws.opi")
