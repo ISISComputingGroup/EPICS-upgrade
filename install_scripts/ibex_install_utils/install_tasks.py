@@ -201,17 +201,21 @@ class UpgradeTasks(object):
 
                 for path in AUTOSTART_LOCATIONS:
                     if os.path.exists(path):
-                        self._prompt.prompt("SECI autostart found in {}, type Y to confirm you have deleted this.".format(path),
-                                            ["Y", "N"], "N")
+                        if self._prompt.prompt("SECI autostart found in {}, type Y to confirm you have deleted this.".format(path),
+                                            ["Y", "N"], "N") != "Y":
+                            raise UserStop
 
-                self._prompt.prompt("Please remove the shortcut to SECI if it is pinned to the task bar. "
-                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N")
+                if self._prompt.prompt("Please remove the shortcut to SECI if it is pinned to the task bar. "
+                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N") != "Y":
+                    raise UserStop
 
-                self._prompt.prompt("Please remove the shortcut to SECI if it is on the desktop. "
-                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N")
+                if self._prompt.prompt("Please remove the shortcut to SECI if it is on the desktop. "
+                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N") != "Y":
+                    raise UserStop
 
-                self._prompt.prompt("Please remove the shortcut to SECI if it is in the start menu. "
-                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N")
+                if self._prompt.prompt("Please remove the shortcut to SECI if it is in the start menu. "
+                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N") != "Y":
+                    raise UserStop
 
     def update_calibrations_repository(self):
         with Task("Updating calibrations repository", self._prompt) as task:
