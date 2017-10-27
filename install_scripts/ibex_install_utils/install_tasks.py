@@ -6,8 +6,9 @@ import os
 import shutil
 import socket
 import subprocess
+import git
 
-from ibex_install_utils.exceptions import UserStop, ErrorInRun
+from ibex_install_utils.exceptions import UserStop, ErrorInRun, ErrorInTask
 from ibex_install_utils.file_utils import FileUtils
 
 INSTRUMENT_BASE_DIR = os.path.join(r"c:\Instrument")
@@ -184,6 +185,47 @@ class UpgradeTasks(object):
         if answer != "Y":
             raise UserStop()
 
+    def upgrade_instrument_configuration(self):
+        with Task("Upgrading instrument configuration", self._prompt) as task:
+            if task.do_step:
+                RunProcess(os.path.join(EPICS_PATH, "misc", "upgrade", "master"), "upgrade.bat").run()
+
+    def remove_seci_shortcuts(self):
+        with Task("Remove SECI shortcuts", self._prompt) as task:
+            if task.do_step:
+                USER_START_MENU = os.path.join("C:\\", "users", "spudulike", "AppData", "Roaming", "Microsoft", "Windows", "Start Menu")
+                PC_START_MENU = os.path.join("C:\\", "ProgramData", "Microsoft", "Windows", "Start Menu")
+                SECI = "SECI User interface.lnk"
+                AUTOSTART_LOCATIONS = [os.path.join(USER_START_MENU, "Programs", "Startup", SECI),
+                                       os.path.join(PC_START_MENU, "Programs", "Startup", SECI)]
+
+                for path in AUTOSTART_LOCATIONS:
+                    if os.path.exists(path):
+                        self._prompt.prompt("SECI autostart found in {}, type Y to confirm you have deleted this.".format(path),
+                                            ["Y", "N"], "N")
+
+                self._prompt.prompt("Please remove the shortcut to SECI if it is pinned to the task bar. "
+                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N")
+
+                self._prompt.prompt("Please remove the shortcut to SECI if it is on the desktop. "
+                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N")
+
+                self._prompt.prompt("Please remove the shortcut to SECI if it is in the start menu. "
+                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N")
+
+    def update_calibrations_repository(self):
+        with Task("Updating calibrations repository", self._prompt) as task:
+            if task.do_step:
+                try:
+                    repo = git.Repo(os.path.join("C:\\", "Instrument", "Settings", "Config", "common"))
+                    repo.git.pull()
+                except git.GitCommandError:
+                    answer = self._prompt.prompt("There was an error pulling the calibrations repository. \n"
+                                                 "Type Y to confirm that you have manually pulled the repository "
+                                                 "and fixed any conflicts? [Y/N]", ["Y", "N"], "N")
+                    if answer != "Y":
+                        raise UserStop()
+
 
 class UpgradeInstrument(object):
     """
@@ -231,6 +273,12 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.upgrade_notepad_pp()
 
+    def run_instrument_update(self):
+        self._upgrade_tasks.stop_ibex_server()
+        self._upgrade_tasks.upgrade_instrument_configuration()
+        self._upgrade_tasks.update_calibrations_repository()
+        self._upgrade_tasks.remove_seci_shortcuts()
+
 
 class Task(object):
     """
@@ -274,6 +322,7 @@ class RunProcess(object):
             executable_file: file of the process to run, e.g. a bat file
             executable_directory: the directory in which the executable file lives, if None, default, use working dir
             press_any_key: if true then press a key to finish
+            python: if true, run as a python process
         """
         self._working_dir = working_dir
         self._bat_file = executable_file
