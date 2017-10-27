@@ -326,7 +326,6 @@ class RunProcess(object):
             executable_file: file of the process to run, e.g. a bat file
             executable_directory: the directory in which the executable file lives, if None, default, use working dir
             press_any_key: if true then press a key to finish
-            python: if true, run as a python process
         """
         self._working_dir = working_dir
         self._bat_file = executable_file
