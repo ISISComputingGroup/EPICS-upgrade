@@ -39,7 +39,7 @@ class UserPrompt(object):
         while True:
             answer = raw_input(prompt_text).strip()
             for possible in possibles:
-                if answer == possible or (case_sensitive and possible.lower() == answer.lower()):
+                if answer == possible or (not case_sensitive and possible.lower() == answer.lower()):
                     return possible
             print("Answer is not allowed can be one of ({0})".format(possibles))
 

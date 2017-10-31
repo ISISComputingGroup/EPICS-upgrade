@@ -199,23 +199,17 @@ class UpgradeTasks(object):
                 AUTOSTART_LOCATIONS = [os.path.join(USER_START_MENU, "Programs", "Startup", SECI),
                                        os.path.join(PC_START_MENU, "Programs", "Startup", SECI)]
 
+                def prompt_and_raise_if_not_yes(string):
+                    if self._prompt.prompt("{}\nType Y when done.".format(string), ["Y", "N"], "N") != "Y":
+                        raise UserStop
+
                 for path in AUTOSTART_LOCATIONS:
                     if os.path.exists(path):
-                        if self._prompt.prompt("SECI autostart found in {}, type Y to confirm you have deleted this.".format(path),
-                                            ["Y", "N"], "N") != "Y":
-                            raise UserStop
+                        prompt_and_raise_if_not_yes("SECI autostart found in {}, delete this.".format(path))
 
-                if self._prompt.prompt("Please remove the shortcut to SECI if it is pinned to the task bar. "
-                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N") != "Y":
-                    raise UserStop
-
-                if self._prompt.prompt("Please remove the shortcut to SECI if it is on the desktop. "
-                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N") != "Y":
-                    raise UserStop
-
-                if self._prompt.prompt("Please remove the shortcut to SECI if it is in the start menu. "
-                                    "Type Y when complete. [Y/N]", ["Y", "N"], "N") != "Y":
-                    raise UserStop
+                prompt_and_raise_if_not_yes("Remove task bar shortcut to SECI")
+                prompt_and_raise_if_not_yes("Remove desktop shortcut to SECI")
+                prompt_and_raise_if_not_yes("Remove start menu shortcut to SECI")
 
     def update_calibrations_repository(self):
         with Task("Updating calibrations repository", self._prompt) as task:
