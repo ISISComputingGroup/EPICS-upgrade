@@ -1,4 +1,5 @@
 import os
+import sys
 
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
@@ -28,4 +29,4 @@ if __name__ == "__main__":
     file_access = FileAccess(logger, config_root)
 
     upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS)
-    exit(upgrade.upgrade())
+    sys.exit(upgrade.upgrade())

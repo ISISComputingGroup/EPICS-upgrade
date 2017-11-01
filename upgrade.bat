@@ -1,3 +1,3 @@
 call C:\Instrument\Apps\EPICS\config_env.bat
 
-%python% upgrade.py
+C:\Instrument\Apps\Python\python.exe upgrade.py

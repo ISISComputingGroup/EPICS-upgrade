@@ -7,6 +7,7 @@ import shutil
 import socket
 import subprocess
 import git
+import sys
 
 from ibex_install_utils.exceptions import UserStop, ErrorInRun, ErrorInTask
 from ibex_install_utils.file_utils import FileUtils
@@ -188,7 +189,22 @@ class UpgradeTasks(object):
     def upgrade_instrument_configuration(self):
         with Task("Upgrading instrument configuration", self._prompt) as task:
             if task.do_step:
-                RunProcess(os.path.join(EPICS_PATH, "misc", "upgrade", "master"), "upgrade.bat").run()
+                sys.path.append('..')
+                from upgrade import Upgrade, UPGRADE_STEPS
+                from src.local_logger import LocalLogger
+                from src.file_access import FileAccess
+
+                try:
+                    config_root = os.path.abspath(os.path.join(os.environ["ICPCONFIGROOT"], os.pardir))
+                    log_dir = os.path.join(os.environ["ICPVARDIR"], "logs", "upgrade")
+                except KeyError:
+                    raise ErrorInTask("Must be run in a terminal that has done config_env")
+
+                logger = LocalLogger(log_dir)
+                file_access = FileAccess(logger, config_root)
+
+                upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS)
+                upgrade.upgrade()
 
     def remove_seci_shortcuts(self):
         with Task("Remove SECI shortcuts", self._prompt) as task:
