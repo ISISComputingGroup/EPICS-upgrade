@@ -1,6 +1,7 @@
 """
 Classes to interact with the user
 """
+from install_scripts.ibex_install_utils.exceptions import UserStop
 
 
 class UserPrompt(object):
@@ -55,3 +56,7 @@ class UserPrompt(object):
         if not self._confirm_steps or self._automatic:
             return True
         return self._get_user_answer("Do step '{0}'? : ".format(step_text), ("Y", "N")) == "Y"
+
+    def prompt_and_raise_if_not_yes(self, string):
+        if self.prompt("{}\nType Y when done.".format(string), ["Y", "N"], "N") != "Y":
+            raise UserStop

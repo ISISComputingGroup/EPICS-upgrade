@@ -215,30 +215,24 @@ class UpgradeTasks(object):
                 AUTOSTART_LOCATIONS = [os.path.join(USER_START_MENU, "Programs", "Startup", SECI),
                                        os.path.join(PC_START_MENU, "Programs", "Startup", SECI)]
 
-                def prompt_and_raise_if_not_yes(string):
-                    if self._prompt.prompt("{}\nType Y when done.".format(string), ["Y", "N"], "N") != "Y":
-                        raise UserStop
-
                 for path in AUTOSTART_LOCATIONS:
                     if os.path.exists(path):
-                        prompt_and_raise_if_not_yes("SECI autostart found in {}, delete this.".format(path))
+                        self._prompt.prompt_and_raise_if_not_yes("SECI autostart found in {}, delete this.".format(path))
 
-                prompt_and_raise_if_not_yes("Remove task bar shortcut to SECI")
-                prompt_and_raise_if_not_yes("Remove desktop shortcut to SECI")
-                prompt_and_raise_if_not_yes("Remove start menu shortcut to SECI")
+                self._prompt.prompt_and_raise_if_not_yes("Remove task bar shortcut to SECI")
+                self._prompt.prompt_and_raise_if_not_yes("Remove desktop shortcut to SECI")
+                self._prompt.prompt_and_raise_if_not_yes("Remove start menu shortcut to SECI")
 
     def update_calibrations_repository(self):
         with Task("Updating calibrations repository", self._prompt) as task:
             if task.do_step:
+                path = os.path.join("C:\\", "Instrument", "Settings", "Config", "common")
                 try:
-                    repo = git.Repo(os.path.join("C:\\", "Instrument", "Settings", "Config", "common"))
+                    repo = git.Repo(path)
                     repo.git.pull()
                 except git.GitCommandError:
-                    answer = self._prompt.prompt("There was an error pulling the calibrations repository. \n"
-                                                 "Type Y to confirm that you have manually pulled the repository "
-                                                 "and fixed any conflicts? [Y/N]", ["Y", "N"], "N")
-                    if answer != "Y":
-                        raise UserStop()
+                    self._prompt.prompt_and_raise_if_not_yes("There was an error pulling the calibrations repo.\n"
+                                                             "Manually pull it. Path='{}'".format(path))
 
 
 class UpgradeInstrument(object):
