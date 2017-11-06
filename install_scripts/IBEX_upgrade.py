@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", default=False, action="store_true",
                         help="Do not ask any questions just to the default.")
 
-    parser.add_argument('deployment_type', choices=['training', 'demo', 'instrument_update'], help="What upgrade should be performed")
+    parser.add_argument('deployment_type', choices=['training_update', 'demo_upgrade', 'instrument_update'], help="What upgrade should be performed")
 
     args = parser.parse_args()
 
