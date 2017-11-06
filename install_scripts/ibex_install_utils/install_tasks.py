@@ -250,7 +250,7 @@ class UpgradeInstrument(object):
         """
         self._upgrade_tasks = UpgradeTasks(user_prompt, server_source_dir, client_source_dir, file_utils)
 
-    def run_test_upgrade(self):
+    def run_test_update(self):
         """
         Run a complete test upgrade on the current system
         Returns:

@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     try:
         if args.deployment_type == "training_update":
-            upgrade_instrument.run_test_upgrade()
+            upgrade_instrument.run_test_update()
         elif args.deployment_type == "demo_upgrade":
             upgrade_instrument.run_demo_upgrade()
         elif args.deployment_type == "instrument_update":
