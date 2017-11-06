@@ -1,7 +1,7 @@
 """
 Classes to interact with the user
 """
-from install_scripts.ibex_install_utils.exceptions import UserStop
+from exceptions import UserStop
 
 
 class UserPrompt(object):

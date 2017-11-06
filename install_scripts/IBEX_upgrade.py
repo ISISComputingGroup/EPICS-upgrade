@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", default=False, action="store_true",
                         help="Do not ask any questions just to the default.")
 
-    parser.add_argument('upgrade_type', choices=['training', 'demo', 'instrument_update'], help="What upgrade should be performed")
+    parser.add_argument('deployment_type', choices=['training', 'demo', 'instrument_update'], help="What upgrade should be performed")
 
     args = parser.parse_args()
 
@@ -41,11 +41,11 @@ if __name__ == "__main__":
     upgrade_instrument = UpgradeInstrument(prompt, server_dir, client_dir)
 
     try:
-        if args.upgrade_type == "training":
+        if args.deployment_type == "training_update":
             upgrade_instrument.run_test_upgrade()
-        elif args.upgrade_type == "demo":
+        elif args.deployment_type == "demo_upgrade":
             upgrade_instrument.run_demo_upgrade()
-        elif args.upgrade_type == "instrument_update":
+        elif args.deployment_type == "instrument_update":
             upgrade_instrument.run_instrument_update()
 
     except UserStop:
