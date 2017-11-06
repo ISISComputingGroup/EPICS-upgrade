@@ -1,6 +1,7 @@
 """
 Classes to interact with the user
 """
+from exceptions import UserStop
 
 
 class UserPrompt(object):
@@ -39,7 +40,7 @@ class UserPrompt(object):
         while True:
             answer = raw_input(prompt_text).strip()
             for possible in possibles:
-                if answer == possible or (case_sensitive and possible.lower() == answer.lower()):
+                if answer == possible or (not case_sensitive and possible.lower() == answer.lower()):
                     return possible
             print("Answer is not allowed can be one of ({0})".format(possibles))
 
@@ -55,3 +56,7 @@ class UserPrompt(object):
         if not self._confirm_steps or self._automatic:
             return True
         return self._get_user_answer("Do step '{0}'? : ".format(step_text), ("Y", "N")) == "Y"
+
+    def prompt_and_raise_if_not_yes(self, string):
+        if self.prompt("{}\nType Y when done.".format(string), ["Y", "N"], "N") != "Y":
+            raise UserStop

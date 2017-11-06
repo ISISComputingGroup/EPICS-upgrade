@@ -6,8 +6,10 @@ import os
 import shutil
 import socket
 import subprocess
+import git
+import sys
 
-from ibex_install_utils.exceptions import UserStop, ErrorInRun
+from ibex_install_utils.exceptions import UserStop, ErrorInRun, ErrorInTask
 from ibex_install_utils.file_utils import FileUtils
 
 INSTRUMENT_BASE_DIR = os.path.join(r"c:\Instrument")
@@ -184,6 +186,54 @@ class UpgradeTasks(object):
         if answer != "Y":
             raise UserStop()
 
+    def upgrade_instrument_configuration(self):
+        with Task("Upgrading instrument configuration", self._prompt) as task:
+            if task.do_step:
+                sys.path.append('..')
+                from upgrade import Upgrade, UPGRADE_STEPS
+                from src.local_logger import LocalLogger
+                from src.file_access import FileAccess
+
+                try:
+                    config_root = os.path.abspath(os.path.join(os.environ["ICPCONFIGROOT"], os.pardir))
+                    log_dir = os.path.join(os.environ["ICPVARDIR"], "logs", "upgrade")
+                except KeyError:
+                    raise ErrorInTask("Must be run in a terminal that has done config_env")
+
+                logger = LocalLogger(log_dir)
+                file_access = FileAccess(logger, config_root)
+
+                upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS)
+                upgrade.upgrade()
+
+    def remove_seci_shortcuts(self):
+        with Task("Remove SECI shortcuts", self._prompt) as task:
+            if task.do_step:
+                USER_START_MENU = os.path.join("C:\\", "users", "spudulike", "AppData", "Roaming", "Microsoft", "Windows", "Start Menu")
+                PC_START_MENU = os.path.join("C:\\", "ProgramData", "Microsoft", "Windows", "Start Menu")
+                SECI = "SECI User interface.lnk"
+                AUTOSTART_LOCATIONS = [os.path.join(USER_START_MENU, "Programs", "Startup", SECI),
+                                       os.path.join(PC_START_MENU, "Programs", "Startup", SECI)]
+
+                for path in AUTOSTART_LOCATIONS:
+                    if os.path.exists(path):
+                        self._prompt.prompt_and_raise_if_not_yes("SECI autostart found in {}, delete this.".format(path))
+
+                self._prompt.prompt_and_raise_if_not_yes("Remove task bar shortcut to SECI")
+                self._prompt.prompt_and_raise_if_not_yes("Remove desktop shortcut to SECI")
+                self._prompt.prompt_and_raise_if_not_yes("Remove start menu shortcut to SECI")
+
+    def update_calibrations_repository(self):
+        with Task("Updating calibrations repository", self._prompt) as task:
+            if task.do_step:
+                path = os.path.join("C:\\", "Instrument", "Settings", "Config", "common")
+                try:
+                    repo = git.Repo(path)
+                    repo.git.pull()
+                except git.GitCommandError:
+                    self._prompt.prompt_and_raise_if_not_yes("There was an error pulling the calibrations repo.\n"
+                                                             "Manually pull it. Path='{}'".format(path))
+
 
 class UpgradeInstrument(object):
     """
@@ -200,7 +250,7 @@ class UpgradeInstrument(object):
         """
         self._upgrade_tasks = UpgradeTasks(user_prompt, server_source_dir, client_source_dir, file_utils)
 
-    def run_test_upgrade(self):
+    def run_test_update(self):
         """
         Run a complete test upgrade on the current system
         Returns:
@@ -230,6 +280,12 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_server(True)
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.upgrade_notepad_pp()
+
+    def run_instrument_update(self):
+        self._upgrade_tasks.stop_ibex_server()
+        self._upgrade_tasks.upgrade_instrument_configuration()
+        self._upgrade_tasks.update_calibrations_repository()
+        self._upgrade_tasks.remove_seci_shortcuts()
 
 
 class Task(object):

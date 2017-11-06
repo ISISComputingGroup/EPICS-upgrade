@@ -4,6 +4,7 @@ Script to install IBEX to various machines
 
 import argparse
 import os
+import sys
 
 from ibex_install_utils.install_tasks import UpgradeInstrument
 from ibex_install_utils.exceptions import UserStop, ErrorInTask
@@ -21,13 +22,13 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", default=False, action="store_true",
                         help="Do not ask any questions just to the default.")
 
-    parser.add_argument('upgrade_type', choices=['training', 'demo'], help="What upgrade should be performed")
+    parser.add_argument('deployment_type', choices=['training_update', 'demo_upgrade', 'instrument_update'], help="What upgrade should be performed")
 
     args = parser.parse_args()
 
     if (args.release_dir is None) and (args.server_dir is None or args.client_dir is None):
         print("You must specify either the release directory or BOTH the server and client directories.")
-        exit(2)
+        sys.exit(2)
 
     if args.release_dir is None:
         server_dir = args.server_dir
@@ -40,16 +41,18 @@ if __name__ == "__main__":
     upgrade_instrument = UpgradeInstrument(prompt, server_dir, client_dir)
 
     try:
-        if args.upgrade_type == "training":
-            upgrade_instrument.run_test_upgrade()
-        elif args.upgrade_type == "demo":
+        if args.deployment_type == "training_update":
+            upgrade_instrument.run_test_update()
+        elif args.deployment_type == "demo_upgrade":
             upgrade_instrument.run_demo_upgrade()
+        elif args.deployment_type == "instrument_update":
+            upgrade_instrument.run_instrument_update()
 
     except UserStop:
         print ("Stopping upgrade")
-        exit(0)
+        sys.exit(0)
     except ErrorInTask as error_in_run_ex:
         print("Error in upgrade: {0}".format(error_in_run_ex.message))
-        exit(1)
+        sys.exit(1)
 
     print ("Finished upgrade")
