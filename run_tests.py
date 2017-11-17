@@ -48,10 +48,10 @@ if __name__ == '__main__':
         unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1p2),
     ]
 
-    print "\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------"
+    print("\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------")
 
     ret_vals = [xmlrunner.XMLTestRunner(output=xml_dir).run(s).wasSuccessful() for s in suites]
 
-    print "------ UPGRADE STEPS UNIT TESTS COMPLETE ------\n\n"
+    print("------ UPGRADE STEPS UNIT TESTS COMPLETE ------\n\n")
     # Return failure exit code if a test failed
     sys.exit(False in ret_vals)

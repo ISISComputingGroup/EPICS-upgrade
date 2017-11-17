@@ -30,7 +30,7 @@ class FileAccess(object):
         Returns:
             contents of file as a list of lines
         """
-        with file(os.path.join(self._config_base, filename)) as f:
+        with open(os.path.join(self._config_base, filename)) as f:
             lines = []
             for line in f:
                 lines.append(line.rstrip())
@@ -46,7 +46,7 @@ class FileAccess(object):
         Returns:
 
         """
-        with file(os.path.join(self._config_base, filename), mode="w") as f:
+        with open(os.path.join(self._config_base, filename), mode="w") as f:
             self._logger.info("Writing new version number {0}".format(version))
             f.write("{0}{1}".format(version, os.linesep))
 
@@ -61,7 +61,7 @@ class FileAccess(object):
         Returns:
 
         """
-        with file(os.path.join(self._config_base, filename), mode="w") as f:
+        with open(os.path.join(self._config_base, filename), mode="w") as f:
             self._logger.info("Writing file {0}".format(filename))
             for line in file_contents:
                 f.write("{0}{1}".format(line, os.linesep))
@@ -92,7 +92,7 @@ class FileAccess(object):
         """
 
         # this can not use pretty print because that will cause it to gain tabs and newlines
-        with file(os.path.join(self._config_base, filename), mode="w") as f:
+        with open(os.path.join(self._config_base, filename), mode="w") as f:
             self._logger.info("Writing xml file {0}".format(filename))
             f.write('<?xml version="1.0" ?>\n')
             xml.firstChild.writexml(f)

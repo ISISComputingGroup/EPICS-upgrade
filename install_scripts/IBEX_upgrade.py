@@ -49,10 +49,10 @@ if __name__ == "__main__":
             upgrade_instrument.run_instrument_update()
 
     except UserStop:
-        print ("Stopping upgrade")
+        print("Stopping upgrade")
         sys.exit(0)
     except ErrorInTask as error_in_run_ex:
         print("Error in upgrade: {0}".format(error_in_run_ex.message))
         sys.exit(1)
 
-    print ("Finished upgrade")
+    print("Finished upgrade")

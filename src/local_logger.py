@@ -34,7 +34,7 @@ class LocalLogger(object):
 
         """
         formatted_message = "ERROR: {0}{1}".format(message, os.linesep)
-        with file(self._log_file, mode="a") as f:
+        with open(self._log_file, mode="a") as f:
                 f.write(formatted_message)
         sys.stderr.write(formatted_message)
 
@@ -50,6 +50,6 @@ class LocalLogger(object):
         """
 
         formatted_message = " INFO: {0}{1}".format(message, os.linesep)
-        with file(self._log_file, mode="a") as f:
+        with open(self._log_file, mode="a") as f:
                 f.write(formatted_message)
         sys.stdout.write(formatted_message)
