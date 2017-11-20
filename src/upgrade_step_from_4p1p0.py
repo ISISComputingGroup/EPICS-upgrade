@@ -31,3 +31,5 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
 
         """
 
+    def change_ioc_macros(self, file_access):
+        pass
