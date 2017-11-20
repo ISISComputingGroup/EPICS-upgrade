@@ -5,6 +5,11 @@ from src.local_logger import LocalLogger
 
 IOC_FILENAME = "configurations\components\_base\iocs.xml"
 
+FILE_TO_CHECK_STR = "IOC default component file"
+ALREADY_CONTAINS = "{} already contains {} ioc."
+INCORRECT_ADDING = "{} now contains {} {} iocs it should contain exactly 1."
+ADD_AFTER_MISSING = "{} contains {} {} iocs it must contain exactly 1."
+
 
 class AddToBaseIOCs():
     """
@@ -39,7 +44,7 @@ class AddToBaseIOCs():
             logger.error("Filename in configuration: {0}".format(IOC_FILENAME))
             return -1
 
-        if not self._check_prerequisits_for_file(ioc_file_contents, logger):
+        if not self._check_prerequistes_for_file(ioc_file_contents, logger):
             return -2
 
         modified_file_contents = self._add_ioc(ioc_file_contents, logger)
@@ -50,6 +55,19 @@ class AddToBaseIOCs():
 
         file_access.write_xml_file(IOC_FILENAME, modified_file_contents)
         return 0
+
+    @staticmethod
+    def _get_ioc_names(xml):
+        """
+        Gets the names of all the iocs in the xml.
+
+        Args:
+            xml: XML to check.
+
+        Returns:
+            List of ioc names.
+        """
+        return [ioc.getAttribute("name") for ioc in xml.getElementsByTagName("ioc")]
 
     def _check_final_file_contains_one_of_added_ioc(self, logger, xml):
         """
@@ -62,19 +80,16 @@ class AddToBaseIOCs():
         Returns:
             True if ok, else False.
         """
-        ioc_names = []
-        for ioc in xml.getElementsByTagName("ioc"):
-            ioc_names.append(ioc.getAttribute("name"))
+        ioc_names = AddToBaseIOCs._get_ioc_names(xml)
 
         node_count = ioc_names.count(self._ioc_to_add)
         if node_count != 1:
             # I can not see how to generate this error but it is here because it is important
-            logger.error("IOC default component file now contains contains {0} {1} iocs it should contain exactly 1."
-                         .format(node_count, self._ioc_to_add))
+            logger.error(INCORRECT_ADDING.format(FILE_TO_CHECK_STR, node_count, self._ioc_to_add))
             return False
         return True
 
-    def _check_prerequisits_for_file(self, xml, logger):
+    def _check_prerequistes_for_file(self, xml, logger):
         """
         Check the file can be modified.
         
@@ -85,18 +100,15 @@ class AddToBaseIOCs():
         Returns:
             True if everything is ok, else False.
         """
-        ioc_names = []
-        for ioc in xml.getElementsByTagName("ioc"):
-            ioc_names.append(ioc.getAttribute("name"))
+        ioc_names = AddToBaseIOCs._get_ioc_names(xml)
 
         if ioc_names.count(self._ioc_to_add) != 0:
-            logger.error("IOC default component file already contains {0} ioc.".format( self._ioc_to_add))
+            logger.error(ALREADY_CONTAINS.format(FILE_TO_CHECK_STR, self._ioc_to_add))
             return False
 
         node_count = ioc_names.count(self._add_after_ioc)
         if node_count != 1:
-            logger.error("IOC default component file doesn't contain {0} {1} iocs it must contain exactly 1."
-                         .format(node_count, self._add_after_ioc))
+            logger.error(ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, node_count, self._add_after_ioc))
             return False
         return True
 
