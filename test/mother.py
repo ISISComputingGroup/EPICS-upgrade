@@ -39,6 +39,9 @@ class FileAccessStub(object):
     def open_file(self, filename):
         pass
 
+    def ioc_file_generator(self):
+        pass
+
     def write_xml_file(self, filename, xml):
         self.write_filename = filename
         self.write_file_contents = xml.toxml()
@@ -48,6 +51,18 @@ class FileAccessStub(object):
 
     def listdir(self, dir):
         return ["file1.xml", "README.txt", "file2.xml"]
+
+
+def create_xml_with_iocs(iocs):
+    doc = minidom.Document()
+    top = doc.createElement("iocs")
+    for ioc in iocs:
+        child = doc.createElement('ioc')
+        child.setAttribute("name", ioc)
+        top.appendChild(child)
+    doc.appendChild(top)
+    return doc
+
 
 CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">

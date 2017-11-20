@@ -1,5 +1,10 @@
 import os
 from xml.dom import minidom
+from xml.parsers.expat import ExpatError
+
+CONFIG_FOLDER = "configurations"
+COMPONENT_FOLDER = "components"
+IOC_FILE = "iocs.xml"
 
 
 class FileAccess(object):
@@ -18,6 +23,25 @@ class FileAccess(object):
         """
         self._config_base = config_root
         self._logger = logger
+
+    def ioc_file_generator(self):
+        """
+        Generator giving all the IOC files in all the configurations.
+
+        Returns:
+            generator: Yielding a tuple of the configuration name and the ioc xml.
+        """
+        config_root_paths = [os.path.join(self._config_base, f) for f in [COMPONENT_FOLDER, CONFIG_FOLDER]]
+
+        for path in config_root_paths:
+            for config in os.listdir(path):
+                ioc_path = os.path.join(path, config, IOC_FILE)
+                try:
+                    yield (config, self.open_xml_file(ioc_path))
+                except IOError:
+                    self._logger.error("Cannot find {}".format(ioc_path))
+                except ExpatError as ex:
+                    self._logger.error("{} is invalid xml '{}'".format(ioc_path, ex))
 
     def open_file(self, filename):
         """
@@ -68,7 +92,6 @@ class FileAccess(object):
 
     def open_xml_file(self, filename):
         """
-
         Open a file and returns the xml it contains
 
         Args:

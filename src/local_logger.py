@@ -40,7 +40,7 @@ class LocalLogger(object):
 
     def info(self, message):
         """
-        Write the message as an error (to standard out with INFO in front of it)
+        Write the message as info (to standard out with INFO in front of it)
 
         Args:
             message: message to write (no new lines needed)
