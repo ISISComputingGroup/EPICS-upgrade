@@ -39,9 +39,6 @@ class FileAccessStub(object):
     def open_file(self, filename):
         pass
 
-    def ioc_file_generator(self):
-        pass
-
     def write_xml_file(self, filename, xml):
         self.write_filename = filename
         self.write_file_contents = xml.toxml()

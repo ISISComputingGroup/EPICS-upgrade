@@ -1,6 +1,5 @@
 import os
 from xml.dom import minidom
-from xml.parsers.expat import ExpatError
 
 
 class FileAccess(object):
