@@ -45,7 +45,7 @@ class Synoptics(object):
                 try:
                     self._update_opi_paths_in_file(filename, paths_to_update)
                 except KeyError as e:
-                    self.logger.error("Cannot upgrade synoptic {0}: {1}".format(filename, e.message))
+                    self.logger.error("Cannot upgrade synoptic {0}: {1}".format(filename, e))
                     result = -2
                     break
         return result
