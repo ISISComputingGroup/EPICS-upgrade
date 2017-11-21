@@ -1,9 +1,12 @@
 import os
 from xml.parsers.expat import ExpatError
+import re
 
 CONFIG_FOLDER = "configurations"
 COMPONENT_FOLDER = "components"
 IOC_FILE = "iocs.xml"
+
+FILTER_REGEX = "^{}(_[\d]{{2}})?$"
 
 
 class ConfigFilter():
@@ -35,14 +38,17 @@ class ConfigFilter():
 
     def ioc_filter_generator(self, ioc_to_change):
         """
-        Generator that gives all the IOCs with the given name and saves them back to their original location
-        after they've been yielded.
+        Generator that gives all the IOCs with the given root IOC name and saves them back to their original location
+        after they've been yielded. This will match IOCs with the same name as the root plus any that have a number
+        appended in the form _XX.
 
         Args:
-            ioc_to_change: the name of the ioc to change
+            ioc_to_change: the root name of the ioc to change
         """
+        regex = re.compile(FILTER_REGEX.format(ioc_to_change))
+
         for path, ioc_xml in self.ioc_file_generator:
             for ioc in ioc_xml.getElementsByTagName("ioc"):
-                if ioc.getAttribute("name") == ioc_to_change:
+                if regex.match(ioc.getAttribute("name")):
                     yield ioc
                     self._file_access.write_xml_file(path, ioc_xml)

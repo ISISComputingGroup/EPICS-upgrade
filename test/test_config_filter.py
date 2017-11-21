@@ -23,7 +23,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         self.filter.ioc_file_generator = generate_many_iocs(configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
-        assert_that(calling(next).with_args(result), raises(StopIteration), "no results")
+        assert_that(len(list(result)), is_(0), "no results")
 
     def test_GIVEN_two_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
         ioc_to_change = "CHANGE_ME"
@@ -32,7 +32,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         self.filter.ioc_file_generator = generate_many_iocs(configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
-        assert_that(calling(next).with_args(result), raises(StopIteration), "no results")
+        assert_that(len(list(result)), is_(0), "no results")
 
     def test_GIVEN_xml_with_requested_iocs_WHEN_filtering_THEN_expected_ioc_returned(self):
         ioc_to_change = "CHANGE_ME"
@@ -42,9 +42,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
         self.filter.ioc_file_generator = generate_many_iocs(configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
-        ioc = next(result)
-        assert_that(ioc.getAttribute("name"), is_(ioc_to_change))
-        assert_that(calling(next).with_args(result), raises(StopIteration), "only one result")
+        result = list(result)
+        assert_that(len(result), is_(1))
+        assert_that(result[0].getAttribute("name"), is_(ioc_to_change))
 
     def test_GIVEN_one_xml_with_requested_iocs_and_one_without_WHEN_filtering_THEN_only_expected_ioc_returned(self):
         ioc_to_change = "CHANGE_ME"
@@ -54,9 +54,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
         self.filter.ioc_file_generator = generate_many_iocs(configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
-        ioc = next(result)
-        assert_that(ioc.getAttribute("name"), is_(ioc_to_change))
-        assert_that(calling(next).with_args(result), raises(StopIteration), "only one result")
+        result = list(result)
+        assert_that(len(result), is_(1))
+        assert_that(result[0].getAttribute("name"), is_(ioc_to_change))
 
     def test_GIVEN_xml_with_requested_ioc_WHEN_after_filtering_THEN_ioc_saved_to_file(self):
         ioc_to_change = "CHANGE_ME"
@@ -65,9 +65,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
 
         self.filter.ioc_file_generator = generate_many_iocs(configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
-
-        next(result)
-        assert_that(calling(next).with_args(result), raises(StopIteration), "only one result")
+        list(result)  # Get all values out of generator
 
         assert_that(self.file_access.write_filename, is_(good_config))
         expected_xml = create_xml_with_iocs(configs[good_config]).toxml()
@@ -79,8 +77,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
 
         self.filter.ioc_file_generator = generate_many_iocs(configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
-
-        assert_that(calling(next).with_args(result), raises(StopIteration), "only one result")
+        list(result)  # Get all values out of generator
 
         assert_that(self.file_access.write_filename, is_(None))
         assert_that(self.file_access.write_file_contents, is_(None))
@@ -100,6 +97,31 @@ class TestAddToBaseIOCs(unittest.TestCase):
 
         assert_that(self.file_access.write_filename, is_(good_config))
         assert_that(self.file_access.write_file_contents, contains_string(new_attr))
+
+    def test_GIVEN_xml_with_numbered_ioc_WHEN_filtering_THEN_expected_ioc_returned(self):
+        root_ioc_name = "CHANGE_ME"
+        ioc_name = root_ioc_name + "_03"
+        config_name = "CONFIG_1"
+        configs = {config_name: [ioc_name, "ANOTHER_ONE"]}
+
+        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        result = self.filter.ioc_filter_generator(root_ioc_name)
+
+        result = list(result)
+        assert_that(len(result), is_(1))
+        assert_that(result[0].getAttribute("name"), is_(ioc_name))
+
+    def test_GIVEN_xml_with_ioc_containing_requested_WHEN_filtering_THEN_nothing_returned(self):
+        root_ioc_name = "CHANGE_ME"
+        ioc_name = "PRE-{}-POST".format(root_ioc_name)
+        config_name = "CONFIG_1"
+        configs = {config_name: [ioc_name, "ANOTHER_ONE"]}
+
+        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        result = self.filter.ioc_filter_generator(root_ioc_name)
+
+        result = list(result)
+        assert_that(len(result), is_(0))
 
 
 if __name__ == '__main__':
