@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", default=False, action="store_true",
                         help="Do not ask any questions just to the default.")
 
-    upgrade_types = ['training_update', 'demo_upgrade', 'instrument_update', 'instrument_deploy', 'adrian']
+    upgrade_types = ['training_update', 'demo_upgrade', 'instrument_update', 'instrument_deploy']
     parser.add_argument('deployment_type', choices=upgrade_types,
                         help="What upgrade should be performed")
 
@@ -51,8 +51,6 @@ if __name__ == "__main__":
             upgrade_instrument.run_instrument_update()
         elif args.deployment_type == "instrument_deploy":
             upgrade_instrument.run_instrument_upgrade()
-        elif args.deployment_type == "adrian":
-            upgrade_instrument.run_adrian_update()
 
     except UserStop:
         print ("Stopping upgrade")

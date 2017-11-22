@@ -415,13 +415,6 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.update_release_notes()
 
-    def run_adrian_update(self):
-        self._upgrade_tasks.install_java()
-        self._upgrade_tasks.take_screenshots()
-        self._upgrade_tasks.backup_old_directories()
-        self._upgrade_tasks.backup_database()
-        self._upgrade_tasks.update_release_notes()
-
 
 class Task(object):
     """
