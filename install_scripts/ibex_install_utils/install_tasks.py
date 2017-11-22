@@ -235,7 +235,7 @@ class UpgradeTasks(object):
                                                              "Manually pull it. Path='{}'".format(path))
 
     def install_java(self):
-        with Task("Installing java", self._prompt) as task:
+        with Task("Install java", self._prompt) as task:
             if task.do_step:
                 java_url = "http://www.java.com/en/"
                 java_installed = os.system("java -version") is 0
@@ -250,6 +250,16 @@ class UpgradeTasks(object):
                 self._prompt.prompt_and_raise_if_not_yes(
                     "Is auto-update turned off? This can be checked from the Java control panel in "
                     "C:\\Program Files\\Java\\jre\\bin\\javacpl.exe")
+
+    def take_screenshots(self):
+        with Task("Take screenshots", self._prompt) as task:
+            if task.do_step:
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Take screenshots of the current IBEX setup for future reference. These should include: client and "
+                    "server versions, blocks, major perspectives, current configuration tabs, running IOCs, available "
+                    "configs, any open LabView VIs")
+
+
 
 
 class UpgradeInstrument(object):
@@ -300,12 +310,17 @@ class UpgradeInstrument(object):
 
     def run_instrument_update(self):
         self._upgrade_tasks.stop_ibex_server()
+        self._upgrade_tasks.install_java()
+        self._upgrade_tasks.take_screenshots()
+        self._upgrade_tasks.backup_old_directories()
         self._upgrade_tasks.upgrade_instrument_configuration()
         self._upgrade_tasks.update_calibrations_repository()
         self._upgrade_tasks.remove_seci_shortcuts()
 
     def run_adrian_update(self):
         self._upgrade_tasks.install_java()
+        self._upgrade_tasks.take_screenshots()
+        self._upgrade_tasks.backup_old_directories()
 
 
 class Task(object):
