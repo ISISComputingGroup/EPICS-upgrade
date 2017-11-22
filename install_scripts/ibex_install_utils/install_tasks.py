@@ -8,6 +8,7 @@ import socket
 import subprocess
 import git
 import sys
+from datetime import date
 
 from ibex_install_utils.exceptions import UserStop, ErrorInRun, ErrorInTask
 from ibex_install_utils.file_utils import FileUtils
@@ -255,10 +256,89 @@ class UpgradeTasks(object):
         with Task("Take screenshots", self._prompt) as task:
             if task.do_step:
                 self._prompt.prompt_and_raise_if_not_yes(
-                    "Take screenshots of the current IBEX setup for future reference. These should include: client and "
-                    "server versions, blocks, major perspectives, current configuration tabs, running IOCs, available "
-                    "configs, any open LabView VIs")
+                    "Take screenshots of the current IBEX setup for future reference. These should include:\n"
+                    "- Client and server versions\n"
+                    "- Blocks\n"
+                    "- Major perspectives\n"
+                    "- Current configuration tabs\n"
+                    "- Running IOCs\n"
+                    "- Available configs\n"
+                    "- Any open LabView VIs")
 
+    @staticmethod
+    def _make_backup_dir():
+        new_backup_dir = os.path.join("C:\\", "data", "old", "ibex_backup_{}".format(date.today().strftime("%Y_%m_%d")))
+        if not os.path.exists(new_backup_dir):
+            os.mkdir(new_backup_dir)
+        return new_backup_dir
+
+    def backup_old_directories(self):
+        with Task("Backup old directories", self._prompt) as task:
+            if task.do_step:
+                data = os.path.join("C:\\", "data")
+                if os.path.exists(data):
+                    old_data = os.path.join("C:\\", "data", "old")
+                    if not os.path.exists(old_data):
+                        os.mkdir(old_data)
+
+                    # Delete all but the oldest backup
+                    current_backups = [d for d in os.listdir(old_data)
+                                       if os.path.isdir(d) and d.startswith("ibex_backup")]
+                    if len(current_backups) > 0:
+                        all_but_newest_backup = sorted(current_backups, key=os.path.getmtime)[:-1]
+                        backups_to_delete = all_but_newest_backup
+                    else:
+                        backups_to_delete = []
+
+                    for d in backups_to_delete:
+                        print("Removing backup {}".format(d))
+                        FileUtils.remove_dir(os.path.join(old_data, d))
+
+                    new_backup_dir = self._make_backup_dir()
+
+                    # Move the folders
+                    apps_dir = os.path.join("C:\\", "Instrument", "Apps")
+                    apps_to_move = ["EPICS", "EPICS_utils", "Python", "Client"]
+                    for app_dir in [os.path.join(apps_dir, app) for app in apps_to_move]:
+                        print("Moving {} to {}".format(app_dir, new_backup_dir))
+                        shutil.move(app_dir, new_backup_dir)
+
+                    # Backup settings and autosave
+                    settings_dir = os.path.join("C:\\", "Instrument", "Settings")
+                    if os.path.exists(settings_dir):
+                        shutil.copytree(settings_dir, os.path.join(new_backup_dir))
+                    autosave_dir = os.path.join("C:\\", "Instrument", "var", "autosave")
+                    if os.path.exists(autosave_dir):
+                        shutil.copytree(autosave_dir, os.path.join(new_backup_dir))
+                else:
+                    self._prompt.prompt_and_raise_if_not_yes(
+                        "Unable to find data directory C:\\data. Please backup the current installation of IBEX "
+                        "manually")
+
+    def backup_database(self):
+        with Task("Backup database", self._prompt) as task:
+            if task.do_step:
+                os.system("mysql -u root -p --execute=\"SET GLOBAL innodb_fast_shutdown=0\"")
+                os.system("mysqladmin -u root -p shutdown")
+                mysql_dir = os.path.join("C:\\", "Instrument", "var", "mysql")
+
+                backup_dir = self._make_backup_dir()
+                if not os.path.exists(backup_dir):
+                    os.mkdir(backup_dir)
+
+                if os.path.exists(mysql_dir):
+                    shutil.copytree(mysql_dir, os.path.join(backup_dir))
+                else:
+                    self._prompt.prompt_and_raise_if_not_yes(
+                        "Cannot find the mysql data directory. Have you backed it up manually?")
+
+                self._prompt.prompt_and_raise_if_not_yes("Data backup complete. Please restart the MYSQL service")
+
+    def update_release_notes(self):
+        with Task("Update release notes", self._prompt) as task:
+            if task.do_step:
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Have you updated the instrument release notes at https://github.com/ISISComputingGroup/IBEX/wiki?")
 
 
 
@@ -308,19 +388,26 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.upgrade_notepad_pp()
 
-    def run_instrument_update(self):
+    def run_instrument_update(self, deploy_ibex=False):
         self._upgrade_tasks.stop_ibex_server()
         self._upgrade_tasks.install_java()
         self._upgrade_tasks.take_screenshots()
         self._upgrade_tasks.backup_old_directories()
+        self._upgrade_tasks.backup_database()
         self._upgrade_tasks.upgrade_instrument_configuration()
         self._upgrade_tasks.update_calibrations_repository()
         self._upgrade_tasks.remove_seci_shortcuts()
+        if deploy_ibex:
+            self._upgrade_tasks.install_ibex_server(True)
+            self._upgrade_tasks.install_ibex_client()
+            self._upgrade_tasks.update_release_notes()
 
     def run_adrian_update(self):
         self._upgrade_tasks.install_java()
         self._upgrade_tasks.take_screenshots()
         self._upgrade_tasks.backup_old_directories()
+        self._upgrade_tasks.backup_database()
+        self._upgrade_tasks.update_release_notes()
 
 
 class Task(object):
