@@ -239,7 +239,7 @@ class UpgradeTasks(object):
         with Task("Install java", self._prompt) as task:
             if task.do_step:
                 java_url = "http://www.java.com/en/"
-                java_installed = os.system("java -version") is 0
+                java_installed = subprocess.call(["java","-version"]) is 0
                 if java_installed:
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Confirm that the java version above is the desired version or that you have "
@@ -324,16 +324,28 @@ class UpgradeTasks(object):
                         "Unable to find data directory C:\\data. Please backup the current installation of IBEX "
                         "manually")
 
+    def _get_mysql_dir(self):
+        mysql_base_dir = os.path.join("C:\\", "Program Files", "MySQL")
+        if not os.path.exists(mysql_base_dir):
+            mysql_dir = None
+        else:
+            mysql_versions = [d for d in os.listdir(mysql_base_dir) if os.path.isdir(d)]
+            if len(mysql_versions)==0:
+                mysql_dir = None
+            else:
+                if len(mysql_versions)>1:
+                    print("Warning, more than 1 version of MySQL detected. Using {}".format(mysql_versions[0]))
+                mysql_dir = os.path.join(mysql_base_dir, mysql_versions[0], "bin")
+
+        return mysql_dir
+
     def backup_database(self):
         with Task("Backup database", self._prompt) as task:
             if task.do_step:
-                mysql_base_dir = os.path.join("C:\\", "Program Files", "MySQL")
-                mysql_versions = os.listdir(mysql_base_dir)
-                mysql_bin_dir = os.path.join(mysql_base_dir, mysql_versions[0], "bin")
+                mysql_bin_dir = self._get_mysql_dir()
                 mysql_path = os.path.join(mysql_bin_dir, "mysql.exe")
                 mysql_admin_path = os.path.join(mysql_bin_dir, "mysqladmin.exe")
-                if all([os.path.exists(path) for path in [mysql_base_dir, mysql_bin_dir, mysql_path, mysql_admin_path]]
-                       + [len(mysql_versions) == 1]):
+                if all([os.path.exists(path) for path in [mysql_bin_dir, mysql_path, mysql_admin_path]]):
                     if subprocess.call([mysql_path, "-u", "root", "-p", "--execute",
                                         "SET GLOBAL innodb_fast_shutdown=0",]) != 0 or \
                                     subprocess.call([mysql_admin_path, "-u", "root", "-p", "shutdown"]) != 0:
@@ -351,6 +363,28 @@ class UpgradeTasks(object):
             if task.do_step:
                 self._prompt.prompt_and_raise_if_not_yes(
                     "Have you updated the instrument release notes at https://github.com/ISISComputingGroup/IBEX/wiki?")
+
+    def upgrade_mysql(self):
+        with Task("Upgrade MySQL", self._prompt) as task:
+            if task.do_step:
+                mysql_path = os.path.join(self._get_mysql_dir(), "mysql.exe")
+                install_mysql_url = "https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/" \
+                                    "Installing-and-Upgrading-MySQL"
+                if os.path.exists(mysql_path):
+                    subprocess.call([mysql_path, "--version"])
+                    self._prompt.prompt_and_raise_if_not_yes(
+                        "If required, upgrade MySQL as per {}".format(install_mysql_url))
+                else:
+                    self._prompt.prompt_and_raise_if_not_yes(
+                        "MySQL not detected on system. Please verify and install if necessary via the instructions at "
+                        "{}".format(install_mysql_url))
+
+    def reapply_hotfixes(self):
+        with Task("Reapply Hotfixes", self._prompt) as task:
+            if task.do_step:
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Have you applied any hotfixes listed that are not fixed by the release, as on the instrument "
+                    "release notes at https://github.com/ISISComputingGroup/IBEX/wiki?")
 
 
 class UpgradeInstrument(object):
@@ -417,6 +451,8 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_server(True)
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.update_release_notes()
+        self._upgrade_tasks.upgrade_mysql()
+        self._upgrade_tasks.reapply_hotfixes()
 
 
 class Task(object):
