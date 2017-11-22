@@ -274,6 +274,10 @@ class UpgradeTasks(object):
 
     def _backup_dir_(self, src, copy=True):
         backup_dir = os.path.join(self._get_backup_dir(), os.path.basename(src))
+        if backup_dir in os.getcwd():
+            self._prompt.prompt_and_raise_if_not_yes(
+                "You appear to be trying to delete the folder, {}, containing the current working directory {}. "
+                "Please do this manually to be on the safe side".format(backup_dir, os.getcwd()))
         if os.path.exists(backup_dir):
             self._prompt.prompt_and_raise_if_not_yes(
                 "Backup dir {} already exist. Please backup this app manually".format(backup_dir))
@@ -295,8 +299,8 @@ class UpgradeTasks(object):
                         os.mkdir(old_data)
 
                     # Delete all but the oldest backup
-                    current_backups = [d for d in os.listdir(old_data)
-                                       if os.path.isdir(d) and d.startswith("ibex_backup")]
+                    current_backups = [os.path.join(old_data, d) for d in os.listdir(old_data)
+                                       if os.path.isdir(os.path.join(old_data, d)) and d.startswith("ibex_backup")]
                     if len(current_backups) > 0:
                         all_but_newest_backup = sorted(current_backups, key=os.path.getmtime)[:-1]
                         backups_to_delete = all_but_newest_backup
@@ -309,13 +313,12 @@ class UpgradeTasks(object):
 
                     # Move the folders
                     apps_dir = os.path.join("C:\\", "Instrument", "Apps")
-                    apps_to_move = ["EPICS", "EPICS_utils", "Python", "Client"]
-                    for app_name in apps_to_move:
+                    for app_name in ["EPICS", "EPICS_utils", "Python", "Client"]:
                         self._backup_dir_(os.path.join(apps_dir, app_name), copy=False)
 
                     # Backup settings and autosave
                     self._backup_dir_(os.path.join("C:\\", "Instrument", "Settings"))
-                    self._backup_dir_(os.path.join("C:\\", "Instrument", "Autosave"))
+                    self._backup_dir_(os.path.join("C:\\", "Instrument", "var", "Autosave"))
                 else:
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Unable to find data directory C:\\data. Please backup the current installation of IBEX "
@@ -396,7 +399,7 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.upgrade_notepad_pp()
 
-    def run_instrument_update(self, deploy_ibex=False):
+    def run_instrument_update(self):
         self._upgrade_tasks.stop_ibex_server()
         self._upgrade_tasks.upgrade_instrument_configuration()
         self._upgrade_tasks.update_calibrations_repository()
