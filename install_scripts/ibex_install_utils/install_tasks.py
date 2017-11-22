@@ -311,6 +311,9 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.update_calibrations_repository()
         self._upgrade_tasks.remove_seci_shortcuts()
 
+    def run_adrian_update(self):
+        self._upgrade_tasks.install_java()
+
 
 class Task(object):
     """

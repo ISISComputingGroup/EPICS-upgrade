@@ -47,6 +47,8 @@ if __name__ == "__main__":
             upgrade_instrument.run_demo_upgrade()
         elif args.deployment_type == "instrument_update":
             upgrade_instrument.run_instrument_update()
+        elif args.deployment_type == "adrian":
+            upgrade_instrument.run_adrian_update()
 
     except UserStop:
         print ("Stopping upgrade")
