@@ -396,7 +396,7 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.upgrade_notepad_pp()
 
-    def run_instrument_update(self):
+    def run_instrument_update(self, deploy_ibex=False):
         self._upgrade_tasks.stop_ibex_server()
         self._upgrade_tasks.upgrade_instrument_configuration()
         self._upgrade_tasks.update_calibrations_repository()
