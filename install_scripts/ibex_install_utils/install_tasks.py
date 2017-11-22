@@ -13,7 +13,7 @@ from datetime import date
 from ibex_install_utils.exceptions import UserStop, ErrorInRun, ErrorInTask
 from ibex_install_utils.file_utils import FileUtils
 
-INSTRUMENT_BASE_DIR = os.path.join(r"c:\Instrument")
+INSTRUMENT_BASE_DIR = os.path.join("C:\\", "Instrument")
 APPS_BASE_DIR = os.path.join(INSTRUMENT_BASE_DIR, "Apps")
 EPICS_PATH = os.path.join(APPS_BASE_DIR, "EPICS")
 GUI_PATH = os.path.join(APPS_BASE_DIR, "Client")
@@ -78,7 +78,7 @@ class UpgradeTasks(object):
         with Task("Removing old version of IBEX", self._prompt) as task:
             if task.do_step:
                 for path in (EPICS_PATH, PYTHON_PATH, GUI_PATH, EPICS_UTILS_PATH):
-                    self._file_utils.delete_if_exists(path)
+                    self._file_utils.remove_tree(path)
 
     def clean_up_desktop_ibex_training_folder(self):
         """
@@ -88,7 +88,7 @@ class UpgradeTasks(object):
         """
         with Task("Removing training folder on desktop ...", self._prompt) as task:
             if task.do_step:
-                self._file_utils.delete_if_exists(DESKTOP_TRAINING_FOLDER_PATH)
+                self._file_utils.remove_tree(DESKTOP_TRAINING_FOLDER_PATH)
 
     def remove_settings(self):
         """
@@ -98,7 +98,7 @@ class UpgradeTasks(object):
         """
         with Task("Removing old settings file", self._prompt) as task:
             if task.do_step:
-                self._file_utils.delete_if_exists(SETTINGS_CONFIG_PATH)
+                self._file_utils.remove_tree(SETTINGS_CONFIG_PATH)
 
     def install_settings(self):
         """
@@ -172,6 +172,14 @@ class UpgradeTasks(object):
         # with Task("Starting IBEX server..."):
         #    RunProcess(EPICS_PATH, "start_ibex_server.bat").run()
         pass
+
+    def _start_ibex_gui(self):
+        """
+        Start the IBEX GUI
+        :return:
+        """
+        subprocess.call([os.path.join(GUI_PATH, "ibex-client.exe")])
+
 
     def check_upgrade_testing_machine(self):
         """
@@ -287,7 +295,7 @@ class UpgradeTasks(object):
                 shutil.copytree(src, backup_dir)
             else:
                 print("Moving {} to {}".format(src, backup_dir))
-                FileUtils.move_dir(src, backup_dir)
+                self._file_utils.move_dir(src, backup_dir)
 
     def backup_old_directories(self):
         with Task("Backup old directories", self._prompt) as task:
@@ -309,12 +317,11 @@ class UpgradeTasks(object):
 
                     for d in backups_to_delete:
                         print("Removing backup {}".format(d))
-                        FileUtils.remove_dir(os.path.join(old_data, d))
+                        self._file_utils.remove_tree(os.path.join(old_data, d))
 
                     # Move the folders
-                    apps_dir = os.path.join("C:\\", "Instrument", "Apps")
-                    for app_name in ["EPICS", "EPICS_utils", "Python", "Client"]:
-                        self._backup_dir_(os.path.join(apps_dir, app_name), copy=False)
+                    for app_path in [EPICS_PATH, EPICS_UTILS_PATH, GUI_PATH, PYTHON_PATH]:
+                        self._backup_dir_(app_path, copy=False)
 
                     # Backup settings and autosave
                     self._backup_dir_(os.path.join("C:\\", "Instrument", "Settings"))
@@ -386,6 +393,25 @@ class UpgradeTasks(object):
                     "Have you applied any hotfixes listed that are not fixed by the release, as on the instrument "
                     "release notes at https://github.com/ISISComputingGroup/IBEX/wiki?")
 
+    def restart_vis(self):
+        with Task("Restart VIs", self._prompt) as task:
+            if task.do_step:
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Please restart any VIs that were running at the start of the upgrade")
+
+    def perform_client_tests(self):
+        with Task("Client smoke tests", self._prompt) as task:
+            if task.do_step:
+                self._start_ibex_server()
+                self._start_ibex_gui()
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Check that the version displayed in the client is as expected after the deployment")
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Confirm that genie_python works from within the client and via genie_python.bat (this includes"
+                    "verifying that the 'g.' and 'inst.' prefixes work as expected)")
+                self._prompt.prompt_and_raise_if_not_yes(
+                    "Verify that the current configuration is consistent with the system prior to upgrade")
+
 
 class UpgradeInstrument(object):
     """
@@ -453,6 +479,8 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.update_release_notes()
         self._upgrade_tasks.upgrade_mysql()
         self._upgrade_tasks.reapply_hotfixes()
+        self._upgrade_tasks.restart_vis()
+        self._upgrade_tasks.perform_client_tests()
 
 
 class Task(object):

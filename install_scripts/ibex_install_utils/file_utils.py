@@ -16,7 +16,7 @@ class FileUtils(object):
     """
 
     @staticmethod
-    def delete_if_exists(path):
+    def remove_tree(path):
         """
         Delete a file path if it exists
         Args:
@@ -75,35 +75,6 @@ class FileUtils(object):
             self.mkdir_recursive(sub_path)
         if not os.path.exists(path):
             os.mkdir(path)
-
-    @staticmethod
-    def remove_dir(path):
-        """
-        Remove a directory, even if non-empty
-
-        Args:
-            path: Directory to delete
-        """
-        def onerror(func, path, exc_info):
-            """
-            Error handler for ``shutil.rmtree``.
-
-            If the error is due to an access error (read only file)
-            it attempts to add write permission and then retries.
-
-            If the error is for another reason it re-raises the error.
-
-            :param func: Action taken on the path
-            :param path: Path that is being manipulated
-            :param exc_info: Whether to log execution info
-            """
-            if not os.access(path, os.W_OK):  # Is the error an access error ?
-                os.chmod(path, stat.S_IWUSR)
-                func(path)
-            elif exc_info:
-                raise OSError("Unable to delete file at {}".format(path))
-
-        shutil.rmtree(path, onerror=onerror)
 
     @staticmethod
     def move_dir(src, dst):
