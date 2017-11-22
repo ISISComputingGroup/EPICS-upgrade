@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbench version="2.0">
+<workbenchAdvisor/>
+<window height="800" width="1100" x="489" y="70">
+<fastViewData fastViewLocation="1024"/>
+<perspectiveBar/>
+<coolbarLayout>
+<coolItem id="org.csstudio.security.toolbar" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.csstudio.trends.databrowser.toolbar" itemType="typeToolBarContribution" x="38" y="22"/>
+<coolItem id="org.eclipse.debug.ui.launch.toolbar" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.debug.ui.main.toolbar" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.csstudio.opibuilder.actionSet" itemType="typeToolBarContribution" x="53" y="22"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.annotationNavigation" itemType="typeToolBarContribution" x="91" y="22"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.navigation" itemType="typeToolBarContribution" x="38" y="22"/>
+</coolbarLayout>
+<page focus="true" label="&lt;Unknown Label&gt; - Startup">
+<editors>
+<editorArea activeWorkbook="DefaultEditorWorkbook">
+<info part="DefaultEditorWorkbook">
+<folder appearance="1" expanded="2">
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+</editorArea>
+</editors>
+<views>
+<view id="uk.ac.stfc.isis.ibex.ui.banner.views.BannerView" partName="Banner">
+<viewState/>
+</view>
+<view id="uk.ac.stfc.isis.ibex.ui.perspectives.PerspectiveSwitcher" partName="Perspectives">
+<viewState/>
+</view>
+<view id="uk.ac.stfc.isis.ibex.ui.blocks.views.BlocksView" partName="Blocks">
+<viewState/>
+</view>
+<view id="uk.ac.stfc.isis.ibex.ui.perspectives.views.StartupView" partName="Start up">
+<viewState/>
+</view>
+<view id="uk.ac.stfc.isis.ibex.ui.dashboard.views.DashboardView" partName="Dashboard">
+<viewState/>
+</view>
+</views>
+<perspectives activePart="uk.ac.stfc.isis.ibex.ui.dashboard.views.DashboardView" activePerspective="uk.ac.stfc.isis.ibex.ui.perspectives.startup">
+<perspective editorAreaTrimState="2" editorAreaVisible="0" fixed="1" version="0.016">
+<descriptor class="uk.ac.stfc.isis.ibex.ui.perspectives.Startup" id="uk.ac.stfc.isis.ibex.ui.perspectives.startup" label="Startup"/>
+<alwaysOnActionSet id="org.csstudio.opibuilder.actionSet"/>
+<alwaysOnActionSet id="org.csstudio.opibuilder.editor.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<hide_menu_item_id id="org.eclipse.ui.run"/>
+<hide_menu_item_id id="navigate"/>
+<hide_toolbar_item_id id="org.eclipse.debug.ui.commands.RunToLine"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="uk.ac.stfc.isis.ibex.ui.dashboard.views.DashboardView"/>
+<view id="uk.ac.stfc.isis.ibex.ui.banner.views.BannerView"/>
+<view id="uk.ac.stfc.isis.ibex.ui.blocks.views.BlocksView"/>
+<view id="uk.ac.stfc.isis.ibex.ui.perspectives.PerspectiveSwitcher"/>
+<view id="uk.ac.stfc.isis.ibex.ui.perspectives.views.StartupView"/>
+<fastViewBars/>
+<viewLayoutRec closeable="false" id="uk.ac.stfc.isis.ibex.ui.banner.views.BannerView" moveable="false" showTitle="false" standalone="true"/>
+<viewLayoutRec closeable="false" id="uk.ac.stfc.isis.ibex.ui.perspectives.PerspectiveSwitcher" moveable="false" showTitle="false" standalone="true"/>
+<viewLayoutRec closeable="false" id="uk.ac.stfc.isis.ibex.ui.blocks.views.BlocksView" moveable="false" showTitle="false" standalone="true"/>
+<viewLayoutRec closeable="false" id="uk.ac.stfc.isis.ibex.ui.perspectives.views.StartupView" moveable="false" showTitle="false" standalone="true"/>
+<viewLayoutRec closeable="false" id="uk.ac.stfc.isis.ibex.ui.dashboard.views.DashboardView" moveable="false" showTitle="false" standalone="true"/>
+<layout>
+<mainWindow>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@56d93692">
+<folder activePageID="uk.ac.stfc.isis.ibex.ui.dashboard.views.DashboardView" appearance="4" expanded="2">
+<page content="uk.ac.stfc.isis.ibex.ui.dashboard.views.DashboardView" label="Dashboard"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="750" ratioRight="250" relationship="2" relative="org.eclipse.ui.internal.ViewStack@56d93692">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@3900fa71" ratio="0.4" ratioLeft="270" ratioRight="405" relationship="4" relative="org.eclipse.ui.internal.ViewStack@56d93692">
+<folder activePageID="uk.ac.stfc.isis.ibex.ui.perspectives.PerspectiveSwitcher" appearance="4" expanded="2">
+<page content="uk.ac.stfc.isis.ibex.ui.perspectives.PerspectiveSwitcher" label="Perspectives"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.15" ratioLeft="150" ratioRight="850" relationship="2" relative="org.eclipse.ui.internal.ViewStack@3900fa71"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@26722665" ratio="0.1" ratioLeft="15" ratioRight="135" relationship="2" relative="org.eclipse.ui.internal.ViewStack@3900fa71">
+<folder activePageID="uk.ac.stfc.isis.ibex.ui.perspectives.views.StartupView" appearance="4" expanded="2">
+<page content="uk.ac.stfc.isis.ibex.ui.perspectives.views.StartupView" label="Start up"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@1686f0b4" ratio="0.14814815" ratioLeft="40" ratioRight="230" relationship="4" relative="org.eclipse.ui.internal.ViewStack@56d93692">
+<folder activePageID="uk.ac.stfc.isis.ibex.ui.banner.views.BannerView" appearance="4" expanded="2">
+<page content="uk.ac.stfc.isis.ibex.ui.banner.views.BannerView" label="Banner"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@76c548f" ratio="0.3" ratioLeft="300" ratioRight="700" relationship="2" relative="org.eclipse.ui.internal.ViewStack@56d93692">
+<folder activePageID="uk.ac.stfc.isis.ibex.ui.blocks.views.BlocksView" appearance="4" expanded="2">
+<page content="uk.ac.stfc.isis.ibex.ui.blocks.views.BlocksView" label="Blocks"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+</perspectives>
+<workingSets/>
+<navigationHistory/>
+</page>
+<workbenchWindowAdvisor/>
+<actionBarAdvisor/>
+<trimLayout>
+<trimArea IMemento.internal.id="1024">
+<trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
+<trimItem IMemento.internal.id="org.csstudio.security.ui.infobar"/>
+</trimArea>
+</trimLayout>
+</window>
+<mruList/>
+</workbench>
