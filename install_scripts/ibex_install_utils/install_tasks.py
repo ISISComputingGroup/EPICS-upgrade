@@ -238,22 +238,15 @@ class UpgradeTasks(object):
         with Task("Installing java", self._prompt) as task:
             if task.do_step:
                 java_url = "http://www.java.com/en/"
-                java_version_query_result = os.system("java -version")
-                install = False
-                if java_version_query_result is None:
+                java_installed = os.system("java -version") is 0
+                if java_installed:
+                    self._prompt.prompt_and_raise_if_not_yes(
+                        "Confirm that the java version above is the desired version or that you have "
+                        "upgraded to the desired 64-bit version from {}".format(java_url))
+                else:
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Java is not installed. Please go to {}, then download and install "
                         "the desired 64-bit version".format(java_url))
-                else:
-                    try:
-                        self._prompt.prompt_and_raise_if_not_yes(
-                            "Current Java version is {}. Confirm that this is the desired version or that you have "
-                            "upgraded to the desired 64-bit version from  {}"
-                                .format(java_version_query_result.split()[2], java_url))
-                    except (ValueError, TypeError) as e:
-                        self._prompt.prompt_and_raise_if_not_yes(
-                            "Unable to determine installed version of Java. Please confirm manually that the correct "
-                            "version is installed")
                 self._prompt.prompt_and_raise_if_not_yes(
                     "Is auto-update turned off? This can be checked from the Java control panel in "
                     "C:\\Program Files\\Java\\jre\\bin\\javacpl.exe")
