@@ -104,3 +104,15 @@ class FileUtils(object):
                 raise OSError("Unable to delete file at {}".format(path))
 
         shutil.rmtree(path, onerror=onerror)
+
+    @staticmethod
+    def move_dir(src, dst):
+        """
+        Moves a dir. Better to copy remove so we can handle permissions issues
+
+        Args:
+            src: Source directory
+            dst: Destination directory
+        """
+        shutil.copytree(src, dst)
+        FileUtils.remove_dir(src)

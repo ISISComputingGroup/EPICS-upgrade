@@ -266,11 +266,24 @@ class UpgradeTasks(object):
                     "- Any open LabView VIs")
 
     @staticmethod
-    def _make_backup_dir():
+    def _get_backup_dir():
         new_backup_dir = os.path.join("C:\\", "data", "old", "ibex_backup_{}".format(date.today().strftime("%Y_%m_%d")))
         if not os.path.exists(new_backup_dir):
             os.mkdir(new_backup_dir)
         return new_backup_dir
+
+    def _backup_dir_(self, src, copy=True):
+        backup_dir = os.path.join(self._get_backup_dir(), os.path.basename(src))
+        if os.path.exists(backup_dir):
+            self._prompt.prompt_and_raise_if_not_yes(
+                "Backup dir {} already exist. Please backup this app manually".format(backup_dir))
+        else:
+            if copy:
+                print("Copying {} to {}".format(src, backup_dir))
+                shutil.copytree(src, backup_dir)
+            else:
+                print("Moving {} to {}".format(src, backup_dir))
+                FileUtils.move_dir(src, backup_dir)
 
     def backup_old_directories(self):
         with Task("Backup old directories", self._prompt) as task:
@@ -294,28 +307,15 @@ class UpgradeTasks(object):
                         print("Removing backup {}".format(d))
                         FileUtils.remove_dir(os.path.join(old_data, d))
 
-                    new_backup_dir = self._make_backup_dir()
-
                     # Move the folders
                     apps_dir = os.path.join("C:\\", "Instrument", "Apps")
-                    apps_to_move = ["EPICS_utils", "Python", "Client"]
+                    apps_to_move = ["EPICS", "EPICS_utils", "Python", "Client"]
                     for app_name in apps_to_move:
-                        app_dir = os.path.join(apps_dir, app_name)
-                        app_backup_dir = os.path.join(new_backup_dir, app_name)
-                        if os.path.exists(app_backup_dir):
-                            self._prompt.prompt_and_raise_if_not_yes(
-                                "Backup dir {} already exist. Please backup this app manually".format(app_backup_dir))
-                        else:
-                            print("Moving {} to {}".format(app_dir, app_backup_dir))
-                            shutil.move(app_dir, app_backup_dir)
+                        self._backup_dir_(os.path.join(apps_dir, app_name), copy=False)
 
                     # Backup settings and autosave
-                    settings_dir = os.path.join("C:\\", "Instrument", "Settings")
-                    if os.path.exists(settings_dir):
-                        shutil.copytree(settings_dir, os.path.join(new_backup_dir, "Settings"))
-                    autosave_dir = os.path.join("C:\\", "Instrument", "var", "autosave")
-                    if os.path.exists(autosave_dir):
-                        shutil.copytree(autosave_dir, os.path.join(new_backup_dir, "autosave"))
+                    self._backup_dir_(os.path.join("C:\\", "Instrument", "Settings"))
+                    self._backup_dir_(os.path.join("C:\\", "Instrument", "Autosave"))
                 else:
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Unable to find data directory C:\\data. Please backup the current installation of IBEX "
@@ -324,20 +324,23 @@ class UpgradeTasks(object):
     def backup_database(self):
         with Task("Backup database", self._prompt) as task:
             if task.do_step:
-                os.system("mysql -u root -p --execute=\"SET GLOBAL innodb_fast_shutdown=0\"")
-                os.system("mysqladmin -u root -p shutdown")
-                mysql_dir = os.path.join("C:\\", "Instrument", "var", "mysql")
-
-                backup_dir = self._make_backup_dir()
-                if not os.path.exists(backup_dir):
-                    os.mkdir(backup_dir)
-
-                if os.path.exists(mysql_dir):
-                    shutil.copytree(mysql_dir, os.path.join(backup_dir, "mysql"))
+                mysql_base_dir = os.path.join("C:\\", "Program Files", "MySQL")
+                mysql_versions = os.listdir(mysql_base_dir)
+                mysql_bin_dir = os.path.join(mysql_base_dir, mysql_versions[0], "bin")
+                mysql_path = os.path.join(mysql_bin_dir, "mysql.exe")
+                mysql_admin_path = os.path.join(mysql_bin_dir, "mysqladmin.exe")
+                if all([os.path.exists(path) for path in [mysql_base_dir, mysql_bin_dir, mysql_path, mysql_admin_path]]
+                       + [len(mysql_versions) == 1]):
+                    if subprocess.call([mysql_path, "-u", "root", "-p", "--execute",
+                                        "SET GLOBAL innodb_fast_shutdown=0",]) != 0 or \
+                                    subprocess.call([mysql_admin_path, "-u", "root", "-p", "shutdown"]) != 0:
+                        self._prompt.prompt_and_raise_if_not_yes(
+                            "Stopping the MySQL service failed. Please do it manually")
                 else:
                     self._prompt.prompt_and_raise_if_not_yes(
-                        "Cannot find the mysql data directory. Have you backed it up manually?")
+                        "Unable to find mysql location. Please shut down the service manually")
 
+                self._backup_dir_(os.path.join("C:\\", "Instrument", "var", "mysql"))
                 self._prompt.prompt_and_raise_if_not_yes("Data backup complete. Please restart the MYSQL service")
 
     def update_release_notes(self):
@@ -345,7 +348,6 @@ class UpgradeTasks(object):
             if task.do_step:
                 self._prompt.prompt_and_raise_if_not_yes(
                     "Have you updated the instrument release notes at https://github.com/ISISComputingGroup/IBEX/wiki?")
-
 
 
 class UpgradeInstrument(object):
@@ -394,7 +396,13 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.install_ibex_client()
         self._upgrade_tasks.upgrade_notepad_pp()
 
-    def run_instrument_update(self, deploy_ibex=False):
+    def run_instrument_update(self):
+        self._upgrade_tasks.stop_ibex_server()
+        self._upgrade_tasks.upgrade_instrument_configuration()
+        self._upgrade_tasks.update_calibrations_repository()
+        self._upgrade_tasks.remove_seci_shortcuts()
+
+    def run_instrument_upgrade(self):
         self._upgrade_tasks.stop_ibex_server()
         self._upgrade_tasks.install_java()
         self._upgrade_tasks.take_screenshots()
@@ -403,10 +411,9 @@ class UpgradeInstrument(object):
         self._upgrade_tasks.upgrade_instrument_configuration()
         self._upgrade_tasks.update_calibrations_repository()
         self._upgrade_tasks.remove_seci_shortcuts()
-        if deploy_ibex:
-            self._upgrade_tasks.install_ibex_server(True)
-            self._upgrade_tasks.install_ibex_client()
-            self._upgrade_tasks.update_release_notes()
+        self._upgrade_tasks.install_ibex_server(True)
+        self._upgrade_tasks.install_ibex_client()
+        self._upgrade_tasks.update_release_notes()
 
     def run_adrian_update(self):
         self._upgrade_tasks.install_java()

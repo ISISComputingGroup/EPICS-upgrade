@@ -50,7 +50,7 @@ if __name__ == "__main__":
         elif args.deployment_type == "instrument_update":
             upgrade_instrument.run_instrument_update()
         elif args.deployment_type == "instrument_deploy":
-            upgrade_instrument.run_instrument_update(deploy_ibex=True)
+            upgrade_instrument.run_instrument_upgrade()
         elif args.deployment_type == "adrian":
             upgrade_instrument.run_adrian_update()
 
