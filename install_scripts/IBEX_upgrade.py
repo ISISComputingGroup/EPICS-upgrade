@@ -22,7 +22,8 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", default=False, action="store_true",
                         help="Do not ask any questions just to the default.")
 
-    parser.add_argument('deployment_type', choices=['training_update', 'demo_upgrade', 'instrument_update', 'adrian'],
+    upgrade_types = ['training_update', 'demo_upgrade', 'instrument_update', 'instrument_deploy', 'adrian']
+    parser.add_argument('deployment_type', choices=upgrade_types,
                         help="What upgrade should be performed")
 
     args = parser.parse_args()
@@ -48,6 +49,8 @@ if __name__ == "__main__":
             upgrade_instrument.run_demo_upgrade()
         elif args.deployment_type == "instrument_update":
             upgrade_instrument.run_instrument_update()
+        elif args.deployment_type == "instrument_deploy":
+            upgrade_instrument.run_instrument_update(deploy_ibex=True)
         elif args.deployment_type == "adrian":
             upgrade_instrument.run_adrian_update()
 
