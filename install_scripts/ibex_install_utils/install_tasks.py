@@ -300,11 +300,11 @@ class UpgradeTasks(object):
 
     def _backup_dir_(self, src, copy=True):
         backup_dir = os.path.join(self._get_backup_dir(), os.path.basename(src))
-        if backup_dir in os.getcwd():
+        if src in os.getcwd():
             self._prompt.prompt_and_raise_if_not_yes(
                 "You appear to be trying to delete the folder, {}, containing the current working directory {}. "
                 "Please do this manually to be on the safe side".format(backup_dir, os.getcwd()))
-        if os.path.exists(backup_dir):
+        elif os.path.exists(backup_dir):
             self._prompt.prompt_and_raise_if_not_yes(
                 "Backup dir {} already exist. Please backup this app manually".format(backup_dir))
         else:
