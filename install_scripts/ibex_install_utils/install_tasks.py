@@ -307,7 +307,7 @@ class UpgradeTasks(object):
         elif os.path.exists(backup_dir):
             self._prompt.prompt_and_raise_if_not_yes(
                 "Backup dir {} already exist. Please backup this app manually".format(backup_dir))
-        else:
+        elif os.path.exists(src):
             if copy:
                 print("Copying {} to {}".format(src, backup_dir))
                 shutil.copytree(src, backup_dir)

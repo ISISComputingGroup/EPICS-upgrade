@@ -86,4 +86,4 @@ class FileUtils(object):
             dst: Destination directory
         """
         shutil.copytree(src, dst)
-        FileUtils.remove_dir(src)
+        FileUtils.remove_tree(src)
