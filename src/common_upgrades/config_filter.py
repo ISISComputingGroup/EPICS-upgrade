@@ -25,9 +25,8 @@ class ConfigFilter():
         Yields:
             Tuple: The path to the ioc file and it's xml representation
         """
-        config_root_paths = [os.path.join(self._config_base, f) for f in [COMPONENT_FOLDER, CONFIG_FOLDER]]
-        for path in config_root_paths:
-            for config in os.listdir(path):
+        for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
+            for config in self._file_access.listdir(path):
                 ioc_path = os.path.join(path, config, IOC_FILE)
                 try:
                     yield (ioc_path, self._file_access.open_xml_file(ioc_path))
@@ -47,8 +46,10 @@ class ConfigFilter():
         """
         regex = re.compile(FILTER_REGEX.format(ioc_to_change))
 
-        for path, ioc_xml in self.ioc_file_generator:
+        for path, ioc_xml in self.ioc_file_generator():
             for ioc in ioc_xml.getElementsByTagName("ioc"):
-                if regex.match(ioc.getAttribute("name")):
+                ioc_name = ioc.getAttribute("name")
+                if regex.match(ioc_name):
+                    self._logger.info("Found {} in {}".format(ioc_name, path))
                     yield ioc
                     self._file_access.write_xml_file(path, ioc_xml)

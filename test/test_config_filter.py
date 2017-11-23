@@ -1,13 +1,13 @@
 import unittest
 from hamcrest import *
-from mock import MagicMock as Mock
-
+from functools import partial
 from src.common_upgrades.config_filter import ConfigFilter
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 
 
 def generate_many_iocs(configs):
-    return ((config, create_xml_with_iocs(iocs)) for config, iocs in configs.items())
+    for config, iocs in configs.items():
+        yield (config, create_xml_with_iocs(iocs))
 
 
 class TestAddToBaseIOCs(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         ioc_to_change = "CHANGE_ME"
         configs = {"CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
         assert_that(len(list(result)), is_(0), "no results")
@@ -29,7 +29,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         ioc_to_change = "CHANGE_ME"
         configs = {"CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"], "CONFIG_2": ["OTHER_IOC"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
         assert_that(len(list(result)), is_(0), "no results")
@@ -39,7 +39,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         config_name = "CONFIG_1"
         configs = {config_name: [ioc_to_change, "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
         result = list(result)
@@ -51,7 +51,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         good_config = "CONFIG_1"
         configs = {good_config: [ioc_to_change, "ANOTHER_ONE"], "CONFIG_2": ["DONT_CHANGE", "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
         result = list(result)
@@ -63,7 +63,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         good_config = "CONFIG_1"
         configs = {good_config: [ioc_to_change, "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
         list(result)  # Get all values out of generator
 
@@ -75,7 +75,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         ioc_to_change = "CHANGE_ME"
         configs = {"CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"], "CONFIG_2": ["OTHER_IOC"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
         list(result)  # Get all values out of generator
 
@@ -88,7 +88,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         new_attr = "TEST_ATTR"
         configs = {good_config: [ioc_to_change, "ANOTHER_ONE"], "CONFIG_2": ["DONT_CHANGE", "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(ioc_to_change)
 
         ioc = next(result)
@@ -104,7 +104,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         config_name = "CONFIG_1"
         configs = {config_name: [ioc_name, "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(root_ioc_name)
 
         result = list(result)
@@ -117,7 +117,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         config_name = "CONFIG_1"
         configs = {config_name: [ioc_name, "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = generate_many_iocs(configs)
+        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
         result = self.filter.ioc_filter_generator(root_ioc_name)
 
         result = list(result)

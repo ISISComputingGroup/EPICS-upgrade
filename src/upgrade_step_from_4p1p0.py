@@ -1,10 +1,16 @@
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
-from src.common_upgrades.synoptics import Synoptics
+from src.common_upgrades.config_filter import ConfigFilter
 from src.upgrade_step import UpgradeStep
-from data.target_details_release_4p0p0 import OPI_PATH_KEYS as OPI_PATH_KEYS_4P0P0
-from data.target_details_release_3p2p1 import OPI_PATH_KEYS as OPI_PATH_KEYS_3P2P1
-from data.target_details_release_2p0p0 import OPI_PATH_KEYS as OPI_PATH_KEYS_2P0P0
+import re
+from xml.etree.ElementTree import SubElement
+
+
+OLD_MACROS_REGEX = "^GALILADDR([\d]{2})$"
+
+MTRCTRL_STR = "MTRCTRL"
+MTRCTRL_PATTERN = ""
+MTRCTRL_DESCRIPTION = ""
 
 
 class UpgradeStepFrom4p1p0(UpgradeStep):
@@ -31,5 +37,58 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
 
         """
 
-    def change_ioc_macros(self, file_access):
-        pass
+    def _are_current_macros_upgradable(self, macros, logger):
+        """
+        Args:
+            macros (list): List of the current macro name
+        Returns:
+            bool: True if current macros are upgradable
+        """
+        contains_mtrctrl = MTRCTRL_STR in macros
+        contains_new_galiladdr = "GALILADDR" in macros
+
+        old_galiladdr = [re.match(OLD_MACROS_REGEX, m) for m in macros]
+
+        if contains_new_galiladdr and contains_mtrctrl and not any(old_galiladdr):
+            logger.info("IOC already contains GALILADDR and {}".format(MTRCTRL_STR))
+            return False
+
+        if len(old_galiladdr) > 1:
+            logger.error("IOC controls multiple GALILs")
+            return False
+
+        if any(old_galiladdr) and not contains_mtrctrl and not contains_new_galiladdr:
+            return True
+
+        logger.error("IOC contains invalid mix of versions")
+        return False
+
+    def _create_MTRCTRL_macro(self, document, number):
+        mtrctrl = document.createElement("macro")
+        mtrctrl.setAttribute("name", MTRCTRL_STR)
+        mtrctrl.setAttribute("value", number)
+        mtrctrl.setAttribute("pattern", MTRCTRL_PATTERN)
+        mtrctrl.setAttribute("description", MTRCTRL_DESCRIPTION)
+        return mtrctrl
+
+    def change_ioc_macros(self, file_access, logger):
+        """
+        Change the Galil macros from:
+            GALILADDRXX = IP
+        to:
+            GALILADDR = IP
+            MTRCTRL = X
+
+        Args:
+            file_access (FileAccess): file access
+        """
+        config_filter = ConfigFilter(file_access, logger)
+        for ioc in config_filter.ioc_filter_generator("GALIL"):
+            macros_xml = ioc.getElementsByTagName("macros")[0]
+            macro_names = [m.getAttribute("name") for m in macros_xml.getElementsByTagName("macro")]
+            if self._are_current_macros_upgradable(macro_names, logger):
+                old_galil_num = [re.match(OLD_MACROS_REGEX, m) for m in macro_names][0].group(1)
+                macros_xml.appendChild(self._create_MTRCTRL_macro(macros_xml.ownerDocument, old_galil_num))
+
+
+

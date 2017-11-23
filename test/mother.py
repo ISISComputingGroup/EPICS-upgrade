@@ -12,6 +12,7 @@ class LoggingStub(object):
     def __init__(self):
         self.log = []
         self.log_err = []
+        self.config_base = "BASE"
 
     def error(self, message):
         self.log_err.append(message)
@@ -51,6 +52,12 @@ class FileAccessStub(object):
 
 
 def create_xml_with_iocs(iocs):
+    """
+    Args:
+        iocs (list): A list of IOC names
+    Returns:
+        str: xml containing the supplied IOCs
+    """
     doc = minidom.Document()
     top = doc.createElement("iocs")
     for ioc in iocs:
