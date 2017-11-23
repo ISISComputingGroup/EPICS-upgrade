@@ -265,7 +265,7 @@ class UpgradeTasks(object):
         with Task("Install java", self._prompt) as task:
             if task.do_step:
                 java_url = "http://www.java.com/en/"
-                java_installed = subprocess.call(["java","-version"]) is 0
+                java_installed = subprocess.call(["java","-version"]) == 0
                 if java_installed:
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Confirm that the java version above is the desired version or that you have "
