@@ -2,8 +2,8 @@ import os
 from xml.parsers.expat import ExpatError
 import re
 
-CONFIG_FOLDER = "configurations"
-COMPONENT_FOLDER = "components"
+CONFIG_FOLDER = os.path.join("configurations","configurations")
+COMPONENT_FOLDER = os.path.join("configurations","components")
 IOC_FILE = "iocs.xml"
 
 FILTER_REGEX = "^{}(_[\d]{{2}})?$"
@@ -27,7 +27,7 @@ class ConfigFilter():
         """
         for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
             for config in self._file_access.listdir(path):
-                ioc_path = os.path.join(path, config, IOC_FILE)
+                ioc_path = os.path.join(config, IOC_FILE)
                 try:
                     yield (ioc_path, self._file_access.open_xml_file(ioc_path))
                 except IOError:
