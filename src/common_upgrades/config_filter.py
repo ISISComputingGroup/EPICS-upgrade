@@ -47,9 +47,12 @@ class ConfigFilter():
         regex = re.compile(FILTER_REGEX.format(ioc_to_change))
 
         for path, ioc_xml in self.ioc_file_generator():
+            xml_changed = False
             for ioc in ioc_xml.getElementsByTagName("ioc"):
                 ioc_name = ioc.getAttribute("name")
                 if regex.match(ioc_name):
                     self._logger.info("Found {} in {}".format(ioc_name, path))
                     yield ioc
-                    self._file_access.write_xml_file(path, ioc_xml)
+                    xml_changed = True
+            if xml_changed:
+                self._file_access.write_xml_file(path, ioc_xml)
