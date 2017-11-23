@@ -298,7 +298,7 @@ class UpgradeTasks(object):
             os.mkdir(new_backup_dir)
         return new_backup_dir
 
-    def _backup_dir_(self, src, copy=True):
+    def _backup_dir(self, src, copy=True):
         backup_dir = os.path.join(self._get_backup_dir(), os.path.basename(src))
         if src in os.getcwd():
             self._prompt.prompt_and_raise_if_not_yes(
@@ -339,11 +339,11 @@ class UpgradeTasks(object):
 
                     # Move the folders
                     for app_path in [EPICS_PATH, EPICS_UTILS_PATH, GUI_PATH, PYTHON_PATH]:
-                        self._backup_dir_(app_path, copy=False)
+                        self._backup_dir(app_path, copy=False)
 
                     # Backup settings and autosave
-                    self._backup_dir_(os.path.join("C:\\", "Instrument", "Settings"))
-                    self._backup_dir_(os.path.join("C:\\", "Instrument", "var", "Autosave"))
+                    self._backup_dir(os.path.join("C:\\", "Instrument", "Settings"))
+                    self._backup_dir(os.path.join("C:\\", "Instrument", "var", "Autosave"))
                 else:
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Unable to find data directory C:\\data. Please backup the current installation of IBEX "
@@ -382,7 +382,7 @@ class UpgradeTasks(object):
                     self._prompt.prompt_and_raise_if_not_yes(
                         "Unable to find mysql location. Please shut down the service manually")
                 finally:
-                    self._backup_dir_(os.path.join("C:\\", "Instrument", "var", "mysql"))
+                    self._backup_dir(os.path.join("C:\\", "Instrument", "var", "mysql"))
                     self._prompt.prompt_and_raise_if_not_yes("Data backup complete. Please restart the MYSQL service")
 
     def update_release_notes(self):
