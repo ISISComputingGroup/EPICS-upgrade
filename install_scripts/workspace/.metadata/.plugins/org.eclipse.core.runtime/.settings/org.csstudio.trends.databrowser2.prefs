@@ -1,3 +1,0 @@
-archives=RDB|1|jdbc\:mysql\://NDXMERLIN/archive*RDB|2|jdbc\:mysql\://130.246.39.152/archive
-eclipse.preferences.version=1
-urls=jdbc\:mysql\://NDXMERLIN/archive*jdbc\:mysql\://130.246.39.152/archive
