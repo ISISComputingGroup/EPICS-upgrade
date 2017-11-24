@@ -2,7 +2,9 @@ from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.common_upgrades.config_filter import ConfigFilter
 from src.upgrade_step import UpgradeStep
+from enum import Enum
 import re
+import os
 from xml.dom import minidom
 
 MTRCTRL_STR = "MTRCTRL"
@@ -11,7 +13,16 @@ MTRCTRL_XML = """<macro name="MTRCTRL" pattern="^[0-9]{{1,2}}$" description="Con
 GALIL_ADDR_STR = "GALILADDR"
 GALIL_ADDR_XML = """<macro name="GALILADDR" pattern="^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$" description="IP address of Galil controller (MTR01* PVs)" value="{}"/>"""
 
-OLD_MACROS_REGEX = "^GALILADDR([\d]{2})$"
+OLD_MACROS_REGEX = r'^GALILADDR([\d]{2})$'
+
+GALIL_FOLDER = "galil"
+GALIL_CMD_REGEX = r'galil([\d]{1,2})\.cmd$'
+
+
+class UpgradedState(Enum):
+    INVALID = -1
+    UPGRADABLE = 0
+    UPGRADED = 1
 
 
 class UpgradeStepFrom4p1p0(UpgradeStep):
@@ -37,32 +48,101 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
         Returns: exit code 0 success; anything else fail
 
         """
-        self.change_ioc_macros(file_access, logger)
+        ret_val = self.change_ioc_macros(file_access, logger)
+        if ret_val == 0:
+            ret_val = self.change_galil_files(file_access, logger)
+        return ret_val
 
-    def _are_current_macros_upgradable(self, macros, old_macros, logger):
+    def change_galil_files(self, file_access, logger):
         """
+        Changes the galilX.cmd files in thr following way:
+            Renamed to galilXX.cmd
+            Change references to GALILADDRXX to GALILADDR as above
+
         Args:
-            macros (list): List of the current macro name
-            old_macros (list): List of the old macros in the xml
-        Returns:
-            bool: True if current macros are upgradable
+            file_access (FileAccess): file access
+            logger (Logger): logger
         """
-        contains_mtrctrl = MTRCTRL_STR in macros
-        contains_new_galiladdr = "GALILADDR" in macros
+        dirs = file_access.listdir(GALIL_FOLDER)
+        for filename in dirs:
+            matched = re.search(GALIL_CMD_REGEX, filename)
+            if matched is not None:
+                try:
+                    galil_cmd = file_access.open_file(filename)
+                except IOError as e:
+                    logger.error("Cannot open {}".format(filename))
+                    return -3
+
+                new_galil_cmd = re.sub(OLD_MACROS_REGEX, GALIL_ADDR_STR, galil_cmd)
+                new_filename = os.path.join(GALIL_FOLDER, "galil{:02d}.cmd".format(int(matched.group(1))))
+
+                try:
+                    file_access.write_file(new_filename, new_galil_cmd)
+                    if filename != new_filename:
+                        file_access.remove_file(filename)
+                except IOError as e:
+                    logger.error("Cannot save {} and remove {}".format(new_filename, filename))
+                    return -4
+        return 0
+
+    def _are_macros_upgradable(self, macro_xml, logger):
+        """
+        Checks whether the macros in the current file are in a state where they can be easily upgraded.
+
+        Args:
+            macro_xml (NodeList): List of the macro nodes
+        Returns:
+            An UpgradedState telling you the state of the macros
+        """
+        macro_names = [m.getAttribute("name") for m in macro_xml]
+
+        contains_mtrctrl = MTRCTRL_STR in macro_names
+        contains_new_galiladdr = "GALILADDR" in macro_names
+        old_macros = [m for m in macro_names if re.match(OLD_MACROS_REGEX, m)]
 
         if contains_new_galiladdr and contains_mtrctrl and not any(old_macros):
             logger.info("IOC already contains GALILADDR and {}".format(MTRCTRL_STR))
-            return False
+            return UpgradedState.UPGRADED
 
         if len(old_macros) > 1:
             logger.error("IOC controls multiple GALILs")
-            return False
+            return UpgradedState.INVALID
 
         if any(old_macros) and not contains_mtrctrl and not contains_new_galiladdr:
-            return True
+            return UpgradedState.UPGRADABLE
 
         logger.error("IOC contains invalid mix of versions")
-        return False
+        return UpgradedState.INVALID
+
+    def _add_node_and_whitespace(self, parent_xml, new_xml, whitespace):
+        """
+        Adds a node and some whitespace to xml.
+        Args:
+            parent_xml (Node): node to add to
+            new_xml (str): new xml to add
+            whitespace (str): the whitespace to add
+        """
+        parent_xml.appendChild(minidom.parseString(new_xml).firstChild)
+        parent_xml.appendChild(parent_xml.ownerDocument.createTextNode(whitespace))
+
+    def _change_macros(self, macros_xml):
+        """
+        Changes the macros in the given xml.
+        Args:
+            macros_xml (NodeList): the current macros
+        """
+        macro_names = [m for m in macros_xml.getElementsByTagName("macro")]
+        old_macro = [m for m in macro_names
+                     if re.match(OLD_MACROS_REGEX, m.getAttribute("name"))][0]
+
+        old_galil_num = re.match(OLD_MACROS_REGEX, old_macro.getAttribute("name")).group(1)
+        old_galil_ip = old_macro.getAttribute("value")
+
+        self._add_node_and_whitespace(macros_xml, MTRCTRL_XML.format(old_galil_num), "\n\t\t\t")
+        self._add_node_and_whitespace(macros_xml, GALIL_ADDR_XML.format(old_galil_ip), "\n\t\t")
+
+        macros_xml.removeChild(old_macro.nextSibling)  # Remove the whitespace before the old macro
+        macros_xml.removeChild(old_macro)
 
     def change_ioc_macros(self, file_access, logger):
         """
@@ -74,23 +154,17 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
 
         Args:
             file_access (FileAccess): file access
+            logger (Logger): logger
         """
         config_filter = ConfigFilter(file_access, logger)
-        for ioc in config_filter.ioc_filter_generator("GALIL"):
-            macros_xml = ioc.getElementsByTagName("macros")[0]
-            macro_xml_list = macros_xml.getElementsByTagName("macro")
-            old_macros = [m for m in macro_xml_list if re.match(OLD_MACROS_REGEX, m.getAttribute("name"))]
-            macro_names = [m.getAttribute("name") for m in macro_xml_list]
-            if self._are_current_macros_upgradable(macro_names, old_macros, logger):
-                old_galil_num = re.match(OLD_MACROS_REGEX, old_macros[0].getAttribute("name")).group(1)
-                old_galil_ip = old_macros[0].getAttribute("value")
-
-                macros_xml.appendChild(minidom.parseString(MTRCTRL_XML.format(old_galil_num)).firstChild)
-                # add some formatting to make it look nice
-                macros_xml.appendChild(macros_xml.ownerDocument.createTextNode("\n\t\t\t"))
-                macros_xml.appendChild(minidom.parseString(GALIL_ADDR_XML.format(old_galil_ip)).firstChild)
-                # add some formatting to make it look nice
-                macros_xml.appendChild(macros_xml.ownerDocument.createTextNode("\n\t\t"))
-
-                macros_xml.removeChild(old_macros[0].nextSibling)  # Remove the whitespace before the old macro
-                macros_xml.removeChild(old_macros[0])
+        try:
+            for ioc in config_filter.ioc_filter_generator("GALIL"):
+                macros_xml = ioc.getElementsByTagName("macros")[0]
+                upgrade_state = self._are_macros_upgradable(macros_xml.getElementsByTagName("macro"), logger)
+                if upgrade_state is UpgradedState.UPGRADABLE:
+                    self._change_macros(macros_xml)
+                elif upgrade_state is UpgradedState.INVALID:
+                    return -1
+        except Exception as e:
+            logger.error(str(e))
+            return -2

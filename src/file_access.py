@@ -108,3 +108,12 @@ class FileAccess(object):
             List of file paths (strings)
         """
         return [os.path.join(dir, f) for f in os.listdir(os.path.join(self.config_base, dir))]
+
+    def remove_file(self, filename):
+        """
+        Removes a file from the file system.
+
+        Args:
+            filename (str): The file to remove, relative to the config directory
+        """
+        os.remove(os.path.join(self.config_base, filename))

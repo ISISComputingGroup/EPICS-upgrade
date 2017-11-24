@@ -50,6 +50,9 @@ class FileAccessStub(object):
     def listdir(self, dir):
         return ["file1.xml", "README.txt", "file2.xml"]
 
+    def remove_file(self, filename):
+        pass
+
 
 def create_xml_with_iocs(iocs):
     """

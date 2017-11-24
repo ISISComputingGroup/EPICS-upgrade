@@ -31,9 +31,9 @@ class ConfigFilter():
                 try:
                     yield (ioc_path, self._file_access.open_xml_file(ioc_path))
                 except IOError:
-                    self._logger.error("Cannot find {}".format(ioc_path))
+                    raise IOError("Cannot find {}".format(ioc_path))
                 except ExpatError as ex:
-                    self._logger.error("{} is invalid xml '{}'".format(path, ex))
+                    raise ExpatError("{} is invalid xml '{}'".format(path, ex))
 
     def ioc_filter_generator(self, ioc_to_change):
         """

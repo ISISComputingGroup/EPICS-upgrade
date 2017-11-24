@@ -1,9 +1,9 @@
 import unittest
 from hamcrest import *
 from mock import MagicMock as Mock
-
+from mock import call
 import xml.etree.ElementTree as ET
-
+import os
 from src.upgrade_step_from_4p1p0 import UpgradeStepFrom4p1p0
 from mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 
@@ -52,30 +52,32 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
 
         assert_that(self.file_access.write_file_contents, is_(xml))
 
-    def test_GIVEN_galiladdr_already_present_and_mtrctrl_not_present_WHEN_replaced_THEN_error_logged_and_no_change_made(self):
+    def test_GIVEN_galiladdr_already_present_and_mtrctrl_not_present_WHEN_replaced_THEN_error_logged_and_nothing_saved(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
-
+        self.file_access.write_file = Mock()
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
         assert_that(len(self.logger.log), is_(1), "Contains info {}".format(self.logger.log))
         assert_that(len(self.logger.log_err), is_(1), "Contains error {}".format(self.logger.log_err))
 
-        assert_that(self.file_access.write_file_contents, is_(xml))
+        self.file_access.write_file.assert_not_called()
 
     def test_GIVEN_old_galiladdr_present_and_mtrctrl_present_WHEN_replaced_THEN_error_logged_and_no_change_made(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR01": "", "MTRCTRL": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.write_file = Mock()
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
         assert_that(len(self.logger.log), is_(1), "Contains info {}".format(self.logger.log))
         assert_that(len(self.logger.log_err), is_(1), "Contains error {}".format(self.logger.log_err))
 
-        assert_that(self.file_access.write_file_contents, is_(xml))
+        self.file_access.write_file.assert_not_called()
 
     def test_GIVEN_multiple_old_galiladdr_present_WHEN_replaced_THEN_error_logged_and_no_change_made(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR01": "", "GALILADDR02": ""}))
+        self.file_access.write_file = Mock()
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
@@ -83,7 +85,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         assert_that(len(self.logger.log), is_(1), "Contains info {}".format(self.logger.log))
         assert_that(len(self.logger.log_err), is_(1), "Contains error {}".format(self.logger.log_err))
 
-        assert_that(self.file_access.write_file_contents, is_(xml))
+        self.file_access.write_file.assert_not_called()
 
     def test_GIVEN_old_galilarr01_WHEN_replaced_THEN_mtrcrtl_contains_01(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR01": ""}))
@@ -108,6 +110,94 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
 
         assert_that(len(mtrctrl_xml), is_(1))
         assert_that(mtrctrl_xml[0].get("value"), is_("03"))
+
+    def test_WHEN_changed_galil_files_THEN_loads_galil_files(self):
+        open_file_mock = Mock(return_value="")
+        self.file_access.open_file = open_file_mock
+        galil_files = ["galil2.cmd", "galil10.cmd"]
+        files = ["jaws.cmd", "other.o"] + galil_files
+        self.file_access.listdir = Mock(return_value=[os.path.join("gailil", f) for f in files])
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+        assert_that(open_file_mock.call_args_list, is_([call(os.path.join("gailil", f)) for f in galil_files]))
+
+    def _set_up_galil_dir_and_change(self, galil_files):
+        self.file_access.open_file = Mock(return_value="")
+        self.file_access.listdir = Mock(return_value=(["jaws.cmd", "other.o"] + galil_files))
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+    def test_GIVEN_galil1_cmd_WHEN_change_galil_files_THEN_saved_as_galil01_cmd(self):
+        self._set_up_galil_dir_and_change(["galil1.cmd"])
+
+        expected = os.path.join("galil", "galil01.cmd")
+        assert_that(self.file_access.write_filename, is_(expected))
+
+    def test_GIVEN_galil5_cmd_WHEN_change_galil_files_THEN_saved_as_galil05_cmd(self):
+        self._set_up_galil_dir_and_change(["galil5.cmd"])
+
+        expected = os.path.join("galil", "galil05.cmd")
+        assert_that(self.file_access.write_filename, is_(expected))
+
+    def test_GIVEN_galil10_cmd_WHEN_change_galil_files_THEN_saved_as_galil10_cmd(self):
+        self._set_up_galil_dir_and_change(["galil10.cmd"])
+
+        expected = os.path.join("galil", "galil10.cmd")
+        assert_that(self.file_access.write_filename, is_(expected))
+
+    def test_GIVEN_two_galil_cmd_WHEN_change_galil_files_THEN_both_saved_as_new_style(self):
+        self.file_access.write_file = Mock()
+        self._set_up_galil_dir_and_change(["galil2.cmd", "galil05.cmd"])
+
+        expected = [os.path.join("galil", f) for f in ["galil02.cmd", "galil05.cmd"]]
+        assert_that([c[0][0] for c in self.file_access.write_file.call_args_list], is_(expected))
+
+    def test_GIVEN_galil_cmd_containing_GALILADDR03_WHEN_change_galil_files_THEN_cmd_saved_with_GALILADDR(self):
+        self.file_access.write_file = Mock()
+        self.file_access.open_file = Mock(return_value="GALILADDR03")
+        self.file_access.listdir = Mock(return_value=[os.path.join("galil", "galil3.cmd")])
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+        assert_that(self.file_access.write_file.call_args[0][1], is_("GALILADDR"))
+
+    def test_GIVEN_galil_cmd_containing_GALILADDR10_WHEN_change_galil_files_THEN_cmd_saved_with_GALILADDR(self):
+        self.file_access.write_file = Mock()
+        self.file_access.open_file = Mock(return_value="GALILADDR10")
+        self.file_access.listdir = Mock(return_value=[os.path.join("galil", "galil3.cmd")])
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+        assert_that(self.file_access.write_file.call_args[0][1], is_("GALILADDR"))
+
+    def test_GIVEN_galil_cmd_containing_GALILADDR_WHEN_change_galil_files_THEN_cmd_unchanged(self):
+        self.file_access.write_file = Mock()
+        self.file_access.open_file = Mock(return_value="GALILADDR")
+        self.file_access.listdir = Mock(return_value=[os.path.join("galil", "galil3.cmd")])
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+        assert_that(self.file_access.write_file.call_args[0][1], is_("GALILADDR"))
+
+    def test_GIVEN_old_style_galil_cmd_WHEN_change_galil_files_THEN_old_cmd_removed(self):
+        self.file_access.remove_file = Mock()
+        old_cmd = os.path.join("galil", "galil3.cmd")
+        self.file_access.open_file = Mock(return_value="")
+        self.file_access.listdir = Mock(return_value=[old_cmd])
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+        self.file_access.remove_file.assert_called_with(old_cmd)
+
+    def test_GIVEN_new_style_galil_cmd_WHEN_change_galil_files_THEN_cmd_not_removed(self):
+        self.file_access.remove_file = Mock()
+        self.file_access.open_file = Mock(return_value="")
+        self.file_access.listdir = Mock(return_value=[os.path.join("galil", "galil10.cmd")])
+
+        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+
+        self.file_access.remove_file.assert_not_called()
 
 
 if __name__ == '__main__':
