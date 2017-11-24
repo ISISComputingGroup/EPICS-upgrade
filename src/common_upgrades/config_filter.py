@@ -2,8 +2,8 @@ import os
 from xml.parsers.expat import ExpatError
 import re
 
-CONFIG_FOLDER = os.path.join("configurations","configurations")
-COMPONENT_FOLDER = os.path.join("configurations","components")
+CONFIG_FOLDER = os.path.join("configurations", "configurations")
+COMPONENT_FOLDER = os.path.join("configurations", "components")
 IOC_FILE = "iocs.xml"
 
 FILTER_REGEX = "^{}(_[\d]{{2}})?$"

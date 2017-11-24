@@ -34,7 +34,7 @@ class FileAccess(object):
             lines = []
             for line in f:
                 lines.append(line.rstrip())
-            return lines
+        return lines
 
     def write_version_number(self, version, filename):
         """
@@ -56,7 +56,7 @@ class FileAccess(object):
 
         Args:
             filename: filename to write to
-            file_contents: the file contents to write as a list of strings (no new lines neeeded)
+            file_contents: the file contents to write as a list of strings (no new lines needed)
 
         Returns:
 
@@ -116,4 +116,5 @@ class FileAccess(object):
         Args:
             filename (str): The file to remove, relative to the config directory
         """
+        self._logger.info("Removing file {}".format(filename))
         os.remove(os.path.join(self.config_base, filename))

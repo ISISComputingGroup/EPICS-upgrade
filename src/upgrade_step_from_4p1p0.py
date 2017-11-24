@@ -13,9 +13,9 @@ MTRCTRL_XML = """<macro name="MTRCTRL" pattern="^[0-9]{{1,2}}$" description="Con
 GALIL_ADDR_STR = "GALILADDR"
 GALIL_ADDR_XML = """<macro name="GALILADDR" pattern="^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$" description="IP address of Galil controller (MTR01* PVs)" value="{}"/>"""
 
-OLD_MACROS_REGEX = r'^GALILADDR([\d]{2})$'
+OLD_MACROS_REGEX = r'GALILADDR([\d]{2})'
 
-GALIL_FOLDER = "galil"
+GALIL_FOLDER = os.path.join("configurations", "galil")
 GALIL_CMD_REGEX = r'galil([\d]{1,2})\.cmd$'
 
 
@@ -50,6 +50,7 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
         """
         ret_val = self.change_ioc_macros(file_access, logger)
         if ret_val == 0:
+            logger.info("Finished changing macros, now modifying galil.cmd files")
             ret_val = self.change_galil_files(file_access, logger)
         return ret_val
 
@@ -73,8 +74,12 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
                     logger.error("Cannot open {}".format(filename))
                     return -3
 
-                new_galil_cmd = re.sub(OLD_MACROS_REGEX, GALIL_ADDR_STR, galil_cmd)
+                new_galil_cmd = []
+                for line in galil_cmd:
+                    new_galil_cmd.append(re.sub(OLD_MACROS_REGEX, GALIL_ADDR_STR, line))
+
                 new_filename = os.path.join(GALIL_FOLDER, "galil{:02d}.cmd".format(int(matched.group(1))))
+                logger.info("Modifying GALILADDR in {}".format(filename))
 
                 try:
                     file_access.write_file(new_filename, new_galil_cmd)
@@ -166,5 +171,6 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
                 elif upgrade_state is UpgradedState.INVALID:
                     return -1
         except Exception as e:
-            logger.error(str(e))
+            logger.error("Changing macros failed: {}".format(str(e)))
             return -2
+        return 0
