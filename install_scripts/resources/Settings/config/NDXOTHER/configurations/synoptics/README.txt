@@ -1,1 +1,0 @@
-This folder will contain the configuration files for the GUI synoptic view.
