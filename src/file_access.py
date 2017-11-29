@@ -48,7 +48,7 @@ class FileAccess(object):
         """
         with open(os.path.join(self.config_base, filename), mode="w") as f:
             self._logger.info("Writing new version number {0}".format(version))
-            f.write("{0}{1}".format(version, os.linesep))
+            f.write("{0}{1}".format(version, "\n"))
 
     def write_file(self, filename, file_contents):
         """
@@ -64,7 +64,7 @@ class FileAccess(object):
         with open(os.path.join(self.config_base, filename), mode="w") as f:
             self._logger.info("Writing file {0}".format(filename))
             for line in file_contents:
-                f.write("{0}{1}".format(line, os.linesep))
+                f.write("{0}{1}".format(line, "\n"))
 
     def open_xml_file(self, filename):
         """
