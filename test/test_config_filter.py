@@ -10,7 +10,7 @@ def generate_many_iocs(configs):
         yield (config, create_xml_with_iocs(iocs))
 
 
-class TestAddToBaseIOCs(unittest.TestCase):
+class TestConfigFilter(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
