@@ -28,7 +28,10 @@ import argparse
 from test.test_upgrade_step_from_3p2p1 import TestUpgradeStepFrom3p2p1
 from test.test_upgrade_step_from_3p2p1p1 import TestUpgradeStepFrom3p2p1p1
 from test.test_upgrade_step_from_3p2p1p2 import TestUpgradeStepFrom3p2p1p2
+from test.test_upgrade_step_from_4p1p0 import TestUpgradeStepFrom4p1p0
 from test.test_upgrade_base import TestUpgradeBase
+from test.test_add_to_base_iocs import TestAddToBaseIOCs
+from test.test_config_filter import TestConfigFilter
 
 DEFAULT_DIRECTORY = os.path.join('..', '..', '..', '..', 'test-reports')
 
@@ -43,15 +46,19 @@ if __name__ == '__main__':
     # Load tests from test suites
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(TestUpgradeBase),
+        unittest.TestLoader().loadTestsFromTestCase(TestAddToBaseIOCs),
+        unittest.TestLoader().loadTestsFromTestCase(TestConfigFilter),
         unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1),
         unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1p1),
         unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom3p2p1p2),
+        unittest.TestLoader().loadTestsFromTestCase(TestUpgradeStepFrom4p1p0),
+
     ]
 
-    print "\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------"
+    print("\n\n------ BEGINNING UPGRADE STEPS UNIT TESTS ------")
 
     ret_vals = [xmlrunner.XMLTestRunner(output=xml_dir).run(s).wasSuccessful() for s in suites]
 
-    print "------ UPGRADE STEPS UNIT TESTS COMPLETE ------\n\n"
+    print("------ UPGRADE STEPS UNIT TESTS COMPLETE ------\n\n")
     # Return failure exit code if a test failed
     sys.exit(False in ret_vals)

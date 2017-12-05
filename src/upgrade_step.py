@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from file_access import FileAccess
-from local_logger import LocalLogger
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 
 
 class UpgradeStep(object):

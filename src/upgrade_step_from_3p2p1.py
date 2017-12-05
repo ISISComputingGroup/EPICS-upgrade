@@ -1,5 +1,5 @@
-from file_access import FileAccess
-from local_logger import LocalLogger
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.common_upgrades.add_to_base_iocs import AddToBaseIOCs
 from src.upgrade_step import UpgradeStep
 

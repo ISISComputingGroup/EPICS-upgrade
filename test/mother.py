@@ -12,6 +12,7 @@ class LoggingStub(object):
     def __init__(self):
         self.log = []
         self.log_err = []
+        self.config_base = "BASE"
 
     def error(self, message):
         self.log_err.append(message)
@@ -48,6 +49,27 @@ class FileAccessStub(object):
 
     def listdir(self, dir):
         return ["file1.xml", "README.txt", "file2.xml"]
+
+    def remove_file(self, filename):
+        pass
+
+
+def create_xml_with_iocs(iocs):
+    """
+    Args:
+        iocs (list): A list of IOC names
+    Returns:
+        str: xml containing the supplied IOCs
+    """
+    doc = minidom.Document()
+    top = doc.createElement("iocs")
+    for ioc in iocs:
+        child = doc.createElement('ioc')
+        child.setAttribute("name", ioc)
+        top.appendChild(child)
+    doc.appendChild(top)
+    return doc
+
 
 CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1 = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">

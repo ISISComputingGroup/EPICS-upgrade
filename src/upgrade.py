@@ -43,7 +43,7 @@ class Upgrade(object):
         """
         try:
             for line in self._file_access.open_file(VERSION_FILENAME):
-                    return line.strip()
+                return line.strip()
         except IOError:
             initial_version_number = self._upgrade_steps[0][0]
             self._file_access.write_version_number(initial_version_number, VERSION_FILENAME)

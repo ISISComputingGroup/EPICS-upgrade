@@ -1,5 +1,5 @@
-from file_access import FileAccess
-from local_logger import LocalLogger
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.common_upgrades.synoptics import Synoptics
 from src.upgrade_step import UpgradeStep
 from data.target_details_release_4p0p0 import OPI_PATH_KEYS as OPI_PATH_KEYS_4P0P0

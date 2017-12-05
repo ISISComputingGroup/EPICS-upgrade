@@ -16,7 +16,7 @@ class FileAccess(object):
             config_root: the root dir for the config (all files a relative to this directory).
                         Should normally be the parent of ICPCONFIGROOT.
         """
-        self._config_base = config_root
+        self.config_base = config_root
         self._logger = logger
 
     def open_file(self, filename):
@@ -30,11 +30,11 @@ class FileAccess(object):
         Returns:
             contents of file as a list of lines
         """
-        with file(os.path.join(self._config_base, filename)) as f:
+        with open(os.path.join(self.config_base, filename)) as f:
             lines = []
             for line in f:
                 lines.append(line.rstrip())
-            return lines
+        return lines
 
     def write_version_number(self, version, filename):
         """
@@ -46,9 +46,9 @@ class FileAccess(object):
         Returns:
 
         """
-        with file(os.path.join(self._config_base, filename), mode="w") as f:
+        with open(os.path.join(self.config_base, filename), mode="w") as f:
             self._logger.info("Writing new version number {0}".format(version))
-            f.write("{0}{1}".format(version, os.linesep))
+            f.write("{}\n".format(version))
 
     def write_file(self, filename, file_contents):
         """
@@ -56,19 +56,18 @@ class FileAccess(object):
 
         Args:
             filename: filename to write to
-            file_contents: the file contents to write as a list of strings (no new lines neeeded)
+            file_contents: the file contents to write as a list of strings (no new lines needed)
 
         Returns:
 
         """
-        with file(os.path.join(self._config_base, filename), mode="w") as f:
+        with open(os.path.join(self.config_base, filename), mode="w") as f:
             self._logger.info("Writing file {0}".format(filename))
             for line in file_contents:
-                f.write("{0}{1}".format(line, os.linesep))
+                f.write("{}\n".format(line))
 
     def open_xml_file(self, filename):
         """
-
         Open a file and returns the xml it contains
 
         Args:
@@ -77,7 +76,7 @@ class FileAccess(object):
         Returns:
             contents of file as an xml tree
         """
-        return minidom.parse(os.path.join(self._config_base, filename))
+        return minidom.parse(os.path.join(self.config_base, filename))
 
     def write_xml_file(self, filename, xml):
         """
@@ -92,7 +91,7 @@ class FileAccess(object):
         """
 
         # this can not use pretty print because that will cause it to gain tabs and newlines
-        with file(os.path.join(self._config_base, filename), mode="w") as f:
+        with open(os.path.join(self.config_base, filename), mode="w") as f:
             self._logger.info("Writing xml file {0}".format(filename))
             f.write('<?xml version="1.0" ?>\n')
             xml.firstChild.writexml(f)
@@ -108,4 +107,14 @@ class FileAccess(object):
         Return:
             List of file paths (strings)
         """
-        return [os.path.join(dir, f) for f in os.listdir(os.path.join(self._config_base, dir))]
+        return [os.path.join(dir, f) for f in os.listdir(os.path.join(self.config_base, dir))]
+
+    def remove_file(self, filename):
+        """
+        Removes a file from the file system.
+
+        Args:
+            filename (str): The file to remove, relative to the config directory
+        """
+        self._logger.info("Removing file {}".format(filename))
+        os.remove(os.path.join(self.config_base, filename))
