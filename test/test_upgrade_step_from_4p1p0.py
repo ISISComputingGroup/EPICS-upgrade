@@ -41,9 +41,28 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.upgrade_step = UpgradeStepFrom4p1p0()
         self.logger = LoggingStub()
 
+    def test_GIVEN_a_file_in_the_configuration_directory_WHEN_searched_THEN_it_is_not_opened(self):
+        self.file_access.open_file = Mock()
+        self.file_access.is_dir = Mock(return_value=False)
+
+        self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
+
+        self.file_access.open_file.assert_not_called()
+
+    def test_GIVEN_config_in_the_configuration_directory_WHEN_searched_THEN_ioc_file_opened(self):
+        config_name = "TEST_CONFIG"
+        self.file_access.open_file = Mock()
+        self.file_access.is_dir = Mock(return_value=True)
+        self.file_access.listdir = Mock(return_value=[config_name])
+
+        self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
+
+        self.file_access.open_file.assert_called_once_with(os.path.join(config_name, "iocs.xml"))
+
     def test_GIVEN_galiladdr_and_mtrctrl_already_present_WHEN_replaced_THEN_warning_logged_and_no_change_made(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "", "MTRCTRL": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.is_dir = Mock(return_value=True)
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
@@ -56,6 +75,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
         self.file_access.write_file = Mock()
+        self.file_access.is_dir = Mock(return_value=True)
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
         assert_that(len(self.logger.log), is_(1), "Contains info {}".format(self.logger.log))
@@ -66,6 +86,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
     def test_GIVEN_old_galiladdr_present_and_mtrctrl_present_WHEN_replaced_THEN_error_logged_and_no_change_made(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR01": "", "MTRCTRL": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.is_dir = Mock(return_value=True)
         self.file_access.write_file = Mock()
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
@@ -79,6 +100,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR01": "", "GALILADDR02": ""}))
         self.file_access.write_file = Mock()
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.is_dir = Mock(return_value=True)
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
@@ -90,6 +112,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
     def test_GIVEN_old_galilarr01_WHEN_replaced_THEN_mtrcrtl_contains_01(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR01": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.is_dir = Mock(return_value=True)
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
@@ -102,6 +125,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
     def test_GIVEN_old_galilarr03_WHEN_replaced_THEN_mtrcrtl_contains_03(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR03": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.is_dir = Mock(return_value=True)
 
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
@@ -199,7 +223,6 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.upgrade_step.change_galil_files(self.file_access, self.logger)
 
         self.file_access.remove_file.assert_not_called()
-
 
 if __name__ == '__main__':
     unittest.main()

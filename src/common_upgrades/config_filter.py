@@ -27,7 +27,7 @@ class ConfigFilter():
             Tuple: The path to the ioc file and it's xml representation
         """
         for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
-            for config in [config for config in self._file_access.listdir(path) if os.path.isdir(config)]:
+            for config in [c for c in self._file_access.listdir(path) if self._file_access.is_dir(c)]:
                 ioc_path = os.path.join(config, IOC_FILE)
                 try:
                     yield (ioc_path, self._file_access.open_xml_file(ioc_path))
