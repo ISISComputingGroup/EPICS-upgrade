@@ -13,10 +13,15 @@ MTRCTRL_XML = """<macro name="MTRCTRL" pattern="^[0-9]{{1,2}}$" description="Con
 GALIL_ADDR_STR = "GALILADDR"
 GALIL_ADDR_XML = """<macro name="GALILADDR" pattern="^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$" description="IP address of Galil controller (MTR01* PVs)" value="{}"/>"""
 
-OLD_MACROS_REGEX = r'GALILADDR([\d]{2})'
+OLD_ADDR_MACRO_REGEX = r'GALILADDR([\d]{2})'
 
 GALIL_FOLDER = os.path.join("configurations", "galil")
+
+CMD_REGEX = r'.+\.cmd$'
 GALIL_CMD_REGEX = r'galil([\d]{1,2})\.cmd$'
+
+OLD_IOC_EXISTS_MACRO_REGEX = r'\$\(IFDMC([\d]{2})\)'
+NEW_IOC_EXISTS_MACRO_REGEX = r'$(IFIOC_GALIL_\1)'
 
 
 class UpgradedState(Enum):
@@ -32,6 +37,10 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
     to:
         GALILADDR = IP
         MTRCTRL = X
+    and:
+        $(IFDMC01)
+    to:
+        $(IFIOC_GALIL_01)
 
     Change file galilX.cmd to be called galil0X.cmd
     Change references to GALILADDR0X in the galilX.cmd to GALILADDR as above
@@ -51,39 +60,47 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
         ret_val = self.change_ioc_macros(file_access, logger)
         if ret_val == 0:
             logger.info("Finished changing macros, now modifying galil.cmd files")
-            ret_val = self.change_galil_files(file_access, logger)
+            ret_val = self.change_cmd_files(file_access, logger)
         return ret_val
 
-    def change_galil_files(self, file_access, logger):
+    def change_cmd_files(self, file_access, logger):
         """
-        Changes the galilX.cmd files in thr following way:
+        Changes the galilX.cmd files in the following way:
             Renamed to galilXX.cmd
             Change references to GALILADDRXX to GALILADDR as above
-
+        Changes all *.cmd files to:
+            $(IFDMC01) -> $(IFIOC_GALIL_01)
         Args:
             file_access (FileAccess): file access
             logger (Logger): logger
         """
         dirs = file_access.listdir(GALIL_FOLDER)
         for filename in dirs:
-            matched = re.search(GALIL_CMD_REGEX, filename)
-            if matched is not None:
+            if re.search(CMD_REGEX, filename):
                 try:
-                    galil_cmd = file_access.open_file(filename)
+                    cmd_lines = file_access.open_file(filename)
                 except IOError as e:
                     logger.error("Cannot open {}".format(filename))
                     return -3
 
-                new_galil_cmd = []
-                for line in galil_cmd:
-                    new_galil_cmd.append(re.sub(OLD_MACROS_REGEX, GALIL_ADDR_STR, line))
+                # Replace IF_IOC_MACRO, keeping the filename the same
+                new_filename = filename
+                cmd_lines = [re.sub(OLD_IOC_EXISTS_MACRO_REGEX, NEW_IOC_EXISTS_MACRO_REGEX, line) for line in cmd_lines]
 
-                new_filename = os.path.join(GALIL_FOLDER, "galil{:02d}.cmd".format(int(matched.group(1))))
-                logger.info("Modifying GALILADDR in {}".format(filename))
+                # If the file is a galil.cmd do additional changes
+                is_galil_cmd = re.search(GALIL_CMD_REGEX, filename)
+                if is_galil_cmd:
+                    cmd_lines = [re.sub(OLD_ADDR_MACRO_REGEX, GALIL_ADDR_STR, line) for line in cmd_lines]
+                    logger.info("Modifying GALILADDR in {}".format(filename))
 
+                    new_filename = os.path.join(GALIL_FOLDER, "galil{:02d}.cmd".format(int(is_galil_cmd.group(1))))
+
+                # Save the cmd file
                 try:
-                    file_access.write_file(new_filename, new_galil_cmd)
+                    file_access.write_file(new_filename, cmd_lines)
+                    logger.info("Saving {}".format(new_filename))
                     if filename != new_filename:
+                        logger.info("Removing {}".format(filename))
                         file_access.remove_file(filename)
                 except IOError as e:
                     logger.error("Cannot save {} and remove {}".format(new_filename, filename))
@@ -103,7 +120,7 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
 
         contains_mtrctrl = MTRCTRL_STR in macro_names
         contains_new_galiladdr = "GALILADDR" in macro_names
-        old_macros = [m for m in macro_names if re.match(OLD_MACROS_REGEX, m)]
+        old_macros = [m for m in macro_names if re.match(OLD_ADDR_MACRO_REGEX, m)]
 
         if contains_new_galiladdr and contains_mtrctrl and not any(old_macros):
             logger.info("IOC already contains GALILADDR and {}".format(MTRCTRL_STR))
@@ -115,6 +132,10 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
 
         if any(old_macros) and not contains_mtrctrl and not contains_new_galiladdr:
             return UpgradedState.UPGRADABLE
+
+        if len(old_macros) == 0:
+            logger.info("IOC contains no address")
+            return UpgradedState.UPGRADED
 
         logger.error("IOC contains invalid mix of versions")
         return UpgradedState.INVALID
@@ -138,9 +159,9 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
         """
         macro_names = [m for m in macros_xml.getElementsByTagName("macro")]
         old_macro = [m for m in macro_names
-                     if re.match(OLD_MACROS_REGEX, m.getAttribute("name"))][0]
+                     if re.match(OLD_ADDR_MACRO_REGEX, m.getAttribute("name"))][0]
 
-        old_galil_num = re.match(OLD_MACROS_REGEX, old_macro.getAttribute("name")).group(1)
+        old_galil_num = re.match(OLD_ADDR_MACRO_REGEX, old_macro.getAttribute("name")).group(1)
         old_galil_ip = old_macro.getAttribute("value")
 
         self._add_node_and_whitespace(macros_xml, MTRCTRL_XML.format(old_galil_num), "\n\t\t\t")

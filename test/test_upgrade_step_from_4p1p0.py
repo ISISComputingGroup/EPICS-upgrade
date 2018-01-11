@@ -135,23 +135,23 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         assert_that(len(mtrctrl_xml), is_(1))
         assert_that(mtrctrl_xml[0].get("value"), is_("03"))
 
-    def test_WHEN_changed_galil_files_THEN_loads_galil_files(self):
+    def test_WHEN_changed_cmd_files_THEN_loads_all_cmd_files(self):
         open_file_mock = Mock(return_value="")
         self.file_access.open_file = open_file_mock
-        galil_files = ["galil2.cmd", "galil10.cmd"]
-        files = ["jaws.cmd", "other.o"] + galil_files
+        cmd_files = ["galil2.cmd", "galil10.cmd", "jaws.cmd"]
+        files = ["other.o", "another.cmdp"] + cmd_files
         self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "gailil", f) for f in files])
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
         assert_that(open_file_mock.call_args_list, is_(
-            [call(os.path.join("configurations", "gailil", f)) for f in galil_files]))
+            [call(os.path.join("configurations", "gailil", f)) for f in cmd_files]))
 
-    def _set_up_galil_dir_and_change(self, galil_files):
+    def _set_up_galil_dir_and_change(self, cmd_files):
         self.file_access.open_file = Mock(return_value="")
-        self.file_access.listdir = Mock(return_value=(["jaws.cmd", "other.o"] + galil_files))
+        self.file_access.listdir = Mock(return_value=(["other.o", "another.cmdp"] + cmd_files))
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
     def test_GIVEN_galil1_cmd_WHEN_change_galil_files_THEN_saved_as_galil01_cmd(self):
         self._set_up_galil_dir_and_change(["galil1.cmd"])
@@ -171,7 +171,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         expected = os.path.join("configurations", "galil", "galil10.cmd")
         assert_that(self.file_access.write_filename, is_(expected))
 
-    def test_GIVEN_two_galil_cmd_WHEN_change_galil_files_THEN_both_saved_as_new_style(self):
+    def test_GIVEN_two_galil_cmd_WHEN_change_cmd_files_THEN_both_saved_as_new_style(self):
         self.file_access.write_file = Mock()
         self._set_up_galil_dir_and_change(["galil2.cmd", "galil05.cmd"])
 
@@ -183,7 +183,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=[TEST_STRING.format("GALILADDR03")])
         self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "galil", "galil3.cmd")])
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
         assert_that(self.file_access.write_file.call_args[0][1], is_([TEST_STRING.format("GALILADDR")]))
 
@@ -192,7 +192,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=[TEST_STRING.format("GALILADDR10")])
         self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "galil", "galil3.cmd")])
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
         assert_that(self.file_access.write_file.call_args[0][1], is_([TEST_STRING.format("GALILADDR")]))
 
@@ -201,7 +201,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=[TEST_STRING.format("GALILADDR")])
         self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "galil", "galil3.cmd")])
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
         assert_that(self.file_access.write_file.call_args[0][1], is_([TEST_STRING.format("GALILADDR")]))
 
@@ -211,7 +211,7 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.file_access.open_file = Mock(return_value="")
         self.file_access.listdir = Mock(return_value=[old_cmd])
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
         self.file_access.remove_file.assert_called_with(old_cmd)
 
@@ -220,9 +220,33 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
         self.file_access.open_file = Mock(return_value="")
         self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "galil", "galil10.cmd")])
 
-        self.upgrade_step.change_galil_files(self.file_access, self.logger)
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
 
         self.file_access.remove_file.assert_not_called()
+
+    def test_GIVEN_cmd_with_IFDMC01_WHEN_change_cmd_files_THEN_changed_to_IFIOC_GALIL_01(self):
+        self.file_access.write_file = Mock()
+        self.file_access.open_file = Mock(return_value=[TEST_STRING.format("$(IFDMC01)")])
+        self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "galil", "jaws.cmd")])
+
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
+
+        assert_that(self.file_access.write_file.call_args[0][1], is_([TEST_STRING.format("$(IFIOC_GALIL_01)")]))
+
+    def test_GIVEN_cmd_with_IFDMC15_WHEN_change_cmd_files_THEN_changed_to_IFIOC_GALIL_15(self):
+        self.file_access.write_file = Mock()
+        self.file_access.open_file = Mock(return_value=[TEST_STRING.format("$(IFDMC15)")])
+        self.file_access.listdir = Mock(return_value=[os.path.join("configurations", "galil", "jaws.cmd")])
+
+        self.upgrade_step.change_cmd_files(self.file_access, self.logger)
+
+        assert_that(self.file_access.write_file.call_args[0][1], is_([TEST_STRING.format("$(IFIOC_GALIL_15)")]))
+
+    def test_GIVEN_generic_cmd_WHEN_change_cmd_files_THEN_file_name_unchanged(self):
+        filename = "jaws.cmd"
+        self._set_up_galil_dir_and_change([filename])
+
+        assert_that(self.file_access.write_filename, is_(filename))
 
 if __name__ == '__main__':
     unittest.main()
