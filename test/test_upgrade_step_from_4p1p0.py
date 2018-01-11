@@ -71,15 +71,15 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
 
         assert_that(self.file_access.write_file_contents, is_(xml))
 
-    def test_GIVEN_galiladdr_already_present_and_mtrctrl_not_present_WHEN_replaced_THEN_error_logged_and_nothing_saved(self):
+    def test_GIVEN_galiladdr_already_present_and_mtrctrl_not_present_WHEN_replaced_THEN_info_logged_and_nothing_saved(self):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
         self.file_access.write_file = Mock()
         self.file_access.is_dir = Mock(return_value=True)
         self.upgrade_step.change_ioc_macros(self.file_access, self.logger)
 
-        assert_that(len(self.logger.log), is_(1), "Contains info {}".format(self.logger.log))
-        assert_that(len(self.logger.log_err), is_(1), "Contains error {}".format(self.logger.log_err))
+        assert_that(len(self.logger.log), is_(2), "Contains info {}".format(self.logger.log))
+        assert_that(len(self.logger.log_err), is_(0), "Contains error {}".format(self.logger.log_err))
 
         self.file_access.write_file.assert_not_called()
 
