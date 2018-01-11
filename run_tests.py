@@ -33,7 +33,7 @@ from test.test_upgrade_base import TestUpgradeBase
 from test.test_add_to_base_iocs import TestAddToBaseIOCs
 from test.test_config_filter import TestConfigFilter
 
-DEFAULT_DIRECTORY = os.path.join('..', '..', '..', '..', 'test-reports')
+DEFAULT_DIRECTORY = os.path.join('..', '..', '..', 'test-reports')
 
 if __name__ == '__main__':
     # get output directory from command line arguments
