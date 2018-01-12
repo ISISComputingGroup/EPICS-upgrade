@@ -118,3 +118,15 @@ class FileAccess(object):
         """
         self._logger.info("Removing file {}".format(filename))
         os.remove(os.path.join(self.config_base, filename))
+
+    def is_dir(self, path):
+        """
+        Checks whether a path is a directory or file.
+
+        Args:
+            path (str): The path relative to the configuration directory.
+
+        Returns:
+            True if is a directory, false otherwise.
+        """
+        return os.path.isdir(os.path.join(self.config_base, path))

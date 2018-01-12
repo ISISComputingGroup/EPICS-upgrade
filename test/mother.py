@@ -53,6 +53,9 @@ class FileAccessStub(object):
     def remove_file(self, filename):
         pass
 
+    def is_dir(self, path):
+        pass
+
 
 def create_xml_with_iocs(iocs):
     """
