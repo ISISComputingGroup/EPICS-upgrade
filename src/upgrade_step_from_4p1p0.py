@@ -75,6 +75,7 @@ class UpgradeStepFrom4p1p0(UpgradeStep):
             logger (Logger): logger
         """
         if not os.path.exists(GALIL_FOLDER):
+            logger.info("No galil directory present ({})".format(GALIL_FOLDER))
             return 0  # Nothing to be done in this case
 
         dirs = file_access.listdir(GALIL_FOLDER)
