@@ -248,5 +248,14 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
 
         assert_that(self.file_access.write_filename, is_(filename))
 
+    def test_GIVEN_galil_settings_directory_does_not_exist_THEN_no_error_in_upgrade(self):
+        self.file_access.exists = Mock(return_value=False)
+        self.logger = Mock()
+
+        return_status = self.upgrade_step.change_cmd_files(self.file_access, self.logger)
+        self.assertEqual(return_status, 0)
+        self.logger.info.assert_called_once_with("No galil directory present (configurations\\galil)")
+
+
 if __name__ == '__main__':
     unittest.main()
