@@ -130,3 +130,6 @@ class FileAccess(object):
             True if is a directory, false otherwise.
         """
         return os.path.isdir(os.path.join(self.config_base, path))
+
+    def exists(self, path):
+        return os.path.exists(os.path.join(self.config_base, path))

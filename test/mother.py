@@ -56,6 +56,9 @@ class FileAccessStub(object):
     def is_dir(self, path):
         pass
 
+    def exists(self, path):
+        return True
+
 
 def create_xml_with_iocs(iocs):
     """
