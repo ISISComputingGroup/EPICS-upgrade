@@ -254,7 +254,8 @@ class TestUpgradeStepFrom4p1p0(unittest.TestCase):
 
         return_status = self.upgrade_step.change_cmd_files(self.file_access, self.logger)
         self.assertEqual(return_status, 0)
-        self.logger.info.assert_called_once_with("No galil directory present (configurations\\galil)")
+        self.logger.info.assert_called_once_with("No galil directory present ({})".format(
+            os.path.join("configurations", "galil")))
 
 
 if __name__ == '__main__':

@@ -15,7 +15,7 @@ class TestUpgradeStepFrom3p2p1p2(unittest.TestCase):
         self.logger = LoggingStub()
 
     def test_GIVEN_no_synoptics_xml_file_WHEN_upgrade_THEN_error(self):
-        self.file_access.listdir = Mock(side_effect=WindowsError("No synoptics directory exists"))
+        self.file_access.listdir = Mock(side_effect=OSError("No synoptics directory exists"))
 
         result = self.upgrade_step.perform(self.file_access, self.logger)
 
