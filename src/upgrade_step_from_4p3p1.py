@@ -9,12 +9,7 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
         """
         Perform the upgrade step from version 0 to 1
 
-        Args:
-            file_access (FileAccess): file access
-            logger (LocalLogger): logger
-
         Returns: exit code 0 success; anything else fail
-
         """
         filename = os.path.join("configurations", "banner.xml")
         file_contents = ["""<?xml version="1.0" ?>
