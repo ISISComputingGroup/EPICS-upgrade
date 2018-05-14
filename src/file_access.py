@@ -1,8 +1,6 @@
 import os
 from xml.dom import minidom
 
-import shutil
-
 
 class FileAccess(object):
     """
