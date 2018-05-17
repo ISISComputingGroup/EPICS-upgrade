@@ -8,6 +8,7 @@ from src.upgrade_step_from_3p2p1 import UpgradeStepFrom3p2p1
 from src.upgrade_step_from_3p2p1p1 import UpgradeStepFrom3p2p1p1
 from src.upgrade_step_from_3p2p1p2 import UpgradeStepFrom3p2p1p2
 from src.upgrade_step_from_4p1p0 import UpgradeStepFrom4p1p0
+from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -24,7 +25,8 @@ UPGRADE_STEPS = [
     ("4.1.0.1", UpgradeStepNoOp()),
     ("4.2.0", UpgradeStepNoOp()),
     ("4.3.0", UpgradeStepNoOp()),
-    ("4.3.1", None)
+    ("4.3.1", UpgradeStepFrom4p3p1()),
+    ("4.4.0", UpgradeStepNoOp()),
 ]
 
 if __name__ == "__main__":
