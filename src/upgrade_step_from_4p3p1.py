@@ -47,6 +47,12 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             for ioc in config_filter.ioc_filter_generator("PIMOT"):
                 macros_xml = ioc.getElementsByTagName("macros")[0]
                 self._change_macros(macros_xml)
+
+            for line_index, iocs in config_filter.globals_filter_generator("PIMOT"):
+                match = re.match(r"(PIMOT_\d\d__[^=]*)1(.*)", iocs[line_index])
+                if match is not None:
+                    iocs[line_index] = match.group(1) + match.group(2)
+
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1

@@ -1,3 +1,4 @@
+import re
 import unittest
 from hamcrest import *
 from mock import MagicMock as Mock
@@ -25,13 +26,26 @@ MACRO_XML = """
 <macro name="{name}" value="{value}"/>
 """
 
+GLOBALS_FILE_TEMPLATE = """
+KHLY2400_01__EMULATOR_PORT=12
+SM300_01__VELO1=324
+{macros}
+JULABO_01__EMULATOR_PORT=23
+"""
+
+
+def create_global_macro_line(ioc_name, ioc_number,  macros):
+    maro_lines = ["{ioc}_0{ioc_number}__{macro}={value}".format(
+        ioc=ioc_name, ioc_number=ioc_number, macro=name, value=value) for name, value in macros.items()]
+    return "\n".join(maro_lines)
+
 
 def create_ioc(ioc_name, ioc_num, macros):
     macro_xml = "".join([MACRO_XML.format(name=name, value=value) for name, value in macros.items()])
     return IOC_XML.format(name="{}_{:0>2}".format(ioc_name, ioc_num), macros=macro_xml)
 
 
-class TestUpgradeStepFrom4p3p1(unittest.TestCase):
+class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()
@@ -57,7 +71,7 @@ class TestUpgradeStepFrom4p3p1(unittest.TestCase):
         macro_names = [m.attrib["name"] for m in written_xml.findall(".//ns:macro", {"ns": NAMESPACE})]
 
         assert_that(len(macro_names), is_(2))
-        assert_that(set(macro_names) == set(("PORT", "BAUD")))
+        assert_that(set(macro_names), is_({"PORT", "BAUD"}))
 
     def test_GIVEN_new_macro_format_WHEN_macros_changed_THEN_macros_unaffected(self):
         self._test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(("PORT", "BAUD"))
@@ -75,6 +89,62 @@ class TestUpgradeStepFrom4p3p1(unittest.TestCase):
         xml = IOC_FILE_XML.format(iocs=create_ioc("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""}))
         self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
         self.file_access.is_dir = Mock(return_value=True)
+
+        self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
+
+        assert_that(self.file_access.write_file_contents, is_(None))
+
+
+class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
+
+    def setUp(self):
+        self.file_access = FileAccessStub()
+        self.upgrade_step = UpgradeStepFrom4p3p1()
+        self.logger = LoggingStub()
+
+    def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
+
+        # Arrange
+        original_macros_with_values = dict()
+        for macro in original_macros:
+            original_macros_with_values[macro] = "12"
+
+        global_file = GLOBALS_FILE_TEMPLATE.format(macros=create_global_macro_line("PIMOT", 1, original_macros_with_values))
+        self.file_access.open_file = Mock(return_value=global_file.split())
+        self.file_access.is_dir = Mock(return_value=False)
+
+        # Act
+        self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
+
+        # Assert
+        assert_that(self.file_access.write_file_contents, is_not(None))
+        written_file = self.file_access.write_file_contents
+        macro_names = []
+        for line in written_file:
+            macro_name_match = re.match(r"PIMOT_\d\d__([^=]*)", line)
+            if macro_name_match is not None:
+                macro_names.append(macro_name_match.group(1))
+
+        assert_that(len(macro_names), is_(2))
+        assert_that(set(macro_names), is_({"PORT", "BAUD"}))
+
+    def test_GIVEN_new_macro_format_WHEN_macros_changed_THEN_macros_unaffected(self):
+        self._test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(("PORT", "BAUD"))
+
+    def test_GIVEN_both_macros_in_old_format_WHEN_macros_changed_THEN_both_macros_updated(self):
+        self._test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(("PORT1", "BAUD1"))
+
+    def test_GIVEN_port_macro_in_old_format_WHEN_macros_changed_THEN_port_macro_updated(self):
+        self._test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(("PORT1", "BAUD"))
+
+    def test_GIVEN_baud_macro_in_old_format_WHEN_macros_changed_THEN_baud_macro_updated(self):
+        self._test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(("PORT", "BAUD1"))
+
+    def test_GIVEN_old_macro_format_on_not_PIMOT_ioc_WHEN_macros_changed_THEN_file_not_touched(self):
+        macro_line = create_global_macro_line("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""})
+        global_file = GLOBALS_FILE_TEMPLATE.format(macros=macro_line)
+        self.file_access.open_file = Mock(return_value=global_file.split())
+        self.file_access.is_dir = Mock(return_value=False)
 
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
