@@ -26,7 +26,8 @@ UPGRADE_STEPS = [
     ("4.2.0", UpgradeStepNoOp()),
     ("4.3.0", UpgradeStepNoOp()),
     ("4.3.1", UpgradeStepFrom4p3p1()),
-    ("4.3.1.1", None)
+    ("4.3.1.1", UpgradeStepNoOp()),
+    ("4.4.0", None),
 ]
 
 if __name__ == "__main__":
