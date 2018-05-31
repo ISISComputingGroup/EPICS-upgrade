@@ -16,3 +16,7 @@ relPaths.sh
 /.idea
 .project
 install_scripts/workspace/*
+misc.xml
+modules.xml
+upgrade.iml
+workspace.xml
