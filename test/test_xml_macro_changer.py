@@ -1,7 +1,7 @@
 import unittest
 from hamcrest import *
 from functools import partial
-from src.common_upgrades.config_filter import ConfigFilter
+from src.common_upgrades.xml_macro_changer import XMLMacroChanger
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 
 
@@ -10,19 +10,24 @@ def generate_many_iocs(configs):
         yield (config, create_xml_with_iocs(iocs))
 
 
-class TestConfigFilter(unittest.TestCase):
+class TestTagGenerator(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.filter = ConfigFilter(self.file_access, self.logger)
+        self.macro_changer = XMLMacroChanger(self.file_access, self.logger)
 
-    def test_GIVEN_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
+    def test_that_GIVEN_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
+        # Given:
         ioc_to_change = "CHANGE_ME"
         configs = {"CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"]}
 
-        self.filter.ioc_file_generator = partial(generate_many_iocs, configs)
-        result = self.filter.ioc_filter_generator(ioc_to_change)
+        # When:
+        self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
+        result = []
+        for config, xml in self.macro_changer._ioc_file_generator():
+            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, ioc_to_change)))
 
+        # Then:
         assert_that(len(list(result)), is_(0), "no results")
 
     def test_GIVEN_two_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
