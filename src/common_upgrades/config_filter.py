@@ -11,7 +11,7 @@ GLOBALS_FILENAME = os.path.join("configurations", "globals.txt")
 FILTER_REGEX = "^{}(_[\d]{{2}})?$"
 
 
-class ConfigFilter():
+class GlobalsConfig(object):
     """
     Filters configurations for specific things.
     """
@@ -25,49 +25,41 @@ class ConfigFilter():
         """
         self._file_access = file_access
         self._logger = logger
+        self._loaded_file = self.load_globals_file()
 
-    def ioc_file_generator(self):
+    def load_globals_file(self):
         """
-        Generator giving all the IOC files in all the configurations.
+        loads in a globals file as a list of strings
 
-        Yields:
-            Tuple: The path to the ioc file and it's xml representation
-        """
-        for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
-            for config in [c for c in self._file_access.listdir(path) if self._file_access.is_dir(c)]:
-                ioc_path = os.path.join(config, IOC_FILE)
-                try:
-                    yield (ioc_path, self._file_access.open_xml_file(ioc_path))
-                except IOError:
-                    raise IOError("Cannot find {}".format(ioc_path))
-                except ExpatError as ex:
-                    raise ExpatError("{} is invalid xml '{}'".format(path, ex))
+        Returns:
+            Globals file loaded as list of strings
 
-    def ioc_filter_generator(self, ioc_to_change):
         """
-        Generator that gives all the IOCs with the given root IOC name and saves them back to their original location
-        after they've been yielded. This will match IOCs with the same name as the root plus any that have a number
-        appended in the form _XX.
+
+        if self._file_access.exists(GLOBALS_FILENAME):
+            return self._file_access.open_file(GLOBALS_FILENAME)
+
+    def macro_change(self, macro_change):
+        """
+        Modifies the macro change held within the class. All changes after this is called
+        will be performed with the updated macro change.
 
         Args:
-            ioc_to_change: the root name of the ioc to change
+            macro_change: Dict-like. Contains the regular expression representation of the
+            macro before and after the change.
+
+        Returns:
+            None
+
         """
-        regex = re.compile(FILTER_REGEX.format(ioc_to_change))
+        assert isinstance(macro_change, dict)
 
-        for path, ioc_xml in self.ioc_file_generator():
-            xml_changed = False
-            for ioc in ioc_xml.getElementsByTagName("ioc"):
-                ioc_name = ioc.getAttribute("name")
-                if regex.match(ioc_name):
-                    self._logger.info("Found {} in {}".format(ioc_name, path))
-                    yield ioc
-                    xml_changed = True
-            if xml_changed:
-                self._file_access.write_xml_file(path, ioc_xml)
+        for index in self._globals_filter_generator(macro_change["ioc_name"]):
+            self._apply_regex_macro_change(index)
 
+        return None
 
-
-    def globals_filter_generator(self, ioc_to_change):
+    def _globals_filter_generator(self, ioc_to_change):
         """
         Generator that gives all the lines for a given IOC in globals.txt and saves them back to their original location
         after they've been yielded. This will match IOCs with the same name as the root plus any that have a number
@@ -77,9 +69,32 @@ class ConfigFilter():
             ioc_to_change: the root name of the ioc to change
         """
 
-        if self._file_access.exists(GLOBALS_FILENAME):
-            lines = self._file_access.open_file(GLOBALS_FILENAME)
-            for index, line in enumerate(lines):
-                if line.startswith("{}_".format(ioc_to_change)):
-                    self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
-                    yield index, lines
+        for index, line in enumerate(self._loaded_file):
+            if line.startswith("{}_".format(ioc_to_change)):
+                self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
+                yield index
+
+    def _apply_regex_macro_change(self, line_number):
+        """
+        Applies a regular expression to modify a macro.
+
+        Returns:
+
+        """
+
+        replace_regex = r"({})_\d\d__)({})=(.*)".format(self._macro_change["ioc_name"], self._macro_change["current_state"])
+
+        macro_change = re.compile(replace_regex)
+        self._loaded_file[line_number] = re.sub(macro_change, r"\1{}\3".format(self._macro_change["new_state"]), self._loaded_file[line_number])
+        return None
+
+    def write_modified_globals_file(self):
+        """
+        Writes the modified globals file to disc
+
+        Returns:
+            None
+
+        """
+
+        self._file_access.write_file(GLOBALS_FILENAME, self._loaded_file)

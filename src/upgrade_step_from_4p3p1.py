@@ -1,8 +1,9 @@
 from src.common_upgrades.config_filter import ConfigFilter
 from src.upgrade_step import UpgradeStep
 import re
-from xml.dom import minidom
 
+from .common_upgrades.xml_config_filter import XMLConfig
+from .common_upgrades.config_filter import GlobalsConfig
 
 class UpgradeStepFrom4p3p1(UpgradeStep):
     """
@@ -22,17 +23,6 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
         """
         return self.change_pimot_macros(file_access, logger)
 
-    @staticmethod
-    def _change_macros(macros_xml):
-        """
-        Changes the macros in the given xml.
-        Args:
-            macros_xml (NodeList): the current macros
-        """
-        for m in macros_xml.getElementsByTagName("macro"):
-            name = m.getAttribute("name")
-            if name.endswith("1"):
-                m.setAttribute("name", name[:-1])
 
     def change_pimot_macros(self, file_access, logger):
         """
@@ -43,15 +33,19 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             logger (Logger): logger
         """
         config_filter = ConfigFilter(file_access, logger)
-        try:
-            for ioc in config_filter.ioc_filter_generator("PIMOT"):
-                macros_xml = ioc.getElementsByTagName("macros")[0]
-                self._change_macros(macros_xml)
+        macro_change1 = {
+            "ioc_name": "PIMOT",
+            "current_name": "BAUD1",
+            "new_name" : "BAUD"
+        }
 
-            for line_index, iocs in config_filter.globals_filter_generator("PIMOT"):
-                match = re.match(r"(PIMOT_\d\d__[^=]*)1(.*)", iocs[line_index])
-                if match is not None:
-                    iocs[line_index] = match.group(1) + match.group(2)
+        try:
+            xml_config = XMLConfig(file_access, logger)
+            xml_config.change_macro(macro_change1)
+
+            global_config = GlobalsConfig(file_access, logger)
+            global_config.macro_change(macro_change1)
+            global_config.write_modified_globals_file()
 
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
