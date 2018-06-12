@@ -65,6 +65,8 @@ class ConfigFilter():
             if xml_changed:
                 self._file_access.write_xml_file(path, ioc_xml)
 
+
+
     def globals_filter_generator(self, ioc_to_change):
         """
         Generator that gives all the lines for a given IOC in globals.txt and saves them back to their original location
@@ -76,12 +78,8 @@ class ConfigFilter():
         """
 
         if self._file_access.exists(GLOBALS_FILENAME):
-            line_changed = False
             lines = self._file_access.open_file(GLOBALS_FILENAME)
             for index, line in enumerate(lines):
                 if line.startswith("{}_".format(ioc_to_change)):
                     self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
-                    line_changed = True
                     yield index, lines
-            if line_changed:
-                self._file_access.write_file(GLOBALS_FILENAME, lines)
