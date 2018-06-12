@@ -11,7 +11,7 @@ GLOBALS_FILENAME = os.path.join("configurations", "globals.txt")
 FILTER_REGEX = "^{}(_[\d]{{2}})?$"
 
 
-class GlobalsConfig(object):
+class ChangeMacroInGlobals(object):
     """
     Filters configurations for specific things.
     """
@@ -39,14 +39,13 @@ class GlobalsConfig(object):
         if self._file_access.exists(GLOBALS_FILENAME):
             return self._file_access.open_file(GLOBALS_FILENAME)
 
-    def macro_change(self, macro_change):
+    def apply_macro_change(self, macro_change):
         """
-        Modifies the macro change held within the class. All changes after this is called
-        will be performed with the updated macro change.
+        Applies a macro change given a dicionary containing the IOC name, old macro and new macros. All changes after
+        this is called will be performed with the updated macro change.
 
         Args:
-            macro_change: Dict-like. Contains the regular expression representation of the
-            macro before and after the change.
+            macro_change: Dict-like of strings. Contains the IOC name, old macro style and new macro style.
 
         Returns:
             None
