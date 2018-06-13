@@ -55,10 +55,14 @@ class ChangeMacroInGlobals(object):
         """
         assert isinstance(macro_change, dict)
 
+        file_changed = False
+
         for index in self._globals_filter_generator(macro_change["ioc_name"]):
+            file_changed = True
             self._apply_regex_macro_change(macro_change, index)
 
-        self.write_modified_globals_file()
+        if file_changed:
+            self.write_modified_globals_file()
 
         return None
 
@@ -85,11 +89,11 @@ class ChangeMacroInGlobals(object):
 
         """
 
-        replace_regex = re.compile(r"({}_\d\d__)({})=(.*)".format(macro_change["ioc_name"],
+        replace_regex = re.compile(r"(%s_\d\d__)(%s)=(.*)" %(macro_change["ioc_name"],
                                                                   macro_change["current_state"]))
 
         self._loaded_file[line_number] = re.sub(replace_regex,
-                                                r"\1{}\3".format(macro_change["new_state"]),
+                                                r"\1{}=\3".format(macro_change["new_state"]),
                                                 self._loaded_file[line_number])
         return None
 
