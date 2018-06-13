@@ -1,6 +1,7 @@
+from src.common_upgrades.config_filter import ConfigFilter
 from src.upgrade_step import UpgradeStep
-from .common_upgrades.change_macros_in_xml import XMLMacroChanger
-from .common_upgrades.config_filter import GlobalsConfig
+import re
+from xml.dom import minidom
 
 
 class UpgradeStepFrom4p3p1(UpgradeStep):
@@ -22,6 +23,17 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
         return self.change_pimot_macros(file_access, logger)
 
     @staticmethod
+    def _change_macros(macros_xml):
+        """
+        Changes the macros in the given xml.
+        Args:
+            macros_xml (NodeList): the current macros
+        """
+        for m in macros_xml.getElementsByTagName("macro"):
+            name = m.getAttribute("name")
+            if name.endswith("1"):
+                m.setAttribute("name", name[:-1])
+
     def change_pimot_macros(self, file_access, logger):
         """
         Change the PIMOT macros from BAUD1 and PORT1 to BAUD and PORT respectively.
@@ -30,19 +42,16 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             file_access (FileAccess): file access
             logger (Logger): logger
         """
-        macro_change1 = {
-            "ioc_name": "PIMOT",
-            "current_name": "BAUD1",
-            "new_name": "BAUD"
-        }
-
+        config_filter = ConfigFilter(file_access, logger)
         try:
-            xml_macro_changer = XMLMacroChanger(file_access, logger)
-            xml_macro_changer.change_macro(macro_change1)
+            for ioc in config_filter.ioc_filter_generator("PIMOT"):
+                macros_xml = ioc.getElementsByTagName("macros")[0]
+                self._change_macros(macros_xml)
 
-            global_config = GlobalsConfig(file_access, logger)
-            global_config.macro_change(macro_change1)
-            global_config.write_modified_globals_file()
+            for line_index, iocs in config_filter.globals_filter_generator("PIMOT"):
+                match = re.match(r"(PIMOT_\d\d__[^=]*)1(.*)", iocs[line_index])
+                if match is not None:
+                    iocs[line_index] = match.group(1) + match.group(2)
 
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))

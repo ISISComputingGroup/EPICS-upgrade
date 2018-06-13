@@ -45,7 +45,9 @@ class ChangeMacroInGlobals(object):
         this is called will be performed with the updated macro change.
 
         Args:
-            macro_change: Dict-like of strings. Contains the IOC name, old macro style and new macro style.
+            macro_change: Dict-like of strings. Contains fields ioc_name      : the IOC name,
+                                                                current_state : old macro style
+                                                                new_state     : new macro style.
 
         Returns:
             None
@@ -54,7 +56,9 @@ class ChangeMacroInGlobals(object):
         assert isinstance(macro_change, dict)
 
         for index in self._globals_filter_generator(macro_change["ioc_name"]):
-            self._apply_regex_macro_change(index)
+            self._apply_regex_macro_change(macro_change, index)
+
+        self.write_modified_globals_file()
 
         return None
 
@@ -73,7 +77,7 @@ class ChangeMacroInGlobals(object):
                 self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
                 yield index
 
-    def _apply_regex_macro_change(self, line_number):
+    def _apply_regex_macro_change(self, macro_change, line_number):
         """
         Applies a regular expression to modify a macro.
 
@@ -81,10 +85,12 @@ class ChangeMacroInGlobals(object):
 
         """
 
-        replace_regex = r"({})_\d\d__)({})=(.*)".format(self._macro_change["ioc_name"], self._macro_change["current_state"])
+        replace_regex = re.compile(r"(%s_\d\d__)(%s)=(.*)" %(macro_change["ioc_name"],
+                                                                  macro_change["current_state"]))
 
-        macro_change = re.compile(replace_regex)
-        self._loaded_file[line_number] = re.sub(macro_change, r"\1{}\3".format(self._macro_change["new_state"]), self._loaded_file[line_number])
+        self._loaded_file[line_number] = re.sub(replace_regex,
+                                                r"\1{}=\3".format(macro_change["new_state"]),
+                                                self._loaded_file[line_number])
         return None
 
     def write_modified_globals_file(self):
@@ -96,4 +102,4 @@ class ChangeMacroInGlobals(object):
 
         """
 
-        self._file_access.write_file(GLOBALS_FILENAME, self._loaded_file)
+        self._file_access.write_file(GLOBALS_FILENAME, "\n".join(self._loaded_file))
