@@ -26,24 +26,30 @@ class XMLMacroChanger(object):
         self._file_access = file_access
         self._logger = logger
 
-    def change_macro(self, macro_change):
+    def change_macro(self, macro_changes):
         """
-        Changes macros in all xml files that contain the
+        Changes macros in all xml files that contain the correct macros for a specified ioc.
+
         Args:
-            macro_change: dictionary with
+            macro_changes: list with entries which are dictionaries with fields
+                ioc_name: name of the ico
+                old_macro: (old_macro_name , old_value): macro to be changed and value to be changed
+                new_macro: (new_macro_name, new_value): macro to be changed to and value to be changed to
         """
 
-        for path, ioc_xml in self._ioc_file_generator():
-            for ioc in self._ioc_tag_generator(path, ioc_xml, macro_change["ioc_name"]):
-                macros = ioc.getElementsByTagName("macros")[0]
-                for macro in macros.getElementsByTagName("macro"):
-                    self._change_macro_name(macro, macro_change["current_name"], macro_change["new_name"])
+        for path, ioc_xml in self.ioc_file_generator():
+            for macro_change in macro_changes:
+                for ioc in self.ioc_tag_generator(path, ioc_xml, macro_change["ioc_name"]):
+                    macros = ioc.getElementsByTagName("macros")[0]
+                    for macro in macros.getElementsByTagName("macro"):
+                        self._change_macro_name(macro, macro_change["old_macro"][0], macro_change["new_macro"][0])
+                        self._change_macro_value(macro, macro_change["old_macro"][1], macro_change["new_macro"][1])
 
             self._file_access.write_xml_file(path, ioc_xml)
 
     def ioc_file_generator(self):
         """
-        Generator giving all the IOC files in all the configurations.
+        Generator giving all the IOC files in all configurations.
 
         Yields:
             Tuple: The path to the ioc file and it's xml representation
@@ -60,6 +66,7 @@ class XMLMacroChanger(object):
 
     def ioc_tag_generator(self, path, ioc_xml, ioc_to_change):
         """
+        Generator giving all the IOC tags in all configurations.
 
         Args:
             path:
@@ -78,12 +85,29 @@ class XMLMacroChanger(object):
                 yield ioc
 
     @staticmethod
-    def _change_macro_name(macro, current_state, new_state):
+    def _change_macro_name(macro, old_macro_name, new_macro_name):
+        """
+        Changes the macros in the given xml.
+
+        Args:
+            macro : The macro node to change.
+            old_macro_name: The macro name to change.
+            new_macro_name: The macro name to be set.
+        """
+        name = macro.getAttribute("name")
+        if name == old_macro_name:
+            macro.setAttribute("name", new_macro_name)
+
+    @staticmethod
+    def _change_macro_value(macro, old_macro_value, new_macro_value):
         """
         Changes the macros in the given xml.
         Args:
-            macros_xml (NodeList): the current macros
+            macro : The macro node to change.
+            old_macro_value: The macro value to change.
+            new_macro_value: The macro value to be set.
         """
-        name = macro.getAttribute("name")
-        if name == current_state:
-            macro.setAttribute("name", new_state)
+        name = macro.getAttribute("value")
+        if name == old_macro_value:
+            macro.setAttribute("value", new_macro_value)
+
