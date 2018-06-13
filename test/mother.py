@@ -38,7 +38,7 @@ class FileAccessStub(object):
         self.write_file_contents = contents
 
     def open_file(self, filename):
-        pass
+        return EXAMPLE_GLOBALS_FILE.split("\n")
 
     def write_xml_file(self, filename, xml):
         self.write_filename = filename
@@ -236,3 +236,25 @@ CLEAN_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("Goniometer")
 UNKNOWN_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("unknown\path\gonio.opi")
 DIRECT_PATH_SYNOPTIC_v4p0p0 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("jaws/Jaws.opi")
 DIRECT_PATH_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("Jaws.opi")
+
+EXAMPLE_GLOBALS_FILE = """
+# IOC specific macros
+# Names changed to prevent accidental overwrites during testing
+BINS_01__PLCIP=127.0.0.1
+GALOL_01__GALOLADDR=127.0.0.1
+GALOL_02__GALOLADDR=127.0.0.1
+GALOL_03__GALOLADDR=127.0.0.1
+GALOL_04__GALOLADDR=127.0.0.1
+GALOL_05__GALOLADDR=127.0.0.1
+GALOL_06__GALOLADDR=127.0.0.1
+GALOL_07__GALOLADDR=127.0.0.1
+GALOL_08__GALOLADDR=127.0.0.1
+
+GALOL_01__CHANGEME=01
+GALOL_02__CHANGEME=02
+GALOL_03__CHANGEME=03
+GALOL_04__CHANGEME=04
+GALOL_05__CHANGEME=05
+GALOL_06__CHANGEME=06
+GALOL_07__CHANGEME=07
+GALOL_08__CHANGEME=08"""
