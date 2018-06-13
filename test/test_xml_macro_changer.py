@@ -137,20 +137,20 @@ class TestMacroChanger(unittest.TestCase):
         # Then:
         assert_that(result, new_macro)
 
-    def test_that_GIVEN_xml_without_specified_ioc_macros_THEN_macros_are_not_updated(self):
+    def test_that_GIVEN_xml_without_specified_macros_THEN_macros_are_not_updated(self):
         # Given:
-        test_macro_xml_string = MACRO_XML.format(name="1", value="None")
+        test_macro_xml_string = MACRO_XML.format(name="PORT1", value="None")
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
         old_macro = "BAUD1"
-        new_macro = "PORT"
+        new_macro = "BAUD"
 
         # When:
         self.macro_changer._change_macro_name(macro_node, old_macro, new_macro)
         result = macro_node.getAttribute("name")
 
         # Then:
-        assert_that(result, new_macro)
+        assert_that(result, old_macro)
 
 
 if __name__ == '__main__':
