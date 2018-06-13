@@ -106,8 +106,13 @@ class XMLMacroChanger(object):
             macro : The macro node to change.
             old_macro_value: The macro value to change.
             new_macro_value: The macro value to be set.
+        Returns:
+            None: If old_macro_value is None.
         """
-        name = macro.getAttribute("value")
-        if name == old_macro_value:
-            macro.setAttribute("value", new_macro_value)
+        if old_macro_value is not None:
+            value = macro.getAttribute("value")
+            if value == old_macro_value:
+                macro.setAttribute("value", new_macro_value)
+        else:
+            return None
 
