@@ -100,4 +100,4 @@ class ChangeMacroInGlobals(object):
 
         """
 
-        self._file_access.write_file(GLOBALS_FILENAME, self._loaded_file)
+        self._file_access.write_file(GLOBALS_FILENAME, "\n".join(self._loaded_file))
