@@ -179,6 +179,21 @@ class TestChangMacroName(unittest.TestCase):
         # Then:
         assert_that(result, is_("PORT1"))
 
+    def test_that_GIVEN_xml_with_macro_matching_a_REGEX_THEN_macros_are_updated(self):
+        # Given:
+        test_macro_xml_string = MACRO_XML.format(name="GALILADDR01", value="None")
+        test_macro_xml = minidom.parseString(test_macro_xml_string)
+        macro_node = test_macro_xml.getElementsByTagName("macro")[0]
+        old_macro_name = r'GALILADDR([\d]{2})'
+        new_macro_name = "GALILADDR"
+
+        # When:
+        self.macro_changer._change_macro_name(macro_node, old_macro_name, new_macro_name)
+        result = macro_node.getAttribute("name")
+
+        # Then:
+        assert_that(result, is_(new_macro_name))
+
 
 class TestChangMacroValue(unittest.TestCase):
 

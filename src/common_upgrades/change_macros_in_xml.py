@@ -95,7 +95,7 @@ class XMLMacroChanger(object):
             new_macro_name: The macro name to be set.
         """
         name = macro.getAttribute("name")
-        if name == old_macro_name:
+        if re.match(old_macro_name, name) is not None:
             macro.setAttribute("name", new_macro_name)
 
     @staticmethod
@@ -111,7 +111,7 @@ class XMLMacroChanger(object):
         """
         if old_macro_value is not None:
             value = macro.getAttribute("value")
-            if value == old_macro_value:
+            if re.match(old_macro_value, value) is not None:
                 macro.setAttribute("value", new_macro_value)
         else:
             return None
