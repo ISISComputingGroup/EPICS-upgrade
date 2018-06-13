@@ -135,7 +135,7 @@ class TestMacroChanger(unittest.TestCase):
         result = macro_node.getAttribute("name")
 
         # Then:
-        assert_that(result, new_macro)
+        assert_that(result, is_(new_macro))
 
     def test_that_GIVEN_xml_without_specified_macros_THEN_macros_are_not_updated(self):
         # Given:
@@ -150,7 +150,7 @@ class TestMacroChanger(unittest.TestCase):
         result = macro_node.getAttribute("name")
 
         # Then:
-        assert_that(result, old_macro)
+        assert_that(result, is_("PORT1"))
 
 
 if __name__ == '__main__':
