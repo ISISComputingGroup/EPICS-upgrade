@@ -45,7 +45,9 @@ class ChangeMacroInGlobals(object):
         this is called will be performed with the updated macro change.
 
         Args:
-            macro_change: Dict-like of strings. Contains the IOC name, old macro style and new macro style.
+            macro_change: Dict-like of strings. Contains fields ioc_name      : the IOC name,
+                                                                current_state : old macro style
+                                                                new_state     : new macro style.
 
         Returns:
             None
