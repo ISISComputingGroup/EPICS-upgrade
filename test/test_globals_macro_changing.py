@@ -59,16 +59,6 @@ class TestChangeMacroInGlobals(unittest.TestCase):
         self.assertEqual(self.file_access.write_file_contents, testfile)
         self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
 
-    def test_GIVEN_globals_file_with_no_requested_ioc_WHEN_after_filtering_THEN_ioc_not_saved_to_file(self):
-        ioc_to_change = "GALOL"
-        macro_to_apply = {"ioc_name": ioc_to_change,
-                          "current_state": "abcfd",
-                          "new_state": "CHANGED"}
-
-        self.macro_changer.apply_macro_change(macro_to_apply)
-
-        self.assertIsNone(self.file_access.write_file_contents)
-
     def test_GIVEN_globals_file_with_requested_ioc_WHEN_changed_after_filtering_THEN_changed_file_written(self):
         ioc_to_change = "GALOL"
 

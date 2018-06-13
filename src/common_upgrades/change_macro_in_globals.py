@@ -55,14 +55,10 @@ class ChangeMacroInGlobals(object):
         """
         assert isinstance(macro_change, dict)
 
-        file_changed = False
-
         for index in self._globals_filter_generator(macro_change["ioc_name"]):
-            file_changed = True
             self._apply_regex_macro_change(macro_change, index)
 
-        if file_changed:
-            self.write_modified_globals_file()
+        self.write_modified_globals_file()
 
         return None
 
