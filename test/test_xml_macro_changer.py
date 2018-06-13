@@ -142,7 +142,7 @@ class TestTagGenerator(unittest.TestCase):
         assert_that(len(result), is_(0))
 
 
-class TestMacroChangerWithSingleInput(unittest.TestCase):
+class TestChangMacroName(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()
@@ -169,18 +169,57 @@ class TestMacroChangerWithSingleInput(unittest.TestCase):
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value="None")
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro = "BAUD1"
-        new_macro = "BAUD"
+        old_macro_name = "BAUD1"
+        new_macro_name = "BAUD"
 
         # When:
-        self.macro_changer._change_macro_name(macro_node, old_macro, new_macro)
+        self.macro_changer._change_macro_name(macro_node, old_macro_name, new_macro_name)
         result = macro_node.getAttribute("name")
 
         # Then:
         assert_that(result, is_("PORT1"))
 
 
-class TestMacroChangsWithMultipleInputs(unittest.TestCase):
+class TestChangMacroValue(unittest.TestCase):
+
+    def setUp(self):
+        self.file_access = FileAccessStub()
+        self.logger = LoggingStub()
+        self.macro_changer = XMLMacroChanger(self.file_access, self.logger)
+
+    def test_that_GIVEN_xml_with_old_ioc_macro_value_THEN_macro_values_are_updated(self):
+        # Given:
+        test_macro_xml_string = MACRO_XML.format(name="BAUD1", value="None")
+        test_macro_xml = minidom.parseString(test_macro_xml_string)
+        macro_node = test_macro_xml.getElementsByTagName("macro")[0]
+        old_macro_value = "None"
+        new_macro_value = "new"
+
+        # When:
+        self.macro_changer._change_macro_value(macro_node, old_macro_value, new_macro_value)
+        result = macro_node.getAttribute("value")
+
+        # Then:
+        assert_that(result, is_(new_macro_value))
+
+    def test_that_GIVEN_xml_without_specified_macro_value_THEN_macros_are_not_updated(self):
+        # Given:
+        original_macro_value = "None"
+        test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
+        test_macro_xml = minidom.parseString(test_macro_xml_string)
+        macro_node = test_macro_xml.getElementsByTagName("macro")[0]
+        old_macro_value = "old"
+        new_macro_value = "new"
+
+        # When:
+        self.macro_changer._change_macro_value(macro_node, old_macro_value, new_macro_value)
+        result = macro_node.getAttribute("value")
+
+        # Then:
+        assert_that(result, is_(original_macro_value))
+
+
+class TestMacroChangesWithMultipleInputs(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()
