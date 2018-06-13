@@ -1,5 +1,5 @@
 from src.upgrade_step import UpgradeStep
-from .common_upgrades.xml_macro_changer import XMLMacroChanger
+from .common_upgrades.change_macros_in_xml import XMLMacroChanger
 from .common_upgrades.config_filter import GlobalsConfig
 
 

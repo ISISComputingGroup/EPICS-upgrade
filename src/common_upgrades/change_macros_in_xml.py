@@ -41,7 +41,7 @@ class XMLMacroChanger(object):
 
             self._file_access.write_xml_file(path, ioc_xml)
 
-    def _ioc_file_generator(self):
+    def ioc_file_generator(self):
         """
         Generator giving all the IOC files in all the configurations.
 
@@ -58,7 +58,7 @@ class XMLMacroChanger(object):
                 except ExpatError as ex:
                     raise ExpatError("{} is invalid xml '{}'".format(path, ex))
 
-    def _ioc_tag_generator(self, path, ioc_xml, ioc_to_change):
+    def ioc_tag_generator(self, path, ioc_xml, ioc_to_change):
         """
 
         Args:

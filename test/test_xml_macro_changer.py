@@ -1,7 +1,7 @@
 import unittest
 from hamcrest import *
 from functools import partial
-from src.common_upgrades.xml_macro_changer import XMLMacroChanger
+from src.common_upgrades.change_macros_in_xml import XMLMacroChanger
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 from xml.dom import minidom
 
@@ -30,7 +30,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, ioc_to_change)))
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(list(result)), is_(0), "no results")
@@ -44,7 +44,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, ioc_to_change)))
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(list(result)), is_(0), "no results")
@@ -59,7 +59,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, ioc_to_change)))
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(result), is_(1))
@@ -75,7 +75,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, ioc_to_change)))
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(result), is_(1))
@@ -92,7 +92,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, root_ioc_name)))
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, root_ioc_name)))
 
         # Then:
         assert_that(len(result), is_(1))
@@ -109,7 +109,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(list(self.macro_changer._ioc_tag_generator(config, xml, root_ioc_name)))
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, root_ioc_name)))
 
         # Then:
         assert_that(len(result), is_(0))
