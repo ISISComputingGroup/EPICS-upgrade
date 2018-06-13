@@ -59,7 +59,7 @@ class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
         for macro in original_macros:
             original_macros_with_values[macro] = ""
         xml = IOC_FILE_XML.format(iocs=create_ioc("PIMOT", 1, original_macros_with_values))
-        self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.open_file = Mock(return_value=xml)
         self.file_access.is_dir = Mock(return_value=True)
 
         # Act
@@ -87,12 +87,12 @@ class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
 
     def test_GIVEN_old_macro_format_on_not_PIMOT_ioc_WHEN_macros_changed_THEN_file_not_touched(self):
         xml = IOC_FILE_XML.format(iocs=create_ioc("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""}))
-        self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.open_file = Mock(return_value=xml)
         self.file_access.is_dir = Mock(return_value=True)
 
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        assert_that(self.file_access.write_file_contents, is_(None))
+        assert_that(self.file_access.write_file_contents, is_(xml))
 
 
 class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
