@@ -1,7 +1,7 @@
 import unittest
 from hamcrest import *
 from functools import partial
-from src.common_upgrades.change_macros_in_xml import XMLMacroChanger
+from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 from xml.dom import minidom
 from mock import MagicMock as Mock
@@ -46,7 +46,7 @@ class TestTagGenerator(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.macro_changer = XMLMacroChanger(self.file_access, self.logger)
+        self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
     def test_that_GIVEN_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
         # Given:
@@ -147,7 +147,7 @@ class TestChangMacroName(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.macro_changer = XMLMacroChanger(self.file_access, self.logger)
+        self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
     def test_that_GIVEN_xml_with_old_ioc_macros_THEN_macros_are_updated(self):
         # Given:
@@ -200,7 +200,7 @@ class TestChangMacroValue(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.macro_changer = XMLMacroChanger(self.file_access, self.logger)
+        self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
     def test_that_GIVEN_xml_with_old_ioc_macro_value_THEN_macro_values_are_updated(self):
         # Given:
@@ -255,7 +255,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.macro_changer = XMLMacroChanger(self.file_access, self.logger)
+        self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
     def test_that_GIVEN_xml_with_single_macro_WHEN_calling_change_macros_THEN_the_single_macro_is_updated(self):
         # Given:
