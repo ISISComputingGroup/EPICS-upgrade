@@ -4,10 +4,6 @@ import sys
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
-from src.upgrade_step_from_3p2p1 import UpgradeStepFrom3p2p1
-from src.upgrade_step_from_3p2p1p1 import UpgradeStepFrom3p2p1p1
-from src.upgrade_step_from_3p2p1p2 import UpgradeStepFrom3p2p1p2
-from src.upgrade_step_from_4p1p0 import UpgradeStepFrom4p1p0
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from src.upgrade_step_noop import UpgradeStepNoOp
 
@@ -16,15 +12,9 @@ from src.upgrade_step_noop import UpgradeStepNoOp
 # Upgrade steps will be executed in order from the configuration set in the configuration file.
 # To add a step which does nothing use UpgradeStepNoOp this is often used to get from the latest dev
 # configuration to the latest production configuration
+
+# Upgrade from 4.3.1 only going forward.
 UPGRADE_STEPS = [
-    ("3.2.1", UpgradeStepFrom3p2p1()),
-    ("3.2.1.1", UpgradeStepFrom3p2p1p1()),
-    ("3.2.1.2", UpgradeStepFrom3p2p1p2()),
-    ("4.0.0", UpgradeStepNoOp()),
-    ("4.1.0", UpgradeStepFrom4p1p0()),
-    ("4.1.0.1", UpgradeStepNoOp()),
-    ("4.2.0", UpgradeStepNoOp()),
-    ("4.3.0", UpgradeStepNoOp()),
     ("4.3.1", UpgradeStepFrom4p3p1()),
     ("4.3.1.1", UpgradeStepNoOp()),
     ("4.4.0", None),
