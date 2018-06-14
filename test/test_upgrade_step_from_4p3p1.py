@@ -118,7 +118,7 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
 
         # Assert
         assert_that(self.file_access.write_file_contents, is_not(None))
-        written_file = self.file_access.write_file_contents
+        written_file = self.file_access.write_file_contents.split()
         macro_names = []
         for line in written_file:
             macro_name_match = re.match(r"PIMOT_\d\d__([^=]*)", line)
@@ -143,12 +143,12 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
     def test_GIVEN_old_macro_format_on_not_PIMOT_ioc_WHEN_macros_changed_THEN_file_not_touched(self):
         macro_line = create_global_macro_line("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""})
         global_file = GLOBALS_FILE_TEMPLATE.format(macros=macro_line)
-        self.file_access.open_file = Mock(return_value=global_file.split())
+        self.file_access.open_file = Mock(return_value=(global_file+"\n").splitlines())
         self.file_access.is_dir = Mock(return_value=False)
 
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        assert_that(self.file_access.write_file_contents, is_(None))
+        assert_that(self.file_access.write_file_contents, is_(global_file))
 
 
 if __name__ == '__main__':

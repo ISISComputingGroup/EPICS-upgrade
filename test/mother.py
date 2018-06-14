@@ -35,10 +35,10 @@ class FileAccessStub(object):
 
     def write_file(self, filename, contents):
         self.write_filename = filename
-        self.write_file_contents = contents
+        self.write_file_contents = "\n".join(contents)
 
     def open_file(self, filename):
-        return EXAMPLE_GLOBALS_FILE.split("\n")
+        return EXAMPLE_GLOBALS_FILE.splitlines()
 
     def write_xml_file(self, filename, xml):
         self.write_filename = filename
