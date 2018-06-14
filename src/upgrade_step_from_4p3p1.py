@@ -55,14 +55,21 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             }
         ]
 
-        change_global_macros = ChangeMacroInGlobals(file_access, logger)
-        change_xml_macros = ChangeMacrosInXML(file_access, logger)
 
         try:
-            change_xml_macros.change_macro(macros_to_change)
+            change_global_macros = ChangeMacroInGlobals(file_access, logger)
             change_global_macros.apply_macro_change(macros_to_change)
 
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
+
+        try:
+            change_xml_macros = ChangeMacrosInXML(file_access, logger)
+            change_xml_macros.change_macro(macros_to_change)
+
+        except Exception as e:
+            logger.error("Changing PIMOT macros failed: {}".format(str(e)))
+            return -1
+
         return 0
