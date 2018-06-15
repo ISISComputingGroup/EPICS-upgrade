@@ -13,7 +13,7 @@ FILTER_REGEX = "^{}(_[\d]{{2}})?$"
 
 class ChangeMacroInGlobals(object):
     """
-    Filters configurations for specific things.
+    An interface to replace arbitrary macros in a globals.txt file
     """
 
     def __init__(self, file_access, logger):
@@ -41,13 +41,12 @@ class ChangeMacroInGlobals(object):
 
     def apply_macro_change(self, macro_change):
         """
-        Applies a macro change given a dicionary containing the IOC name, old macro and new macros. All changes after
-        this is called will be performed with the updated macro change.
+        Applies a macro change given a dicionary containing the IOC name, old macro and new macros.
 
         Args:
             macro_change: Dict-like or list-of-dicts. Contains fields ioc_name : the IOC name,
-                                                                      old_macro: (old_macro_name, old_macro_value)
-                                                                      new_macro: (new_macro_name, new_macro_value)
+                                                                      old_macro: (old_macro_name, old_macro_value (optional))
+                                                                      new_macro: (new_macro_name, new_macro_value (optional))
 
         Returns:
             None
@@ -69,6 +68,8 @@ class ChangeMacroInGlobals(object):
 
     def _globals_filter_generator(self, ioc_to_change):
         """
+        Returns lines containing specified IOCs from globals.txt
+
         Generator that gives all the lines for a given IOC in globals.txt and saves them back to their original location
         after they've been yielded. This will match IOCs with the same name as the root plus any that have a number
         appended in the form _XX. To change the line change the yielded lines[index] to the value given.
@@ -101,6 +102,7 @@ class ChangeMacroInGlobals(object):
 
     def _sanitise_input_dictionary_tuples(self, macro_change):
         """
+        Standardises the macros which have been user inputted into tuples of length 1 or 2.
 
         Args:
             macro_change: A dict-like object containing three fields:
