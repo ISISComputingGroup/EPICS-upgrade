@@ -38,6 +38,8 @@ class ChangeMacroInGlobals(object):
 
         if self._file_access.exists(GLOBALS_FILENAME):
             return self._file_access.open_file(GLOBALS_FILENAME)
+        else:
+            return None
 
     def apply_macro_change(self, macro_change):
         """
@@ -52,7 +54,6 @@ class ChangeMacroInGlobals(object):
             None
 
         """
-
         if not type(macro_change) == list:
             macro_change = [macro_change, ]
 
@@ -77,8 +78,7 @@ class ChangeMacroInGlobals(object):
         Args:
             ioc_to_change: the root name of the ioc to change
         """
-
-        for index, line in enumerate(self._loaded_file):
+        for index, line in enumerate(self._loaded_file if self._loaded_file is not None else []):
             if line.startswith("{}_".format(ioc_to_change)):
                 self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
                 yield index

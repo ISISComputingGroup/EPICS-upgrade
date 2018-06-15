@@ -1,9 +1,10 @@
 import unittest
 from hamcrest import *
-from functools import partial
 from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs, EXAMPLE_GLOBALS_FILE
 import os
+
+GLOBALS_FILENAME = os.path.join("configurations", "globals.txt")
 
 
 def generate_many_iocs(configs):
@@ -14,6 +15,7 @@ def generate_many_iocs(configs):
 class TestChangeMacroInGlobals(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
+        self.file_access.existing_files = {GLOBALS_FILENAME: GLOBALS_FILENAME}
         self.logger = LoggingStub()
         self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
 
@@ -55,6 +57,7 @@ class TestChangeMacroInGlobals(unittest.TestCase):
 
         testfile = EXAMPLE_GLOBALS_FILE.replace("CHANGEME",
                                                 "CHANGED")
+
 
         self.assertEqual(self.file_access.write_file_contents, testfile)
         self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
