@@ -29,6 +29,7 @@ class FileAccessStub(object):
         self.wrote_version = None
         self.write_filename = None
         self.write_file_contents = None
+        self.existing_files = None
 
     def write_version_number(self, version, filename):
         self.wrote_version = version
@@ -57,7 +58,9 @@ class FileAccessStub(object):
         pass
 
     def exists(self, path):
-        return True
+        if self.existing_files is None:
+            return False
+        return self.existing_files[path]
 
 
 def create_xml_with_iocs(iocs):

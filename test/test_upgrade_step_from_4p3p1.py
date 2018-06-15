@@ -1,4 +1,5 @@
 import re
+import os
 import unittest
 from hamcrest import *
 from mock import MagicMock as Mock
@@ -33,6 +34,8 @@ SM300_01__VELO1=324
 JULABO_01__EMULATOR_PORT=23
 """
 
+GLOBALS_FILENAME = os.path.join("configurations", "globals.txt")
+
 
 def create_global_macro_line(ioc_name, ioc_number,  macros):
     maro_lines = ["{ioc}_0{ioc_number}__{macro}={value}".format(
@@ -51,6 +54,7 @@ class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
         self.file_access = FileAccessStub()
         self.upgrade_step = UpgradeStepFrom4p3p1()
         self.logger = LoggingStub()
+        self.file_access.existing_files = None
 
     def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
 
@@ -101,6 +105,7 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
         self.file_access = FileAccessStub()
         self.upgrade_step = UpgradeStepFrom4p3p1()
         self.logger = LoggingStub()
+        self.file_access.existing_files = {GLOBALS_FILENAME: GLOBALS_FILENAME}
 
     def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
 
