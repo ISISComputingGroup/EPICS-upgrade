@@ -62,12 +62,15 @@ class ChangeMacroInGlobals(object):
         """
         Returns lines containing specified IOCs from globals.txt
 
-        Generator that gives all the lines for a given IOC in globals.txt and saves them back to their original location
-        after they've been yielded. This will match IOCs with the same name as the root plus any that have a number
-        appended in the form _XX. To change the line change the yielded lines[index] to the value given.
+        Generator that gives all the lines for a given IOC in globals.txt.
+        This will match IOCs with the same name as the root plus any that have a number
+        appended in the form _XX.
 
         Args:
             ioc_to_change: the root name of the ioc to change
+
+        Yields:
+            Index that the ioc is on.
         """
         for index, line in enumerate(self._loaded_file if self._loaded_file is not None else []):
             if line.startswith("{}_".format(ioc_to_change)):
@@ -77,6 +80,7 @@ class ChangeMacroInGlobals(object):
     def _dict_field_to_tuple(self, dict_field):
         """
         Converts a string to a 1-tuple containing that string, or returns a 1- or 2-tuple input
+
         Args:
             dict_field: A string to be contained in a 1-tuple, or a tuple
 
@@ -174,9 +178,9 @@ class ChangeMacroInGlobals(object):
 
         Args:
             macro_change: A dict-like object containing three fields:
-            ioc_name : the IOC name,
-            old_macro: (old_macro_name, old_macro_value (optional))
-            new_macro: (new_macro_name, new_macro_value (optional))
+                ioc_name : the IOC name,
+                old_macro: (old_macro_name, old_macro_value (optional))
+                new_macro: (new_macro_name, new_macro_value (optional))
 
         Returns:
             regex_changes: The regex representations of the strings to search for/replace
