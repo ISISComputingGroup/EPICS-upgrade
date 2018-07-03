@@ -262,8 +262,8 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDRXX": ""}))
         macro_to_change = [{
             "ioc_name": "GALIL",
-            "old_macro": ("GALILADDRXX", ""),
-            "new_macro": ("GALILADDR", "")
+            "old_macro": ("GALILADDRXX", None),
+            "new_macro": ("GALILADDR", None)
         }]
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
