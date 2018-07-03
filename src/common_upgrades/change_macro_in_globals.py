@@ -20,17 +20,17 @@ class ChangeMacroInGlobals(object):
 
     def load_globals_file(self):
         """
-        loads in a globals file as a list of strings
+        Loads in a globals file as a list of strings.
 
         Returns:
-            Globals file loaded as list of strings
-
+            Globals file loaded as list of strings if globals file exists.
+            Empty list otherwise.
         """
 
         if self._file_access.exists(GLOBALS_FILENAME):
             return self._file_access.open_file(GLOBALS_FILENAME)
         else:
-            return None
+            return []
 
     def apply_macro_change(self, macro_change):
         """
