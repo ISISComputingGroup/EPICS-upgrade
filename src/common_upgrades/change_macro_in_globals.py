@@ -67,7 +67,7 @@ class ChangeMacroInGlobals(object):
         Yields:
             Index that the ioc is on.
         """
-        for index, line in enumerate(self._loaded_file if self._loaded_file is not None else []):
+        for index, line in enumerate(self._loaded_file):
             if line.startswith("{}_".format(ioc_to_change)):
                 self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
                 yield index
@@ -130,4 +130,5 @@ class ChangeMacroInGlobals(object):
             None
 
         """
-        self._file_access.write_file(GLOBALS_FILENAME, self._loaded_file)
+        if self._loaded_file:
+            self._file_access.write_file(GLOBALS_FILENAME, self._loaded_file)
