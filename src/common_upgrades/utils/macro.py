@@ -3,7 +3,6 @@ class Macro(object):
     Macro Object
 
     Attributes:
-        ioc_name: Name of the IOC you want to change a macro within
         name: Macro name. E.g. GALILADDR.
         value: Value of the Macro. E.g. 1. Defaults to None.
     """
