@@ -2,6 +2,7 @@ import unittest
 from hamcrest import *
 from functools import partial
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
+from src.common_upgrades.utils.macro import Macro
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 from xml.dom import minidom
 from mock import MagicMock as Mock
@@ -169,11 +170,11 @@ class TestChangMacroName(unittest.TestCase):
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value="None")
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro_name = "BAUD1"
-        new_macro_name = "BAUD"
+        old_macro = Macro("BAUD1")
+        new_macro = Macro("BAUD")
 
         # When:
-        self.macro_changer._change_macro_name(macro_node, old_macro_name, new_macro_name)
+        self.macro_changer._change_macro_name(macro_node, old_macro.name, new_macro.name)
         result = macro_node.getAttribute("name")
 
         # Then:
@@ -184,15 +185,15 @@ class TestChangMacroName(unittest.TestCase):
         test_macro_xml_string = MACRO_XML.format(name="GALILADDR01", value="None")
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro_name = r'GALILADDR([\d]{2})'
-        new_macro_name = "GALILADDR"
+        old_macro = Macro(r'GALILADDR([\d]{2})')
+        new_macro = Macro("GALILADDR")
 
         # When:
-        self.macro_changer._change_macro_name(macro_node, old_macro_name, new_macro_name)
+        self.macro_changer._change_macro_name(macro_node, old_macro.name, new_macro.name)
         result = macro_node.getAttribute("name")
 
         # Then:
-        assert_that(result, is_(new_macro_name))
+        assert_that(result, is_(new_macro.name))
 
 
 class TestChangMacroValue(unittest.TestCase):
@@ -207,15 +208,15 @@ class TestChangMacroValue(unittest.TestCase):
         test_macro_xml_string = MACRO_XML.format(name="BAUD1", value="None")
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro_value = "None"
-        new_macro_value = "new"
+        old_macro = Macro("BAUD1", "None")
+        new_macro = Macro("BAUD1", "new")
 
         # When:
-        self.macro_changer._change_macro_value(macro_node, old_macro_value, new_macro_value)
+        self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
         result = macro_node.getAttribute("value")
 
         # Then:
-        assert_that(result, is_(new_macro_value))
+        assert_that(result, is_(new_macro.value))
 
     def test_that_GIVEN_xml_without_specified_macro_value_THEN_macros_are_not_updated(self):
         # Given:
@@ -223,11 +224,11 @@ class TestChangMacroValue(unittest.TestCase):
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro_value = "old"
-        new_macro_value = "new"
+        old_macro = Macro("PORT1", "old")
+        new_macro = Macro("PORT1", "new")
 
         # When:
-        self.macro_changer._change_macro_value(macro_node, old_macro_value, new_macro_value)
+        self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
         result = macro_node.getAttribute("value")
 
         # Then:
@@ -239,11 +240,11 @@ class TestChangMacroValue(unittest.TestCase):
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro_value = None
-        new_macro_value = "new"
+        old_macro = Macro("PORT1")
+        new_macro = Macro("PORT1", "new")
 
         # When:
-        self.macro_changer._change_macro_value(macro_node, old_macro_value, new_macro_value)
+        self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
         result = macro_node.getAttribute("value")
 
         # Then:
@@ -260,18 +261,17 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
     def test_that_GIVEN_xml_with_single_macro_WHEN_calling_change_macros_THEN_the_single_macro_is_updated(self):
         # Given:
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDRXX": ""}))
-        macro_to_change = [{
-            "ioc_name": "GALIL",
-            "old_macro": ("GALILADDRXX", None),
-            "new_macro": ("GALILADDR", None)
-        }]
+        ioc_name = "GALIL"
+        old_macro = Macro("GALILADDRXX")
+        new_macro = Macro("GALILADDR")
+
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.is_dir = Mock(return_value=True)
         self.file_access.listdir = Mock(return_value=["file1.xml"])
 
         # When:
-        self.macro_changer.change_macro(macro_to_change)
+        self.macro_changer.change_macro(ioc_name, [(old_macro, new_macro)])
 
         # Then:
         written_xml = ET.fromstring(self.file_access.write_file_contents)
@@ -283,16 +283,11 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
     def test_that_GIVEN_xml_with_multiple_old_ioc_macros_THEN_all_macros_are_updated(self):
         # Given:
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDRXX": "", "MTRCTRLXX": ""}))
-        macro_to_change = [{
-                "ioc_name": "GALIL",
-                "old_macro": ("GALILADDRXX", ""),
-                "new_macro": ("GALILADDR", "1")
-            },
-            {
-                "ioc_name": "GALIL",
-                "old_macro": ("MTRCTRLXX", ""),
-                "new_macro": ("MTRCTRL", "1")
-            }]
+        ioc_name = "GALIL"
+        macros_to_change = [
+            (Macro("GALILADDRXX", ""), Macro("GALILADDR", "1")),
+            (Macro("MTRCTRLXX", ""), Macro("MTRCTRL", "1"))
+            ]
         self.file_access.write_file_contents = xml
 
         self.file_access.open_file = Mock(return_value=self.file_access.write_file_contents)
@@ -301,7 +296,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.listdir = Mock(return_value=["file1.xml"])
 
         # When:
-        self.macro_changer.change_macro(macro_to_change)
+        self.macro_changer.change_macro(ioc_name, macros_to_change)
 
         # Then:
         written_xml = ET.fromstring(self.file_access.write_file_contents)

@@ -1,13 +1,8 @@
 import os
-from xml.parsers.expat import ExpatError
 import re
+from xml.parsers.expat import ExpatError
 
-CONFIG_FOLDER = os.path.join("configurations", "configurations")
-COMPONENT_FOLDER = os.path.join("configurations", "components")
-IOC_FILE = "iocs.xml"
-
-# Matches an ioc name and it's numbered IOC's e.g. GALIL matches GALIL_01, GALIL_02
-FILTER_REGEX = "^{}(_[\d]{{2}})?$"
+from src.common_upgrades.utils.constants import FILTER_REGEX, CONFIG_FOLDER, COMPONENT_FOLDER, IOC_FILE
 
 
 class ChangeMacrosInXML(object):
@@ -26,26 +21,24 @@ class ChangeMacrosInXML(object):
         self._file_access = file_access
         self._logger = logger
 
-    def change_macro(self, macro_changes):
+    def change_macro(self, ioc_name, macros_to_change):
         """
-        Changes macros in all xml files that contain the correct macros for a specified ioc.
+        Changes macros in all xml files that contain the correct macros (name and possibly value) for a specified ioc.
 
         Args:
-            macro_changes: list with entries which are dictionaries with fields:
-                ioc_name: name of the ico.
-                old_macro: (old_macro_name , old_value) macro to be changed and value to be changed.
-                new_macro: (new_macro_name, new_value) macro to be changed to and value to be changed to.
+            ioc_name: Name of the IOC to change macros within.
+            macros_to_change: List of 2-tuples of old_macro and new_macro Macro classes.
         Returns:
             None.
         """
 
         for path, ioc_xml in self.ioc_file_generator():
-            for macro_change in macro_changes:
-                for ioc in self.ioc_tag_generator(path, ioc_xml, macro_change["ioc_name"]):
-                    macros = ioc.getElementsByTagName("macros")[0]
+            for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
+                macros = ioc.getElementsByTagName("macros")[0]
+                for old_macro, new_macro in macros_to_change:
                     for macro in macros.getElementsByTagName("macro"):
-                        self._change_macro_name(macro, macro_change["old_macro"][0], macro_change["new_macro"][0])
-                        self._change_macro_value(macro, macro_change["old_macro"][1], macro_change["new_macro"][1])
+                        self._change_macro_name(macro, old_macro.name, new_macro.name)
+                        self._change_macro_value(macro, old_macro.value, new_macro.value)
 
             self._file_access.write_xml_file(path, ioc_xml)
 
