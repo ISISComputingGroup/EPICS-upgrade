@@ -99,19 +99,21 @@ class ChangeMacrosInXML(object):
     @staticmethod
     def _change_macro_value(macro, old_macro_value, new_macro_value):
         """
-        Changes the macros in the given xml.
+        Changes the macros in the given xml if the new macro value is not unset.
 
         Args:
-            macro : The macro node to change.
+            macro : The macro xml node to change.
             old_macro_value: The macro value to change.
             new_macro_value: The macro value to be set.
 
         Returns:
-            None: If old_macro_value is None.
+            None: If new_macro_value is None.
         """
-        if old_macro_value is not None:
+        if new_macro_value is not None:
             value = macro.getAttribute("value")
-            if re.match(old_macro_value, value) is not None:
+            if old_macro_value is None:
+                macro.setAttribute("value", new_macro_value)
+            elif re.match(old_macro_value, value) is not None:
                 macro.setAttribute("value", new_macro_value)
         else:
             return None

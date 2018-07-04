@@ -234,14 +234,14 @@ class TestChangMacroValue(unittest.TestCase):
         # Then:
         assert_that(result, is_(original_macro_value))
 
-    def test_that_GIVEN_xml_old_macro_value_of_None_THEN_macro_values_are_not_updated(self):
+    def test_that_GIVEN_new_macro_without_a_value_THEN_macro_values_are_not_updated(self):
         # Given:
         original_macro_value = "None"
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
-        old_macro = Macro("PORT1")
-        new_macro = Macro("PORT1", "new")
+        old_macro = Macro("PORT1", "new")
+        new_macro = Macro("PORT1")
 
         # When:
         self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
