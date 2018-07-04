@@ -57,7 +57,7 @@ class TestChangingMacroName(unittest.TestCase):
         old_macro = Macro("CHANGEME")
         new_macro = Macro("CHANGED")
 
-        self.macro_changer.change_macros(ioc_to_change, old_macro, new_macro)
+        self.macro_changer.change_macro(ioc_to_change, old_macro, new_macro)
 
         testfile = EXAMPLE_GLOBALS_FILE.replace("CHANGEME",
                                                 "CHANGED")
@@ -72,7 +72,7 @@ class TestChangingMacroName(unittest.TestCase):
                            (Macro("CHANGEME"), Macro("CHANGED1"))]
 
         for old_macro, new_macro in macros_to_apply:
-            self.macro_changer.change_macros(ioc_to_change, old_macro, new_macro)
+            self.macro_changer.change_macro(ioc_to_change, old_macro, new_macro)
 
         self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
         self.assertTrue('CHANGED1' in self.file_access.write_file_contents)

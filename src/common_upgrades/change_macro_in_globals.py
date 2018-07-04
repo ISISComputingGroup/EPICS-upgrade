@@ -32,13 +32,14 @@ class ChangeMacroInGlobals(object):
         else:
             return []
 
-    def change_macros(self, ioc_name, old_macro, new_macro):
+    def change_macro(self, ioc_name, old_macro, new_macro):
         """
-        Changes macros in the globals.txt file.
+        Changes the macro name and possibly value in the globals.txt file for a given IOC.
 
         Args:
-            macro_to_change: 2-tuples of Macro objects.
-                E.g. (old_macro, new_macro)
+            ioc_name: Name of the IOC
+            old_macro: Old Macro objects to be changed.
+            new_macro: New Macro object for the macro to be changed to.
 
         Returns:
             None
