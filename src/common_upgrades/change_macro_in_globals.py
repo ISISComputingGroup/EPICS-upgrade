@@ -32,7 +32,7 @@ class ChangeMacroInGlobals(object):
         else:
             return []
 
-    def apply_macro_change(self, ioc_name, old_macro, new_macro):
+    def change_macros(self, ioc_name, old_macro, new_macro):
         """
         Changes macros in the globals.txt file.
 

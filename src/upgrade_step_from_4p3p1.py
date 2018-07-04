@@ -1,6 +1,8 @@
 from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 import os
+
+from src.common_upgrades.utils.macro import Macro
 from src.upgrade_step import UpgradeStep
 
 
@@ -53,22 +55,15 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             file_access (FileAccess): file access
             logger (Logger): logger
         """
+        ioc_name = "PIMOT"
         macros_to_change = [
-            {
-                "ioc_name": "PIMOT",
-                "old_macro": ("BAUD1", None),
-                "new_macro": ("BAUD", None)
-            },
-            {
-                "ioc_name": "PIMOT",
-                "old_macro": ("PORT1", None),
-                "new_macro": ("PORT", None)
-            }
+            (Macro("BAUD1"), Macro("BAUD")),
+            (Macro("PORT1"), Macro("PORT"))
         ]
 
         try:
             change_xml_macros = ChangeMacrosInXML(file_access, logger)
-            change_xml_macros.change_macro(macros_to_change)
+            change_xml_macros.change_macros(ioc_name, macros_to_change)
 
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
@@ -76,7 +71,7 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
 
         try:
             change_global_macros = ChangeMacroInGlobals(file_access, logger)
-            change_global_macros.apply_macro_change(macros_to_change)
+            change_global_macros.change_macros(ioc_name, macros_to_change)
 
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))

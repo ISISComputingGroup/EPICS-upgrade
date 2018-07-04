@@ -271,7 +271,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.listdir = Mock(return_value=["file1.xml"])
 
         # When:
-        self.macro_changer.change_macro(ioc_name, [(old_macro, new_macro)])
+        self.macro_changer.change_macros(ioc_name, [(old_macro, new_macro)])
 
         # Then:
         written_xml = ET.fromstring(self.file_access.write_file_contents)
@@ -296,7 +296,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.listdir = Mock(return_value=["file1.xml"])
 
         # When:
-        self.macro_changer.change_macro(ioc_name, macros_to_change)
+        self.macro_changer.change_macros(ioc_name, macros_to_change)
 
         # Then:
         written_xml = ET.fromstring(self.file_access.write_file_contents)

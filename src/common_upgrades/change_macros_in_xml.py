@@ -21,7 +21,7 @@ class ChangeMacrosInXML(object):
         self._file_access = file_access
         self._logger = logger
 
-    def change_macro(self, ioc_name, macros_to_change):
+    def change_macros(self, ioc_name, macros_to_change):
         """
         Changes macros in all xml files that contain the correct macros (name and possibly value) for a specified ioc.
 
