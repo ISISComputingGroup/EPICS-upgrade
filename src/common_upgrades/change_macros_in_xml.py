@@ -23,7 +23,7 @@ class ChangeMacrosInXML(object):
 
     def change_macros(self, ioc_name, macros_to_change):
         """
-        Changes macros in all xml files that contain the correct macros (name and possibly value) for a specified ioc.
+        Changes macros in all xml files that contain the correct macros for a specified ioc.
 
         Args:
             ioc_name: Name of the IOC to change macros within.
@@ -99,7 +99,7 @@ class ChangeMacrosInXML(object):
     @staticmethod
     def _change_macro_value(macro, old_macro_value, new_macro_value):
         """
-        Changes the macros in the given xml if the new macro value is not unset.
+        Changes the macros in the given xml if a new macro value is given.
 
         Args:
             macro : The macro xml node to change.

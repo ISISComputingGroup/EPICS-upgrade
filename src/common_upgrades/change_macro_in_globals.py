@@ -1,5 +1,5 @@
 import re
-from src.common_upgrades.utils.constants import GLOBALS_FILENAME, FILTER_REGEX
+from src.common_upgrades.utils.constants import GLOBALS_FILENAME
 
 
 class ChangeMacroInGlobals(object):
@@ -10,9 +10,10 @@ class ChangeMacroInGlobals(object):
     def __init__(self, file_access, logger):
         """
         Initialise.
+
         Args:
-            file_access: object to allow for file access
-            logger: Logger to use
+            file_access: Object to allow for file access.
+            logger: Logger to use.
         """
         self._file_access = file_access
         self._logger = logger
@@ -51,8 +52,6 @@ class ChangeMacroInGlobals(object):
 
         self.write_modified_globals_file()
 
-        return None
-
     def _globals_filter_generator(self, ioc_to_change):
         """
         Returns lines containing specified IOCs from globals.txt
@@ -67,6 +66,7 @@ class ChangeMacroInGlobals(object):
         Yields:
             Index that the ioc is on.
         """
+
         for index, line in enumerate(self._loaded_file):
             if line.startswith("{}_".format(ioc_to_change)):
                 self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
@@ -74,15 +74,14 @@ class ChangeMacroInGlobals(object):
 
     def _determine_replacement_values(self, old_macro, new_macro):
         """
-        Determines whether to change just the macro name, just the macro value or both given the fields
-        entered in the provided dictionary
+        Determines the strings to search for and replace.
 
         Args:
-            old_macro
-            new_macro
+            old_macro: Old Macro object with old macro name and old macro value.
+            new_macro: New Macro object with new macro name and new macro value.
+
         Returns:
             regex_changes: Dictionary of regex representations of the strings to search for/replace.
-
         """
 
         if old_macro.value is None:
@@ -108,6 +107,7 @@ class ChangeMacroInGlobals(object):
         Applies a regular expression to modify a macro.
 
         Args:
+            ioc_name: Name of the IOC to
 
         Returns:
             None
@@ -124,11 +124,11 @@ class ChangeMacroInGlobals(object):
 
     def write_modified_globals_file(self):
         """
-        Writes the modified globals file to disc
+        Writes the modified globals file if it has been loaded.
 
         Returns:
             None
-
         """
+
         if self._loaded_file:
             self._file_access.write_file(GLOBALS_FILENAME, self._loaded_file)

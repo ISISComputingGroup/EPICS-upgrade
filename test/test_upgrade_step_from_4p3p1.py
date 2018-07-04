@@ -1,11 +1,11 @@
 import re
-import os
 import unittest
 from hamcrest import *
 from mock import MagicMock as Mock
 import xml.etree.ElementTree as ET
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from mother import LoggingStub, FileAccessStub
+from src.common_upgrades.utils.constants import GLOBALS_FILENAME
 
 NAMESPACE = "http://epics.isis.rl.ac.uk/schema/iocs/1.0"
 
@@ -33,8 +33,6 @@ SM300_01__VELO1=324
 {macros}
 JULABO_01__EMULATOR_PORT=23
 """
-
-GLOBALS_FILENAME = os.path.join("configurations", "globals.txt")
 
 
 def create_global_macro_line(ioc_name, ioc_number,  macros):
