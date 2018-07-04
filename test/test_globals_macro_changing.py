@@ -55,7 +55,7 @@ class TestChangingMacroName(unittest.TestCase):
     def test_GIVEN_globals_file_with_requested_ioc_WHEN_after_filtering_THEN_ioc_saved_to_file(self):
         ioc_to_change = "GALOL"
         macros_to_change = [
-            (Macro("CHANGEME"),Macro("CHANGED"))
+            (Macro("CHANGEME"), Macro("CHANGED"))
         ]
 
         self.macro_changer.change_macros(ioc_to_change, macros_to_change)
