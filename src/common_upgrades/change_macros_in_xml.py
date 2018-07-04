@@ -35,8 +35,8 @@ class ChangeMacrosInXML(object):
         for path, ioc_xml in self.ioc_file_generator():
             for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
                 macros = ioc.getElementsByTagName("macros")[0]
-                for old_macro, new_macro in macros_to_change:
-                    for macro in macros.getElementsByTagName("macro"):
+                for macro in macros.getElementsByTagName("macro"):
+                    for old_macro, new_macro in macros_to_change:
                         self._change_macro_name(macro, old_macro.name, new_macro.name)
                         self._change_macro_value(macro, old_macro.value, new_macro.value)
 
@@ -82,7 +82,7 @@ class ChangeMacrosInXML(object):
     @staticmethod
     def _change_macro_name(macro, old_macro_name, new_macro_name):
         """
-        Changes the macros in the given xml.
+        Changes the macro name of a macro xml node.
 
         Args:
             macro : The macro node to change.

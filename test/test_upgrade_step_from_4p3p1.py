@@ -5,7 +5,7 @@ from hamcrest import *
 from mock import MagicMock as Mock
 import xml.etree.ElementTree as ET
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
-from mother import LoggingStub, FileAccessStub, create_xml_with_iocs
+from mother import LoggingStub, FileAccessStub
 
 NAMESPACE = "http://epics.isis.rl.ac.uk/schema/iocs/1.0"
 
@@ -48,7 +48,7 @@ def create_ioc(ioc_name, ioc_num, macros):
     return IOC_XML.format(name="{}_{:0>2}".format(ioc_name, ioc_num), macros=macro_xml)
 
 
-class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
+class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()
@@ -58,7 +58,7 @@ class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
 
     def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
 
-        # Arrange
+        # Given:
         original_macros_with_values = dict()
         for macro in original_macros:
             original_macros_with_values[macro] = ""
@@ -66,11 +66,13 @@ class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.is_dir = Mock(return_value=True)
 
-        # Act
+        # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        # Assert
+        # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
+        assert_that(self.file_access.write_file_contents, is_not(""))
+
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         macro_names = [m.attrib["name"] for m in written_xml.findall(".//ns:macro", {"ns": NAMESPACE})]
 
@@ -109,7 +111,7 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
 
     def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
 
-        # Arrange
+        # Given:
         original_macros_with_values = dict()
         for macro in original_macros:
             original_macros_with_values[macro] = "12"
@@ -118,10 +120,10 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=global_file.split())
         self.file_access.is_dir = Mock(return_value=False)
 
-        # Act
+        # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        # Assert
+        # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
         written_file = self.file_access.write_file_contents.split()
         macro_names = []
