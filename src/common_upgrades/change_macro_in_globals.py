@@ -32,21 +32,22 @@ class ChangeMacroInGlobals(object):
         else:
             return []
 
-    def change_macro(self, ioc_name, old_macro, new_macro):
+    def change_macros(self, ioc_name, macros_to_change):
         """
-        Changes the macro name and possibly value in the globals.txt file for a given IOC.
+        Changes a list of macros in the globals.txt file for a specific IOC.
 
         Args:
-            ioc_name: Name of the IOC
-            old_macro: Old Macro objects to be changed.
-            new_macro: New Macro object for the macro to be changed to.
+            ioc_name: Name of the IOC.
+            macros_to_change: List of tuples of Macro objects.
+                E.g. [(old_macro, new_macro)]
 
         Returns:
             None
         """
 
-        for index in self._globals_filter_generator(ioc_name):
-            self._apply_regex_macro_change(ioc_name, old_macro, new_macro, index)
+        for old_macro, new_macro in macros_to_change:
+            for index in self._globals_filter_generator(ioc_name):
+                self._apply_regex_macro_change(ioc_name, old_macro, new_macro, index)
 
         self.write_modified_globals_file()
 

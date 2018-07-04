@@ -54,10 +54,11 @@ class TestChangingMacroName(unittest.TestCase):
 
     def test_GIVEN_globals_file_with_requested_ioc_WHEN_after_filtering_THEN_ioc_saved_to_file(self):
         ioc_to_change = "GALOL"
-        old_macro = Macro("CHANGEME")
-        new_macro = Macro("CHANGED")
+        macros_to_change = [
+            (Macro("CHANGEME"),Macro("CHANGED"))
+        ]
 
-        self.macro_changer.change_macro(ioc_to_change, old_macro, new_macro)
+        self.macro_changer.change_macros(ioc_to_change, macros_to_change)
 
         testfile = EXAMPLE_GLOBALS_FILE.replace("CHANGEME",
                                                 "CHANGED")
@@ -68,11 +69,10 @@ class TestChangingMacroName(unittest.TestCase):
     def test_GIVEN_globals_file_with_requested_ioc_WHEN_changed_after_filtering_THEN_changed_file_written(self):
         ioc_to_change = "GALOL"
 
-        macros_to_apply = [(Macro("DONTCHANGE"), Macro("CHANGED0")),
-                           (Macro("CHANGEME"), Macro("CHANGED1"))]
+        macros_to_change = [(Macro("DONTCHANGE"), Macro("CHANGED0")),
+                            (Macro("CHANGEME"), Macro("CHANGED1"))]
 
-        for old_macro, new_macro in macros_to_apply:
-            self.macro_changer.change_macro(ioc_to_change, old_macro, new_macro)
+        self.macro_changer.change_macros(ioc_to_change, macros_to_change)
 
         self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
         self.assertTrue('CHANGED1' in self.file_access.write_file_contents)
