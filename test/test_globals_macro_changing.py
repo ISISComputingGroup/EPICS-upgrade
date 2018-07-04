@@ -8,6 +8,7 @@ from src.common_upgrades.utils.constants import GLOBALS_FILENAME
 
 
 class TestFindingIOC(unittest.TestCase):
+
     def setUp(self):
         self.file_access = FileAccessStub()
         self.file_access.existing_files = {GLOBALS_FILENAME: GLOBALS_FILENAME}
@@ -76,6 +77,15 @@ class TestChangingMacroName(unittest.TestCase):
         self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
         self.assertTrue('CHANGED1' in self.file_access.write_file_contents)
         self.assertFalse('CHANGED0' in self.file_access.write_file_contents)
+
+
+class TestFilteringIOCs(unittest.TestCase):
+
+    def setUp(self):
+        self.file_access = FileAccessStub()
+        self.file_access.existing_files = {GLOBALS_FILENAME: GLOBALS_FILENAME}
+        self.logger = LoggingStub()
+        self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
 
     def test_GIVEN_globals_file_with_numbered_iocs_requested_WHEN_filtering_THEN_expected_iocs_returned(self):
         root_ioc_name = "GALOL"
