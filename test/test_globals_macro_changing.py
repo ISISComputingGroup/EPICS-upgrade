@@ -78,7 +78,7 @@ class TestChangingMacro(unittest.TestCase):
         self.assertTrue('CHANGED1' in self.file_access.write_file_contents)
         self.assertFalse('CHANGED0' in self.file_access.write_file_contents)
 
-    def test_GIVEN_macro_to_change_with_name_and_value_THEN_the_only_the_macro_matching_both_the_name_and_value_are_changed\(self):
+    def test_GIVEN_macro_to_change_with_name_and_value_THEN_the_only_macro_matching_both_the_name_and_value_are_changed(self):
         ioc_to_change = "GALOL"
         macros_to_change = [
             (Macro("CHANGEME", "01"), Macro("CHANGED", "001"))
