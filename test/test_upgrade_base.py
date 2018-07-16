@@ -139,6 +139,5 @@ class TestUpgradeBase(unittest.TestCase):
         assert_that(result, is_(expect_error_code), "Fail exit")
 
 
-
 if __name__ == '__main__':
     unittest.main()

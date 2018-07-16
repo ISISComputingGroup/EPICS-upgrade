@@ -288,7 +288,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         macros_to_change = [
             (Macro("GALILADDRXX", ""), Macro("GALILADDR", "1")),
             (Macro("MTRCTRLXX", ""), Macro("MTRCTRL", "1"))
-            ]
+        ]
         self.file_access.write_file_contents = xml
 
         self.file_access.open_file = Mock(return_value=self.file_access.write_file_contents)

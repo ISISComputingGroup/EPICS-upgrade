@@ -114,7 +114,8 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
         for macro in original_macros:
             original_macros_with_values[macro] = "12"
 
-        global_file = GLOBALS_FILE_TEMPLATE.format(macros=create_global_macro_line("PIMOT", 1, original_macros_with_values))
+        global_file = GLOBALS_FILE_TEMPLATE.format(
+            macros=create_global_macro_line("PIMOT", 1, original_macros_with_values))
         self.file_access.open_file = Mock(return_value=global_file.split())
         self.file_access.is_dir = Mock(return_value=False)
 

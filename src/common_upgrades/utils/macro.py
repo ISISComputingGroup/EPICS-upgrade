@@ -21,4 +21,3 @@ class Macro(object):
     @property
     def value(self):
         return self.__value
-

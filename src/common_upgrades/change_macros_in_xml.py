@@ -117,4 +117,3 @@ class ChangeMacrosInXML(object):
                 macro.setAttribute("value", new_macro_value)
         else:
             return None
-
