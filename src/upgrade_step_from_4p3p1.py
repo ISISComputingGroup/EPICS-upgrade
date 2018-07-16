@@ -1,7 +1,9 @@
+from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
+from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 import os
-from src.common_upgrades.config_filter import ConfigFilter
+
+from src.common_upgrades.utils.macro import Macro
 from src.upgrade_step import UpgradeStep
-import re
 
 
 class UpgradeStepFrom4p3p1(UpgradeStep):
@@ -53,18 +55,26 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             file_access (FileAccess): file access
             logger (Logger): logger
         """
-        config_filter = ConfigFilter(file_access, logger)
-        try:
-            for ioc in config_filter.ioc_filter_generator("PIMOT"):
-                macros_xml = ioc.getElementsByTagName("macros")[0]
-                self._change_macros(macros_xml)
+        ioc_name = "PIMOT"
+        macros_to_change = [
+            (Macro("BAUD1"), Macro("BAUD")),
+            (Macro("PORT1"), Macro("PORT"))
+        ]
 
-            for line_index, iocs in config_filter.globals_filter_generator("PIMOT"):
-                match = re.match(r"(PIMOT_\d\d__[^=]*)1(.*)", iocs[line_index])
-                if match is not None:
-                    iocs[line_index] = match.group(1) + match.group(2)
+        try:
+            change_xml_macros = ChangeMacrosInXML(file_access, logger)
+            change_xml_macros.change_macros(ioc_name, macros_to_change)
 
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
+
+        try:
+            change_global_macros = ChangeMacroInGlobals(file_access, logger)
+            change_global_macros.change_macros(ioc_name, macros_to_change)
+
+        except Exception as e:
+            logger.error("Changing PIMOT macros failed: {}".format(str(e)))
+            return -1
+
         return 0

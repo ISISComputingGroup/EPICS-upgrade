@@ -4,7 +4,8 @@ from hamcrest import *
 from mock import MagicMock as Mock
 import xml.etree.ElementTree as ET
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
-from mother import LoggingStub, FileAccessStub, create_xml_with_iocs
+from mother import LoggingStub, FileAccessStub
+from src.common_upgrades.utils.constants import GLOBALS_FILENAME
 
 NAMESPACE = "http://epics.isis.rl.ac.uk/schema/iocs/1.0"
 
@@ -45,28 +46,31 @@ def create_ioc(ioc_name, ioc_num, macros):
     return IOC_XML.format(name="{}_{:0>2}".format(ioc_name, ioc_num), macros=macro_xml)
 
 
-class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
+class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
 
     def setUp(self):
         self.file_access = FileAccessStub()
         self.upgrade_step = UpgradeStepFrom4p3p1()
         self.logger = LoggingStub()
+        self.file_access.existing_files = None
 
     def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
 
-        # Arrange
+        # Given:
         original_macros_with_values = dict()
         for macro in original_macros:
             original_macros_with_values[macro] = ""
         xml = IOC_FILE_XML.format(iocs=create_ioc("PIMOT", 1, original_macros_with_values))
-        self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.open_file = Mock(return_value=xml)
         self.file_access.is_dir = Mock(return_value=True)
 
-        # Act
+        # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        # Assert
+        # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
+        assert_that(self.file_access.write_file_contents, is_not(""))
+
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         macro_names = [m.attrib["name"] for m in written_xml.findall(".//ns:macro", {"ns": NAMESPACE})]
 
@@ -87,12 +91,12 @@ class TestUpgradeStepFrom4p3p1IOCs(unittest.TestCase):
 
     def test_GIVEN_old_macro_format_on_not_PIMOT_ioc_WHEN_macros_changed_THEN_file_not_touched(self):
         xml = IOC_FILE_XML.format(iocs=create_ioc("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""}))
-        self.file_access.open_file = Mock(side_effect=[xml, "<a/>"])
+        self.file_access.open_file = Mock(return_value=xml)
         self.file_access.is_dir = Mock(return_value=True)
 
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        assert_that(self.file_access.write_file_contents, is_(None))
+        assert_that(self.file_access.write_file_contents, is_(xml))
 
 
 class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
@@ -101,24 +105,26 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
         self.file_access = FileAccessStub()
         self.upgrade_step = UpgradeStepFrom4p3p1()
         self.logger = LoggingStub()
+        self.file_access.existing_files = {GLOBALS_FILENAME: GLOBALS_FILENAME}
 
     def _test_GIVEN_input_macros_when_macros_changed_THEN_new_macros_in_new_format(self, original_macros):
 
-        # Arrange
+        # Given:
         original_macros_with_values = dict()
         for macro in original_macros:
             original_macros_with_values[macro] = "12"
 
-        global_file = GLOBALS_FILE_TEMPLATE.format(macros=create_global_macro_line("PIMOT", 1, original_macros_with_values))
+        global_file = GLOBALS_FILE_TEMPLATE.format(
+            macros=create_global_macro_line("PIMOT", 1, original_macros_with_values))
         self.file_access.open_file = Mock(return_value=global_file.split())
         self.file_access.is_dir = Mock(return_value=False)
 
-        # Act
+        # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        # Assert
+        # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
-        written_file = self.file_access.write_file_contents
+        written_file = self.file_access.write_file_contents.split()
         macro_names = []
         for line in written_file:
             macro_name_match = re.match(r"PIMOT_\d\d__([^=]*)", line)
@@ -143,12 +149,12 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
     def test_GIVEN_old_macro_format_on_not_PIMOT_ioc_WHEN_macros_changed_THEN_file_not_touched(self):
         macro_line = create_global_macro_line("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""})
         global_file = GLOBALS_FILE_TEMPLATE.format(macros=macro_line)
-        self.file_access.open_file = Mock(return_value=global_file.split())
+        self.file_access.open_file = Mock(return_value=(global_file+"\n").splitlines())
         self.file_access.is_dir = Mock(return_value=False)
 
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        assert_that(self.file_access.write_file_contents, is_(None))
+        assert_that(self.file_access.write_file_contents, is_(global_file))
 
 
 if __name__ == '__main__':

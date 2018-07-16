@@ -9,6 +9,7 @@ class LoggingStub(object):
     """
     Stub for logging
     """
+
     def __init__(self):
         self.log = []
         self.log_err = []
@@ -25,20 +26,22 @@ class FileAccessStub(object):
     """
     Stub for file access
     """
+
     def __init__(self):
         self.wrote_version = None
         self.write_filename = None
         self.write_file_contents = None
+        self.existing_files = None
 
     def write_version_number(self, version, filename):
         self.wrote_version = version
 
     def write_file(self, filename, contents):
         self.write_filename = filename
-        self.write_file_contents = contents
+        self.write_file_contents = "\n".join(contents)
 
     def open_file(self, filename):
-        pass
+        return EXAMPLE_GLOBALS_FILE.splitlines()
 
     def write_xml_file(self, filename, xml):
         self.write_filename = filename
@@ -57,7 +60,9 @@ class FileAccessStub(object):
         pass
 
     def exists(self, path):
-        return True
+        if self.existing_files is None:
+            return False
+        return self.existing_files[path]
 
 
 def create_xml_with_iocs(iocs):
@@ -67,6 +72,7 @@ def create_xml_with_iocs(iocs):
     Returns:
         str: xml containing the supplied IOCs
     """
+
     doc = minidom.Document()
     top = doc.createElement("iocs")
     for ioc in iocs:
@@ -140,7 +146,7 @@ CLEAN_COMPONENT_BASE_IOC_FILE_v3p2p1p2 = """<?xml version="1.0" ?>
 </iocs>
 """
 
-ERROR_COMPONENT_BASE_IOC_FILE_NO_ISISDAE="""<?xml version="1.0" ?>
+ERROR_COMPONENT_BASE_IOC_FILE_NO_ISISDAE = """<?xml version="1.0" ?>
 <iocs xmlns="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:ioc="http://epics.isis.rl.ac.uk/schema/iocs/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
     <ioc autostart="true" name="INSTETC_01" restart="true" simlevel="none">
         <macros/>
@@ -236,3 +242,25 @@ CLEAN_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("Goniometer")
 UNKNOWN_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("unknown\path\gonio.opi")
 DIRECT_PATH_SYNOPTIC_v4p0p0 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("jaws/Jaws.opi")
 DIRECT_PATH_SYNOPTIC_v3p2p1p2 = SYOPTIC_WITH_TEMPLATE_TARGET_NAME.format("Jaws.opi")
+
+EXAMPLE_GLOBALS_FILE = """
+# IOC specific macros
+# Names changed to prevent accidental overwrites during testing
+BINS_01__PLCIP=127.0.0.1
+GALOL_01__GALOLADDR=127.0.0.1
+GALOL_02__GALOLADDR=127.0.0.1
+GALOL_03__GALOLADDR=127.0.0.1
+GALOL_04__GALOLADDR=127.0.0.1
+GALOL_05__GALOLADDR=127.0.0.1
+GALOL_06__GALOLADDR=127.0.0.1
+GALOL_07__GALOLADDR=127.0.0.1
+GALOL_08__GALOLADDR=127.0.0.1
+
+GALOL_01__CHANGEME=01
+GALOL_02__CHANGEME=02
+GALOL_03__CHANGEME=03
+GALOL_04__CHANGEME=04
+GALOL_05__CHANGEME=05
+GALOL_06__CHANGEME=06
+GALOL_07__CHANGEME=07
+GALOL_08__CHANGEME=08"""
