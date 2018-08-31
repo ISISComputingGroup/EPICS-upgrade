@@ -19,7 +19,8 @@ UPGRADE_STEPS = [
     ("4.3.1.1", UpgradeStepNoOp()),
     ("4.4.0", UpgradeStepNoOp()),
     ("4.4.1", UpgradeStepNoOp()),
-    ("5.0.0", None),
+    ("5.0.0", UpgradeStepNoOp()),
+    ("5.0.1", None),
 ]
 
 if __name__ == "__main__":
