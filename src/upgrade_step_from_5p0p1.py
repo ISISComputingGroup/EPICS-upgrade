@@ -24,8 +24,7 @@ class UpgradeStepFrom5p0p1(UpgradeStep):
             self.logger.error("Failed to connect to database: {}".format(e))
             return -1
 
-        ret = self.add_new_user('exp_data_writer@130.246.39.152', '$exp_data_writer')
-        ret += self.add_new_user('exp_data_writer@130.246.54.107', '$exp_data_writer')
+        ret = self.add_new_user("'exp_data_writer'@'control-svcs.isis.cclrc.ac.uk'", '$exp_data_writer')
         ret += self.flush_privileges()
         return ret
 
