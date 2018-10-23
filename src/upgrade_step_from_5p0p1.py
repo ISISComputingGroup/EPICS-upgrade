@@ -28,7 +28,7 @@ class UpgradeStepFrom5p0p1(UpgradeStep):
 
         for motor in motor_dirs:
             file_name = os.path.join("configurations", motor, "motionSetPoints.cmd")
-            if os.path.exists(file_name):
+            if file_access.exists(file_name):
                 try:
                     content = file_access.open_file(file_name)
                     self.append_load_inpos_instructions(content)
@@ -50,7 +50,7 @@ class UpgradeStepFrom5p0p1(UpgradeStep):
         for line in content:
             if self.LOAD_MOTION_SP_DB_INSTRUCTION in line:
                 line = line.replace(self.LOAD_MOTION_SP_DB_INSTRUCTION, self.LOAD_INPOS_DB_INSTRUCTION)
-                line = line[:-1] + ',"I", 0, 10)'
+                line = line[:-1] + ',"NUMPOS", 0, 30)'
                 lines_to_add.append(line)
 
         for line in lines_to_add:

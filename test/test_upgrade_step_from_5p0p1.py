@@ -2,7 +2,7 @@ import unittest
 from src.upgrade_step_from_5p0p1 import UpgradeStepFrom5p0p1
 
 
-class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
+class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
 
     def setUp(self):
         self.upgrade_step = UpgradeStepFrom5p0p1()
@@ -39,7 +39,7 @@ class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
         TEST_LKUP = "TEST_LKUP"
         setpoint_instruction = UpgradeStepFrom5p0p1.LOAD_MOTION_SP_DB_INSTRUCTION
         inpos_instruction = UpgradeStepFrom5p0p1.LOAD_INPOS_DB_INSTRUCTION
-        inpos_loop_suffix = '"I", 0, 10)'
+        inpos_loop_suffix = '"NUMPOS", 0, 30)'
         macros = '"P={pref},NAME1={name},AXIS1={axis},TOL={tol},LOOKUP={lkup}")'.format(
                 pref=TEST_PREFIX, name=TEST_NAME, axis=TEST_AXIS, tol=TEST_TOLERANCE, lkup=TEST_LKUP)
         dbload_instruction = setpoint_instruction + "," + macros + ")"
@@ -49,6 +49,7 @@ class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
 
         expected = inpos_instruction + "," + macros + "," + inpos_loop_suffix
         self.assertEquals(expected, file_content[1])
+
 
 if __name__ == '__main__':
     unittest.main()
