@@ -5,7 +5,7 @@ from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
-from src.upgrade_step_from_5p0p1 import UpgradeStepFrom5p0p1
+from src.upgrade_step_from_5p0p1 import UpgradeMotionSetpoints, UpgradeExpDatabase
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -21,7 +21,8 @@ UPGRADE_STEPS = [
     ("4.4.0", UpgradeStepNoOp()),
     ("4.4.1", UpgradeStepNoOp()),
     ("5.0.0", UpgradeStepNoOp()),
-    ("5.0.1", UpgradeStepFrom5p0p1()),
+    ("5.0.1", UpgradeMotionSetpoints()),
+    ("5.0.2", UpgradeExpDatabase()),
     ("5.1.0", None),
 ]
 
