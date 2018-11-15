@@ -1,9 +1,6 @@
-from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
-from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 import os
 import mysql.connector
 
-from src.common_upgrades.utils.macro import Macro
 from src.upgrade_step import UpgradeStep
 
 

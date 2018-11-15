@@ -1,5 +1,6 @@
 import os
 from xml.dom import minidom
+import shutil
 
 
 class FileAccess(object):
@@ -118,6 +119,15 @@ class FileAccess(object):
         """
         self._logger.info("Removing file {}".format(filename))
         os.remove(os.path.join(self.config_base, filename))
+
+    def delete_folder(self, path):
+        """
+        Deletes a folder recursively.
+
+        Args:
+            path (String): The folder to remove
+        """
+        shutil.rmtree(path)
 
     def is_dir(self, path):
         """
