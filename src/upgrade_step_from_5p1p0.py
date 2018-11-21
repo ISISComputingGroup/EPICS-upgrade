@@ -37,7 +37,8 @@ class RemoveOldExpPopulator(UpgradeStep):
                 raise
 
     def stop_and_remove_service(self, service_name):
-        # Service status codes from https://docs.microsoft.com/en-gb/windows/desktop/api/winsvc/ns-winsvc-_service_status
+        # Service status codes from
+        # https://docs.microsoft.com/en-gb/windows/desktop/api/winsvc/ns-winsvc-_service_status
         SERVICE_RUNNING = 4
         SERVICE_STOPPED = 1
         # Error code from https://msdn.microsoft.com/en-us/library/ms932980.aspx

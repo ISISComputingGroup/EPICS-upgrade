@@ -34,7 +34,7 @@ class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
 
     @patch('src.upgrade_step_from_5p1p0.RemoveService')
     @patch('src.upgrade_step_from_5p1p0.StopService')
-    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', return_value=[0,1])
+    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', return_value=[0, 1])
     def test_GIVEN_service_not_running_WHEN_service_removed_THEN_not_stopped(self, query, stop, remove):
         self.upgrade_step.stop_and_remove_service("TEST")
 
@@ -43,27 +43,27 @@ class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
 
     @patch('src.upgrade_step_from_5p1p0.RemoveService')
     @patch('src.upgrade_step_from_5p1p0.StopService')
-    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', return_value=[0,4])
-    def test_GIVEN_service_running_and_not_stopping_WHEN_service_removed_THEN_service_queried_repeatedly_and_exception_rasied(self, query, stop, remove):
+    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', return_value=[0, 4])
+    def test_GIVEN_service_running_and_not_stopping_WHEN_service_removed_THEN_service_queried_repeatedly_and_exception_rasied(
+            self, query, stop, remove):
         self.upgrade_step.WAIT_FOR_STOPPED_TIME = 2
 
         with self.assertRaises(Exception):
             self.upgrade_step.stop_and_remove_service("TEST")
 
         self.assertEqual(query.call_count, self.upgrade_step.WAIT_FOR_STOPPED_TIME+1)
-
         stop.assert_called_once()
 
     @patch('src.upgrade_step_from_5p1p0.RemoveService')
     @patch('src.upgrade_step_from_5p1p0.StopService', side_effect=IndexError())
-    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', return_value = [0,4])
+    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', return_value=[0, 4])
     def test_GIVEN_service_running_WHEN_service_stopped_failed_THEN_exception_raised(self, query, stop, remove):
         with self.assertRaises(IndexError):
             self.upgrade_step.stop_and_remove_service("TEST")
 
     @patch('src.upgrade_step_from_5p1p0.RemoveService')
     @patch('src.upgrade_step_from_5p1p0.StopService')
-    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', side_effect=[[0,4], [0,1]])
+    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', side_effect=[[0, 4], [0, 1]])
     def test_GIVEN_service_running_WHEN_service_stopped_THEN_service_remove_called(self, query, stop, remove):
         self.upgrade_step.stop_and_remove_service("TEST")
 
@@ -71,7 +71,7 @@ class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
 
     @patch('src.upgrade_step_from_5p1p0.RemoveService', side_effect=Exception())
     @patch('src.upgrade_step_from_5p1p0.StopService')
-    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', side_effect=[[0,4], [0,1]])
+    @patch('src.upgrade_step_from_5p1p0.QueryServiceStatus', side_effect=[[0, 4], [0, 1]])
     def test_GIVEN_remove_service_failing_WHEN_service_removed_THEN_exception_raised(self, query, stop, remove):
         with self.assertRaises(Exception):
             self.upgrade_step.stop_and_remove_service("TEST")
@@ -87,6 +87,7 @@ class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
         exception = OSError()
         exception.errno = 3
         file_access.delete_folder.side_effect = exception
+
         self.upgrade_step.delete_populator(file_access)
 
         file_access.delete_folder.assert_called_once()
@@ -95,8 +96,10 @@ class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
     def test_GIVEN_remove_failed_WHEN_populator_removed_THEN_exception_rasied(self):
         file_access = Mock()
         file_access.delete_folder.side_effect = Exception()
+
         with self.assertRaises(Exception):
             self.upgrade_step.delete_populator(file_access)
+
 
 if __name__ == '__main__':
     unittest.main()
