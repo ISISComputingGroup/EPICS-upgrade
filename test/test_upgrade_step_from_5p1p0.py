@@ -1,11 +1,10 @@
 try:
     import pywintypes
-    import win32serviceutil
+    from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
 except ImportError as e:
     pywintypes = None
 
 import unittest
-from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
 from mock import patch, Mock
 
 class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
