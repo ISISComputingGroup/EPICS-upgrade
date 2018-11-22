@@ -1,17 +1,18 @@
+try:
+    import pywintypes
+    import win32serviceutil
+except ImportError as e:
+    pywintypes = None
+
 import unittest
 from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
 from mock import patch, Mock
-
-try:
-    import pywintypes
-except ImportError as e:
-    pywintypes = None
 
 class TestUpgradeStepFrom5p0p1Changes(unittest.TestCase):
 
     def setUp(self):
         if not pywintypes:
-            self.skipTest("Failed to import pywintypes, probably as this is windows specific.")
+            self.skipTest("Failed to import pywintypes and win32serviceutil, probably as this is windows specific.")
         self.upgrade_step = RemoveOldExpPopulator()
         self.upgrade_step.logger = Mock()
 
