@@ -27,10 +27,11 @@ class RemoveOldExpPopulator(UpgradeStep):
 
     def delete_populator(self, file_access):
         FOLDER_NOT_FOUND = 3
+        PATH_NOT_FOUND = 2
         try:
             file_access.delete_folder(self.RB_program_location)
         except Exception as e:
-            if isinstance(e, OSError) and e.errno == FOLDER_NOT_FOUND:
+            if isinstance(e, OSError) and (e.errno == FOLDER_NOT_FOUND or e.errno == PATH_NOT_FOUND):
                 self.logger.info("RB populator not installed, no need to uninstall")
             else:
                 self.logger.error("Failed to remove RB populator: {}".format(e))
