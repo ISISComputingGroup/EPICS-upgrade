@@ -3,7 +3,7 @@ Helpful sql utilities
 """
 from getpass import getpass
 
-import mysql
+import mysql.connector
 
 
 class SqlConnection:
