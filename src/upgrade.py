@@ -1,4 +1,6 @@
 import os
+
+from src.common_upgrades.sql_utilities import SqlConnection
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 
@@ -60,23 +62,24 @@ class Upgrade(object):
         self._logger.info("Config at initial version {0}".format(current_version))
         upgrade = False
         final_upgrade_version = None
-        for version, upgrade_step in self._upgrade_steps:
+        with SqlConnection():
+            for version, upgrade_step in self._upgrade_steps:
 
-            if version == current_version:
-                upgrade = True
-                if upgrade_step is None:
-                    self._logger.info("Current config is on latest version, no upgrade needed")
+                if version == current_version:
+                    upgrade = True
+                    if upgrade_step is None:
+                        self._logger.info("Current config is on latest version, no upgrade needed")
 
-            if upgrade:
-                final_upgrade_version = version
-                if upgrade_step is not None:
+                if upgrade:
+                    final_upgrade_version = version
+                    if upgrade_step is not None:
 
-                    self._logger.info("Upgrading from {0}".format(version))
-                    self._logger.info("-------------------------")
-                    result = upgrade_step.perform(self._file_access, self._logger)
-                    if result != 0:
-                        return result
-                    self._file_access.write_version_number(version, VERSION_FILENAME)
+                        self._logger.info("Upgrading from {0}".format(version))
+                        self._logger.info("-------------------------")
+                        result = upgrade_step.perform(self._file_access, self._logger)
+                        if result != 0:
+                            return result
+                        self._file_access.write_version_number(version, VERSION_FILENAME)
 
         if upgrade:
             self._file_access.write_version_number(final_upgrade_version, VERSION_FILENAME)
