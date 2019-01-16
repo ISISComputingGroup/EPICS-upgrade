@@ -53,7 +53,7 @@ class TestChangingMacro(unittest.TestCase):
         self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
 
     def test_that_GIVEN_globals_file_with_old_macro_THEN_all_old_macros_are_changed(self):
-        ioc_to_change = "GALOL"
+        ioc_to_change = "GALIL"
         macros_to_change = [
             (Macro("CHANGEME"), Macro("CHANGED"))
         ]
@@ -64,47 +64,47 @@ class TestChangingMacro(unittest.TestCase):
                                                 "CHANGED")
 
         self.assertEqual(self.file_access.write_file_contents, testfile)
-        self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
 
     def test_that_GIVEN_two_macros_with_only_in_the_globals_file_THEN_only_the_macro_in_the_globals_file_is_changed(self):
-        ioc_to_change = "GALOL"
+        ioc_to_change = "GALIL"
 
         macros_to_change = [(Macro("DONTCHANGE"), Macro("CHANGED0")),
                             (Macro("CHANGEME"), Macro("CHANGED1"))]
 
         self.macro_changer.change_macros(ioc_to_change, macros_to_change)
 
-        self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
         self.assertTrue('CHANGED1' in self.file_access.write_file_contents)
         self.assertFalse('CHANGED0' in self.file_access.write_file_contents)
 
     def test_GIVEN_macro_to_change_with_name_and_value_THEN_the_only_macro_matching_both_the_name_and_value_are_changed(self):
-        ioc_to_change = "GALOL"
+        ioc_to_change = "GALIL"
         macros_to_change = [
             (Macro("CHANGEME", "01"), Macro("CHANGED", "001"))
         ]
 
         self.macro_changer.change_macros(ioc_to_change, macros_to_change)
 
-        # This only changes "GALOL_01__CHANGEME=01" to "GALOL_01__CHANGED=001" and doesn't change any other macros.
+        # This only changes "GALIL_01__CHANGEME=01" to "GALIL_01__CHANGED=001" and doesn't change any other macros.
         testfile = EXAMPLE_GLOBALS_FILE.replace("CHANGEME=01", "CHANGED=001")
 
         self.assertEqual(self.file_access.write_file_contents, testfile)
-        self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
 
     def test_that_GIVEN_macro_value_to_change_THEN_the_only_macro_value_is_changed(self):
-        ioc_to_change = "GALOL"
+        ioc_to_change = "GALIL"
         macros_to_change = [
             (Macro("CHANGEME", "01"), Macro("CHANGEME", "001"))
         ]
 
         self.macro_changer.change_macros(ioc_to_change, macros_to_change)
 
-        # This only changes "GALOL_01__CHANGEME=01" to "GALOL_01__CHANGED=001" and doesn't change any other macros.
+        # This only changes "GALIL_01__CHANGEME=01" to "GALIL_01__CHANGED=001" and doesn't change any other macros.
         testfile = EXAMPLE_GLOBALS_FILE.replace("=01", "=001")
 
         self.assertEqual(self.file_access.write_file_contents, testfile)
-        self.assertEqual(self.file_access.write_filename, os.path.join("configurations", "globals.txt"))
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
 
 
 class TestFilteringIOCs(unittest.TestCase):
@@ -116,7 +116,7 @@ class TestFilteringIOCs(unittest.TestCase):
         self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
 
     def test_GIVEN_globals_file_with_numbered_iocs_requested_WHEN_filtering_THEN_expected_iocs_returned(self):
-        root_ioc_name = "GALOL"
+        root_ioc_name = "GALIL"
         ioc_to_change = root_ioc_name + "_03"
 
         matching_indices = []
@@ -129,7 +129,7 @@ class TestFilteringIOCs(unittest.TestCase):
         self.assertNotEqual(len(matching_indices), 0)
 
     def test_GIVEN_globals_file_with_ioc_containing_requested_WHEN_filtering_THEN_nothing_returned(self):
-        root_ioc_name = "GALOL"
+        root_ioc_name = "GALIL"
         ioc_name = "PRE-{}-POST".format(root_ioc_name)
 
         matching_indices = []
@@ -139,6 +139,47 @@ class TestFilteringIOCs(unittest.TestCase):
             matched_lines.append(self.macro_changer._loaded_file[index])
 
         self.assertEqual(len(matching_indices), 0)
+
+
+class TestChangingIOCName(unittest.TestCase):
+
+    def setUp(self):
+        self.file_access = FileAccessStub()
+        self.file_access.existing_files = {GLOBALS_FILENAME: GLOBALS_FILENAME}
+        self.logger = LoggingStub()
+        self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
+
+    def test_GIVEN_IOC_name_in_globals_file_WHEN_name_changed_THEN_all_instances_of_IOC_changed(self):
+        ioc_to_change = "GALIL"
+        new_ioc_name = "CHANGED"
+
+        self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
+
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
+        self.assertTrue('CHANGED' in self.file_access.write_file_contents)
+        self.assertFalse('GALIL' in self.file_access.write_file_contents)
+
+    def test_GIVEN_ioc_in_globals_file_WHEN_name_changed_THEN_all_macro_values_remain_the_same(self):
+        ioc_to_change = "GALIL"
+        new_ioc_name = "CHANGED"
+
+        self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
+
+        # This only changes "GALIL_XX__YYY=ZZZ" to "CHANGED_XX__YYY=ZZZ" and doesn't change any other fields.
+        testfile = EXAMPLE_GLOBALS_FILE.replace("GALIL", "CHANGED")
+
+        self.assertEqual(self.file_access.write_file_contents, testfile)
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
+
+    def test_GIVEN_different_iocs_in_globals_file_WHEN_ioc_name_changed_THEN_only_the_desired_name_changed(self):
+        ioc_to_change = "GALIL"
+        new_ioc_name = "CHANGED"
+
+        self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
+
+        self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
+        self.assertTrue('CHANGED' in self.file_access.write_file_contents)
+        self.assertTrue('BINS' in self.file_access.write_file_contents)
 
 
 if __name__ == '__main__':
