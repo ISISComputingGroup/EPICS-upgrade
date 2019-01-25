@@ -76,22 +76,23 @@ class ChangeMacrosInXML(object):
 
         path = SYNOPTIC_FOLDER
 
-        for xml_path in [c for c in self._file_access.listdir(path)]:
+        for xml_path in [c for c in self._file_access.listdir(path) if c.endswith(".xml")]:
             try:
                 synoptic_xml = self._file_access.open_xml_file(xml_path)
             except IOError:
                 raise IOError("Cannot find {}".format(xml_path))
             except ExpatError as ex:
-                raise ExpatError("{} is invalid xml '{}'".format(xml_path, ex))
+                raise ExpatError("{} is invalid xml '{}'".format(path, ex))
 
             for element in synoptic_xml.getElementsByTagName("value"):
                 # Obtain text between the <value> tags (https://stackoverflow.com/a/317494 and https://stackoverflow.com/a/13591742)
-                if element.firstChild.nodeType == element.firstChild.nodeType:
-                    ioc_name_with_suffix = element.firstChild.nodeValue
+                if element.firstChild is not None:
+                    if element.firstChild.nodeType == element.TEXT_NODE:
+                        ioc_name_with_suffix = element.firstChild.nodeValue
 
-                    if old_ioc_name in ioc_name_with_suffix:
-                        ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
-                        element.firstChild.replaceWholeText(ioc_replacement)
+                        if old_ioc_name in ioc_name_with_suffix:
+                            ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                            element.firstChild.replaceWholeText(ioc_replacement)
 
             self._file_access.write_xml_file(xml_path, synoptic_xml)
 
