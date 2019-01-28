@@ -52,6 +52,24 @@ class ChangeMacroInGlobals(object):
 
         self.write_modified_globals_file()
 
+    def change_ioc_name(self, old_ioc_name, new_ioc_name):
+        """
+        Changes the name of an IOC in a globals.txt file.
+
+        Args:
+            old_ioc_name: String, the old name of the IOC
+            new_ioc_name: String, the new name of the IOC
+
+        Returns:
+            None
+
+        """
+
+        for index in self._globals_filter_generator(old_ioc_name):
+            self._change_ioc_name(old_ioc_name, new_ioc_name, index)
+
+        self.write_modified_globals_file()
+
     def _globals_filter_generator(self, ioc_to_change):
         """
         Returns lines containing specified IOCs from globals.txt
@@ -121,6 +139,21 @@ class ChangeMacroInGlobals(object):
         self._loaded_file[line_number] = re.sub(replace_regex, r"\1{}={}".format(regex_args["new_macro_replacement"],
                                                                                  regex_args["new_value_replacement"]),
                                                 self._loaded_file[line_number])
+
+    def _change_ioc_name(self, ioc_name, new_ioc_name, line_number):
+        """
+        If a new name is supplied, changes the name of the IOC
+
+        Args:
+            ioc_name: String, the current name of the IOC
+            new_ioc_name: String if an IOC name change is requested, otherwise None
+
+        Returns:
+            None
+        """
+
+        if new_ioc_name is not None:
+            self._loaded_file[line_number] = self._loaded_file[line_number].replace(ioc_name, new_ioc_name.upper())
 
     def write_modified_globals_file(self):
         """

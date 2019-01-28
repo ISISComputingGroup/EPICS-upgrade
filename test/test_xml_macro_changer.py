@@ -27,6 +27,32 @@ IOC_XML = """
 </ioc>
 """
 
+SYNOPTIC_FILE_XML = """<?xml version="1.0" ?>
+<instrument xmlns="http://www.isis.stfc.ac.uk//instrument">
+    {synoptics}
+</instrument>
+"""
+
+SYOPTIC_XML = """<name>Goniometer</name>
+    <components>
+        <component>
+            <name>New Component</name>
+            <type>GONIOMETER</type>
+            <target>
+                <name>Device</name>
+                <type>OPI</type>
+                <properties>
+                    <property>
+                        <value>{0}</value>
+                    </property>
+                </properties>
+            </target>
+            <pvs/>
+            <components/>
+        </component>
+    </components>
+"""
+
 
 MACRO_XML = """
         <macro name="{name}" value="{value}"/>
@@ -313,5 +339,144 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         assert_that(result_galiladdr[0].get("value"), is_("1"))
 
 
+class TestChangeIOCName(unittest.TestCase):
+
+    def setUp(self):
+        self.file_access = FileAccessStub()
+        self.logger = LoggingStub()
+        self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
+
+    def create_synoptic_file_with_multiple_IOCs(self, iocs):
+        """
+        Mocks out a synoptic file with multiple IOCs in it.
+        Args:
+            iocs: List of strings with the IOC names in it
+
+        Returns:
+            formatted_synoptic_file: A mock XML document containing a sample synoptic
+
+        """
+
+        synoptics = "".join([SYOPTIC_XML.format(ioc) for ioc in iocs])
+        formatted_synoptic_file = SYNOPTIC_FILE_XML.format(synoptics=synoptics)
+
+        return formatted_synoptic_file
+
+    def test_GIVEN_an_ioc_name_WHEN_IOC_change_asked_THEN_ioc_name_is_changed(self):
+        # Given:
+        ioc_suffix_digit = 1
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(ioc_suffix_digit, {"GALILADDRXX": ""}))
+
+        self.file_access.open_file = Mock(return_value=xml)
+        self.file_access.write_file = Mock()
+        self.file_access.is_dir = Mock(return_value=True)
+        self.file_access.listdir = Mock(return_value=["file1.xml"])
+
+        # When:
+        self.macro_changer.change_ioc_name("GALIL", "CHANGED")
+
+        # Then:
+        written_xml = ET.fromstring(self.file_access.write_file_contents)
+        tree = ET.ElementTree(written_xml)
+
+        iocs = tree.findall(".//ns:ioc", {"ns": NAMESPACE})
+
+        assert_that(iocs[0].get("name"), is_("CHANGED_{:02}".format(ioc_suffix_digit)))
+
+    def test_GIVEN_more_than_one_IOC_in_config_WHEN_its_name_is_changed_THEN_IOC_suffix_digits_are_preserved(self):
+        # Given:
+        number_of_repeated_iocs = 3
+
+        ioc_to_change = "CHANGEME"
+        new_ioc_name = "CHANGED"
+
+        ioc_names = ["{}_{:02d}".format(ioc_to_change, i) for i in range(1, number_of_repeated_iocs + 1)]
+        new_ioc_names = ["{}_{:02d}".format(new_ioc_name, i) for i in range(1, number_of_repeated_iocs + 1)]
+
+        xml_contents = create_xml_with_iocs(ioc_names).toxml()
+
+        self.file_access.open_file = Mock(return_value=xml_contents)
+        self.file_access.write_file = Mock()
+        self.file_access.is_dir = Mock(return_value=True)
+        self.file_access.listdir = Mock(return_value=["file1.xml"])
+
+        # When:
+        self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
+
+        # Then:
+        written_xml = ET.fromstring(self.file_access.write_file_contents)
+        tree = ET.ElementTree(written_xml)
+        iocs = tree.findall(".//ioc", {"ns": NAMESPACE})
+
+        for repeated_ioc_index, ioc in enumerate(iocs):
+            assert_that(ioc.get("name"), is_(new_ioc_names[repeated_ioc_index]))
+
+    def test_GIVEN_multiple_different_IOCs_in_configuration_WHEN_ones_name_is_changed_THEN_only_that_ioc_changes(self):
+        # Given:
+        number_of_repeated_iocs = 3
+
+        ioc_to_change = "CHANGEME"
+        new_ioc_name = "CHANGED"
+
+        all_ioc_names = ["CHANGEME", "GALIL", "DONTCHANGE"]
+
+        ioc_names = []
+        new_ioc_names = []
+
+        for ioc in all_ioc_names:
+            for repeat_suffix in range(1, number_of_repeated_iocs + 1):
+                ioc_names.append("{}_{:02d}".format(ioc, repeat_suffix))
+
+                if ioc == ioc_to_change:
+                    new_ioc_names.append("{}_{:02d}".format(new_ioc_name, repeat_suffix))
+                else:
+                    new_ioc_names.append("{}_{:02d}".format(ioc, repeat_suffix))
+
+        xml_contents = create_xml_with_iocs(ioc_names).toxml()
+
+        self.file_access.open_file = Mock(return_value=xml_contents)
+        self.file_access.write_file = Mock()
+        self.file_access.is_dir = Mock(return_value=True)
+        self.file_access.listdir = Mock(return_value=["file1.xml"])
+
+        # When:
+        self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
+
+        # Then:
+        written_xml = ET.fromstring(self.file_access.write_file_contents)
+        tree = ET.ElementTree(written_xml)
+        iocs = tree.findall(".//ioc", {"ns": NAMESPACE})
+
+        for i, ioc in enumerate(iocs):
+            assert_that(ioc.get("name"), is_(new_ioc_names[i]))
+
+    def test_GIVEN_synoptic_xml_file_WHEN_IOC_name_changed_THEN_only_the_ioc_synoptics_are_changed(self):
+        # Given:
+        ioc_to_change = "CHANGEME"
+        new_ioc_name = "CHANGED"
+        unchanged_ioc = "DONTCHANGE"
+
+        suffix = "_01"
+
+        synoptic_file = self.create_synoptic_file_with_multiple_IOCs([ioc_to_change+suffix, unchanged_ioc+suffix])
+
+        print(synoptic_file)
+
+        self.file_access.open_file = Mock(return_value=synoptic_file)
+        self.file_access.is_dir = Mock(return_value=True)
+        self.file_access.listdir = Mock(return_value=["file1.xml"])
+
+        # When:
+        self.macro_changer.change_ioc_name_in_synoptics(ioc_to_change, new_ioc_name)
+
+        # Then:
+        output_file = self.file_access.write_file_contents
+
+        assert_that((ioc_to_change in output_file), is_(False))
+        assert_that((new_ioc_name in output_file), is_(True))
+        assert_that((unchanged_ioc in output_file), is_(True))
+
+
 if __name__ == '__main__':
+
     unittest.main()

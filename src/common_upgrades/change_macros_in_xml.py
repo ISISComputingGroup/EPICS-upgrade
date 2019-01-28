@@ -2,7 +2,7 @@ import os
 import re
 from xml.parsers.expat import ExpatError
 
-from src.common_upgrades.utils.constants import FILTER_REGEX, CONFIG_FOLDER, COMPONENT_FOLDER, IOC_FILE
+from src.common_upgrades.utils.constants import FILTER_REGEX, CONFIG_FOLDER, COMPONENT_FOLDER, IOC_FILE, SYNOPTIC_FOLDER
 
 
 class ChangeMacrosInXML(object):
@@ -42,12 +42,66 @@ class ChangeMacrosInXML(object):
 
             self._file_access.write_xml_file(path, ioc_xml)
 
+    def change_ioc_name(self, old_ioc_name, new_ioc_name):
+        """
+        Replaces all instances of old_ioc_name with new_ioc_name in an XML tree
+        Args:
+            old_ioc_name: String, the old ioc prefix (without _XX number suffix)
+            new_ioc_name: String, The desired new IOC prefix (without _XX number suffix)
+
+        Returns:
+            None
+        """
+        for path, ioc_xml in self.ioc_file_generator():
+            for ioc in ioc_xml.getElementsByTagName("ioc"):
+                ioc_name_with_suffix = ioc.getAttribute("name")
+                if old_ioc_name in ioc_name_with_suffix:
+                    ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                    ioc.setAttribute("name", ioc_replacement)
+
+            self._file_access.write_xml_file(path, ioc_xml)
+
+    def change_ioc_name_in_synoptics(self, old_ioc_name, new_ioc_name):
+        """
+        Replaces instances of old_ioc_name with new_ioc_name
+
+        Args:
+            old_ioc_name: String, the old ioc prefix (without _XX number suffix)
+            new_ioc_name: String, The desired new IOC prefix (without _XX number suffix)
+
+        Returns:
+            None
+
+        """
+
+        path = SYNOPTIC_FOLDER
+
+        for xml_path in [c for c in self._file_access.listdir(path) if c.endswith(".xml")]:
+            try:
+                synoptic_xml = self._file_access.open_xml_file(xml_path)
+            except IOError:
+                raise IOError("Cannot find {}".format(xml_path))
+            except ExpatError as ex:
+                raise ExpatError("{} is invalid xml '{}'".format(path, ex))
+
+            for element in synoptic_xml.getElementsByTagName("value"):
+                # Obtain text between the <value> tags (https://stackoverflow.com/a/317494 and https://stackoverflow.com/a/13591742)
+                if element.firstChild is not None:
+                    if element.firstChild.nodeType == element.TEXT_NODE:
+                        ioc_name_with_suffix = element.firstChild.nodeValue
+
+                        if old_ioc_name in ioc_name_with_suffix:
+                            ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                            element.firstChild.replaceWholeText(ioc_replacement)
+
+            self._file_access.write_xml_file(xml_path, synoptic_xml)
+
     def ioc_file_generator(self):
         """
         Generator giving all the IOC files in all configurations.
 
         Yields:
-            Tuple: The path to the ioc file and it's xml representation.
+            Tuple: The path to the ioc file and its xml representation.
         """
         for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
             for config in [c for c in self._file_access.listdir(path) if self._file_access.is_dir(c)]:
@@ -115,5 +169,3 @@ class ChangeMacrosInXML(object):
                 macro.setAttribute("value", new_macro_value)
             elif re.match(old_macro_value, value) is not None:
                 macro.setAttribute("value", new_macro_value)
-        else:
-            return None

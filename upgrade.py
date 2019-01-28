@@ -8,6 +8,7 @@ from src.upgrade_archive_use_medium_blob import UpgradeArchiveUseMediumBlob
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from src.upgrade_step_from_5p0p1 import UpgradeMotionSetpoints, UpgradeExpDatabase
 from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
+from src.upgrade_step_rename_moxa1210 import UpgradeMOXA1210IOCs
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -27,7 +28,8 @@ UPGRADE_STEPS = [
     ("5.0.2", UpgradeExpDatabase()),
     ("5.1.0", RemoveOldExpPopulator()),
     ("5.1.0.1", UpgradeArchiveUseMediumBlob()),
-    ("5.1.0.2", None)
+    ("5.1.1", UpgradeMOXA1210IOCs()),
+    ("5.1.1.0", None)
 ]
 
 if __name__ == "__main__":
