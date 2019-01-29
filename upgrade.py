@@ -29,7 +29,7 @@ UPGRADE_STEPS = [
     ("5.1.0", RemoveOldExpPopulator()),
     ("5.1.0.1", UpgradeArchiveUseMediumBlob()),
     ("5.1.1", UpgradeMOXA1210IOCs()),
-    ("5.1.1.0", None)
+    ("5.2.0", None)
 ]
 
 if __name__ == "__main__":
