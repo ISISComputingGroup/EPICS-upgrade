@@ -28,8 +28,10 @@ UPGRADE_STEPS = [
     ("5.0.2", UpgradeExpDatabase()),
     ("5.1.0", RemoveOldExpPopulator()),
     ("5.1.0.1", UpgradeArchiveUseMediumBlob()),
-    ("5.1.1", UpgradeMOXA1210IOCs()),
+    ("5.1.0.2", UpgradeStepNoOp()),
+    ("5.1.1", UpgradeMOXA1210IOCs()),  # should have been 5.1.0.3 but we cant change it now
     ("5.2.0", None)
+    # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
 if __name__ == "__main__":
