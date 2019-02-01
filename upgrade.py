@@ -9,6 +9,7 @@ from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from src.upgrade_step_from_5p0p1 import UpgradeMotionSetpoints, UpgradeExpDatabase
 from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
 from src.upgrade_step_rename_moxa1210 import UpgradeMOXA1210IOCs
+from src.upgrade_step_change_moxa12XX_macros import UpgradeMOXA12XXMacros
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -30,6 +31,7 @@ UPGRADE_STEPS = [
     ("5.1.0.1", UpgradeArchiveUseMediumBlob()),
     ("5.1.0.2", UpgradeStepNoOp()),
     ("5.1.1", UpgradeMOXA1210IOCs()),  # should have been 5.1.0.3 but we cant change it now
+    ("5.1.1.1", UpgradeMOXA12XXMacros()),
     ("5.2.0", None)
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
