@@ -63,12 +63,14 @@ def add_new_user(logger, user, password):
     Adds a user with all permissions to the exp_user database
     Args:
         logger: the logger to use to log messages
-        user: The name of the user
+        user: The name of the user in form 'username'@'host'
         password: The password that the user will be required to use
     """
     try:
-        run_sql(logger, "GRANT INSERT, SELECT, UPDATE, DELETE ON exp_data.* TO {} IDENTIFIED BY '{}';".format(
+        run_sql(logger, "CREATE USER {} IDENTIFIED WITH mysql_native_password BY '{}';".format(
             user, password))
+        run_sql(logger, "GRANT INSERT, SELECT, UPDATE, DELETE ON exp_data.* TO {};".format(
+            user))
         return 0
     except Exception as e:
         logger.error("Failed to add user: {}".format(e))
