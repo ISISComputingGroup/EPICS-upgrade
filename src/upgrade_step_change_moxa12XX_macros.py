@@ -48,3 +48,5 @@ class UpgradeMOXA12XXMacros(UpgradeStep):
             logger.error("Changing MOXA12XX Macro failed: {}".format(str(e)))
             traceback.print_exc()
             return -1
+
+        return 0
