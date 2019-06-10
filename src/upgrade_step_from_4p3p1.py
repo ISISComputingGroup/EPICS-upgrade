@@ -61,13 +61,16 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             (Macro("PORT1"), Macro("PORT"))
         ]
 
-        try:
-            change_xml_macros = ChangeMacrosInXML(file_access, logger)
-            change_xml_macros.change_macros(ioc_name, macros_to_change)
+        #try:
+        change_xml_macros = ChangeMacrosInXML(file_access, logger)
+        change_xml_macros.change_macros(ioc_name, macros_to_change)
 
-        except Exception as e:
-            logger.error("Changing PIMOT macros failed: {}".format(str(e)))
-            return -1
+        #except Exception as e:
+#        #    logger.error("Changing PIMOT macros failed: {}".format(str(e)))
+        #    return -1
+
+        a = file_access.write_file_contents
+        #print(file_access.write_file_contents)
 
         try:
             change_global_macros = ChangeMacroInGlobals(file_access, logger)
@@ -76,5 +79,9 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
+
+        print(a == file_access.write_file_contents, a is None)
+
+        #print(file_access.write_file_contents)
 
         return 0

@@ -39,16 +39,29 @@ class FileAccessStub(object):
     def write_file(self, filename, contents):
         self.write_filename = filename
         self.write_file_contents = "\n".join(contents)
+        print('written file')
 
     def open_file(self, filename):
         return EXAMPLE_GLOBALS_FILE.splitlines()
 
     def write_xml_file(self, filename, xml):
+        #print(filename)
+        #print(xml.toxml())
         self.write_filename = filename
         self.write_file_contents = xml.toxml()
+        print('Written xml')
+        #print(self.write_file_contents)
+
+        #print(self.write_file_contents)
 
     def open_xml_file(self, filename):
-        return minidom.parseString(self.open_file(filename))
+        #print(self.open_file(filename))
+        try:
+            md = minidom.parseString(self.open_file(filename))
+        except TypeError:
+            print(self.open_file(filename))
+            raise
+        return md
 
     def listdir(self, dir):
         return ["file1.xml", "README.txt", "file2.xml"]
@@ -65,7 +78,9 @@ class FileAccessStub(object):
         return self.existing_files[path]
 
     def get_config_files(self, type):
-        pass
+        print(self.open_xml_file(type))
+        yield type, self.open_xml_file(type)
+        #pass
 
 
 def create_xml_with_iocs(iocs):

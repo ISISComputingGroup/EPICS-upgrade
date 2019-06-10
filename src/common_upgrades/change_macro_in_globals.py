@@ -47,6 +47,7 @@ class ChangeMacroInGlobals(object):
         """
 
         for old_macro, new_macro in macros_to_change:
+            #print('start')
             for index in self._globals_filter_generator(ioc_name):
                 self._apply_regex_macro_change(ioc_name, old_macro, new_macro, index)
 

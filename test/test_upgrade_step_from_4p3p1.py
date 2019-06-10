@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from mother import LoggingStub, FileAccessStub
 from src.common_upgrades.utils.constants import GLOBALS_FILENAME
+from xml.dom import minidom
 
 NAMESPACE = "http://epics.isis.rl.ac.uk/schema/iocs/1.0"
 
@@ -67,6 +68,9 @@ class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
         # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
+        #print(self.file_access.write_filename)
+        #print(self.file_access.write_file_contents)
+
         # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
         assert_that(self.file_access.write_file_contents, is_not(""))
@@ -117,10 +121,17 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
         global_file = GLOBALS_FILE_TEMPLATE.format(
             macros=create_global_macro_line("PIMOT", 1, original_macros_with_values))
         self.file_access.open_file = Mock(return_value=global_file.split())
+
+        xml = IOC_FILE_XML.format(iocs=create_ioc("PIMOT", 1, original_macros_with_values))
+
+        xml = minidom.parseString(xml)
+
+        self.file_access.open_xml_file = Mock(return_value=xml)
         self.file_access.is_dir = Mock(return_value=False)
 
         # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
+        #print(self.file_access.write_file_contents)
 
         # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
@@ -150,6 +161,8 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
         macro_line = create_global_macro_line("NOT_A_PIMOT", 1, {"PORT1": "", "BAUD1": ""})
         global_file = GLOBALS_FILE_TEMPLATE.format(macros=macro_line)
         self.file_access.open_file = Mock(return_value=(global_file+"\n").splitlines())
+
+        self.file_access.open_xml_file = Mock(return_value=minidom.parseString(IOC_FILE_XML))
         self.file_access.is_dir = Mock(return_value=False)
 
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)

@@ -157,11 +157,12 @@ class FileAccess(object):
             Tuple: The path to the ioc file and its xml representation.
         """
         for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
+            self._logger.info('file')
             for config in [c for c in self.listdir(path) if self.is_dir(c)]:
-                ioc_path = os.path.join(config, file_type)
+                xml_path = os.path.join(config, file_type)
                 try:
-                    yield (ioc_path, self.open_xml_file(ioc_path))
+                    yield (xml_path, self.open_xml_file(xml_path))
                 except IOError:
-                    raise IOError("Cannot find {}".format(ioc_path))
+                    raise IOError("Cannot find {}".format(xml_path))
                 except ExpatError as ex:
                     raise ExpatError("{} is invalid xml '{}'".format(path, ex))

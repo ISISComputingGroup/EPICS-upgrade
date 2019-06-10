@@ -51,6 +51,8 @@ class ChangeMacrosInXML(object):
         self._file_access = file_access
         self._logger = logger
 
+        logger.info(repr(file_access))
+
     def change_macros(self, ioc_name, macros_to_change):
         """
         Changes macros in all xml files that contain the correct macros for a specified ioc.
@@ -62,9 +64,13 @@ class ChangeMacrosInXML(object):
             None.
         """
 
+        #print self._file_access.get_config_files(IOC_FILE)
+
         for path, ioc_xml in self._file_access.get_config_files(IOC_FILE):
+            #print(path, ioc_xml)
             for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
                 macros = ioc.getElementsByTagName("macros")[0]
+#                print(str(macros))
                 for macro in macros.getElementsByTagName("macro"):
                     for old_macro, new_macro in macros_to_change:
                         change_macro_name(macro, old_macro.name, new_macro.name)
@@ -83,6 +89,7 @@ class ChangeMacrosInXML(object):
             None
         """
         for path, ioc_xml in self._file_access.get_config_files(IOC_FILE):
+            #print(path, ioc_xml)
             for ioc in ioc_xml.getElementsByTagName("ioc"):
                 ioc_name_with_suffix = ioc.getAttribute("name")
                 if old_ioc_name in ioc_name_with_suffix:
@@ -114,6 +121,7 @@ class ChangeMacrosInXML(object):
                 raise ExpatError("{} is invalid xml '{}'".format(path, ex))
 
             for element in synoptic_xml.getElementsByTagName("value"):
+#                print(element)
                 # Obtain text between the <value> tags (https://stackoverflow.com/a/317494 and https://stackoverflow.com/a/13591742)
                 if element.firstChild is not None:
                     if element.firstChild.nodeType == element.TEXT_NODE:
