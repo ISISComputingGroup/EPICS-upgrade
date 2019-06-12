@@ -157,7 +157,6 @@ class FileAccess(object):
             Tuple: The path to the ioc file and its xml representation.
         """
         for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
-            self._logger.info('file')
             for config in [c for c in self.listdir(path) if self.is_dir(c)]:
                 xml_path = os.path.join(config, file_type)
                 try:

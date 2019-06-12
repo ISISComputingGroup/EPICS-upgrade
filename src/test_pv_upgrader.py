@@ -1,12 +1,12 @@
 from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
-import os
+from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 
 from src.common_upgrades.utils.macro import Macro
 from src.upgrade_step import UpgradeStep
 
 
-class UpgradeStepFrom4p3p1(UpgradeStep):
+class TestPVUpdater(UpgradeStep):
     """
     Change the PIMOT macros from BAUD1 and PORT1 to BAUD and PORT respectively.
     """
@@ -19,21 +19,18 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
 
         Returns: exit code 0 success; anything else fail
         """
-        filename = os.path.join("configurations", "banner.xml")
-        file_contents = ["""<?xml version="1.0" ?>
-<banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:blk="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
-<items>
- <item>
-  <name>Manager mode</name>
-  <pv>CS:MANAGER</pv>
-  <local>true</local>
- </item>
- </items>
-</banner>
-"""]
 
-        file_access.write_file(filename, file_contents)
-        return self.change_pimot_macros(file_access, logger)
+        pimot = self.change_pimot_macros(file_access, logger)
+        PVs = self.change_block_PVs(file_access, logger)
+
+        if pimot != 0 or PVs != 0:
+            return -1
+        else:
+            return 0
+
+        #self.pv_changer.change_pv_name(pv_to_change, new_pv)
+
+        #return self.change_pimot_macros(file_access, logger)
 
     @staticmethod
     def _change_macros(macros_xml):
@@ -46,6 +43,16 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             name = m.getAttribute("name")
             if name.endswith("1"):
                 m.setAttribute("name", name[:-1])
+
+    def change_block_PVs(self, file_access, logger):
+        try:
+            pv_changer = ChangePVsInXML(file_access, logger)
+            pv_changer.change_pv_name('CHANGEME', 'CHANGED')
+        except Exception as e:
+            logger.error("Changing block PVs failed: {}".format(str(e)))
+            return -1
+
+        return 0
 
     def change_pimot_macros(self, file_access, logger):
         """
@@ -69,8 +76,6 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
 
-        #print(file_access.write_file_contents)
-
         try:
             change_global_macros = ChangeMacroInGlobals(file_access, logger)
             change_global_macros.change_macros(ioc_name, macros_to_change)
@@ -78,8 +83,5 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
-
-
-        #print(file_access.write_file_contents)
 
         return 0

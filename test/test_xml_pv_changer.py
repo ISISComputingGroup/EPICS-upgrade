@@ -58,7 +58,7 @@ class TestChangePVs(unittest.TestCase):
                                    "CHANGEME", "CHANGED",
                                    [("BLOCKNAME", "CHANGED:BUT:NOT:ME"), ("BLOCKNAME_1", "ALSO:CHANGED:BUT:NOT:ME")])
 
-    def test_GIVEN_block_with_name_that_could_be_chaanged_WHEN_pv_is_changed_THEN_name_is_not(self):
+    def test_GIVEN_block_with_name_that_could_be_changed_WHEN_pv_is_changed_THEN_name_is_not(self):
         self._test_changing_blocks([("CHANGEME", "BLAH")], "CHANGEME", "CHANGED",
                                    [("CHANGEME", "BLAH")])
 
