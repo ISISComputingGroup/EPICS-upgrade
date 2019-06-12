@@ -35,8 +35,7 @@ UPGRADE_STEPS = [
     ("5.1.1.1", UpgradeMOXA12XXMacros()),
     ("5.2.0", UpgradeStepNoOp()),
     ("5.3.0", UpgradeStepNoOp()),
-    ("5.4.0", ChangeJawsManager()),
-    ("5.4.0.1", None)
+    ("5.4.0", None)
     
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
