@@ -69,8 +69,6 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
 
-        #print(file_access.write_file_contents)
-
         try:
             change_global_macros = ChangeMacroInGlobals(file_access, logger)
             change_global_macros.change_macros(ioc_name, macros_to_change)
@@ -78,8 +76,5 @@ class UpgradeStepFrom4p3p1(UpgradeStep):
         except Exception as e:
             logger.error("Changing PIMOT macros failed: {}".format(str(e)))
             return -1
-
-
-        #print(file_access.write_file_contents)
 
         return 0
