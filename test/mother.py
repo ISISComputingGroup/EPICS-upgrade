@@ -64,6 +64,9 @@ class FileAccessStub(object):
             return False
         return self.existing_files[path]
 
+    def get_config_files(self, type):
+        yield type, self.open_xml_file(type)
+
 
 def create_xml_with_iocs(iocs):
     """

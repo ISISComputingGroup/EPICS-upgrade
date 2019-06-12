@@ -1,7 +1,7 @@
 import unittest
 from hamcrest import *
 from functools import partial
-from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
+from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML, change_macro_name, change_macro_value
 from src.common_upgrades.utils.macro import Macro
 from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
 from xml.dom import minidom
@@ -185,7 +185,7 @@ class TestChangMacroName(unittest.TestCase):
         new_macro = "BAUD"
 
         # When:
-        self.macro_changer._change_macro_name(macro_node, old_macro, new_macro)
+        change_macro_name(macro_node, old_macro, new_macro)
         result = macro_node.getAttribute("name")
 
         # Then:
@@ -200,7 +200,7 @@ class TestChangMacroName(unittest.TestCase):
         new_macro = Macro("BAUD")
 
         # When:
-        self.macro_changer._change_macro_name(macro_node, old_macro.name, new_macro.name)
+        change_macro_name(macro_node, old_macro.name, new_macro.name)
         result = macro_node.getAttribute("name")
 
         # Then:
@@ -215,7 +215,7 @@ class TestChangMacroName(unittest.TestCase):
         new_macro = Macro("GALILADDR")
 
         # When:
-        self.macro_changer._change_macro_name(macro_node, old_macro.name, new_macro.name)
+        change_macro_name(macro_node, old_macro.name, new_macro.name)
         result = macro_node.getAttribute("name")
 
         # Then:
@@ -238,7 +238,7 @@ class TestChangMacroValue(unittest.TestCase):
         new_macro = Macro("BAUD1", "new")
 
         # When:
-        self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
+        change_macro_value(macro_node, old_macro.value, new_macro.value)
         result = macro_node.getAttribute("value")
 
         # Then:
@@ -254,7 +254,7 @@ class TestChangMacroValue(unittest.TestCase):
         new_macro = Macro("PORT1", "new")
 
         # When:
-        self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
+        change_macro_value(macro_node, old_macro.value, new_macro.value)
         result = macro_node.getAttribute("value")
 
         # Then:
@@ -270,7 +270,7 @@ class TestChangMacroValue(unittest.TestCase):
         new_macro = Macro("PORT1")
 
         # When:
-        self.macro_changer._change_macro_value(macro_node, old_macro.value, new_macro.value)
+        change_macro_value(macro_node, old_macro.value, new_macro.value)
         result = macro_node.getAttribute("value")
 
         # Then:
@@ -294,8 +294,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
 
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
-        self.file_access.is_dir = Mock(return_value=True)
-        self.file_access.listdir = Mock(return_value=["file1.xml"])
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
 
         # When:
         self.macro_changer.change_macros(ioc_name, macro_to_change)
@@ -319,8 +318,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
 
         self.file_access.open_file = Mock(return_value=self.file_access.write_file_contents)
         self.file_access.write_file = Mock()
-        self.file_access.is_dir = Mock(return_value=True)
-        self.file_access.listdir = Mock(return_value=["file1.xml"])
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
 
         # When:
         self.macro_changer.change_macros(ioc_name, macros_to_change)
@@ -369,8 +367,7 @@ class TestChangeIOCName(unittest.TestCase):
 
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
-        self.file_access.is_dir = Mock(return_value=True)
-        self.file_access.listdir = Mock(return_value=["file1.xml"])
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
 
         # When:
         self.macro_changer.change_ioc_name("GALIL", "CHANGED")
@@ -397,8 +394,7 @@ class TestChangeIOCName(unittest.TestCase):
 
         self.file_access.open_file = Mock(return_value=xml_contents)
         self.file_access.write_file = Mock()
-        self.file_access.is_dir = Mock(return_value=True)
-        self.file_access.listdir = Mock(return_value=["file1.xml"])
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
 
         # When:
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
@@ -436,8 +432,7 @@ class TestChangeIOCName(unittest.TestCase):
 
         self.file_access.open_file = Mock(return_value=xml_contents)
         self.file_access.write_file = Mock()
-        self.file_access.is_dir = Mock(return_value=True)
-        self.file_access.listdir = Mock(return_value=["file1.xml"])
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
 
         # When:
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
@@ -459,8 +454,6 @@ class TestChangeIOCName(unittest.TestCase):
         suffix = "_01"
 
         synoptic_file = self.create_synoptic_file_with_multiple_IOCs([ioc_to_change+suffix, unchanged_ioc+suffix])
-
-        print(synoptic_file)
 
         self.file_access.open_file = Mock(return_value=synoptic_file)
         self.file_access.is_dir = Mock(return_value=True)

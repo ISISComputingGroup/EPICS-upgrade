@@ -1,6 +1,8 @@
 import os
 from xml.dom import minidom
 import shutil
+from xml.parsers.expat import ExpatError
+from src.common_upgrades.utils.constants import CONFIG_FOLDER, COMPONENT_FOLDER, SYNOPTIC_FOLDER
 
 
 class FileAccess(object):
@@ -143,3 +145,23 @@ class FileAccess(object):
 
     def exists(self, path):
         return os.path.exists(os.path.join(self.config_base, path))
+
+    def get_config_files(self, file_type):
+        """
+        Generator giving all the config files of a given type.
+
+        Args:
+            file_type: The type of file that you want to get e.g. iocs.xml
+
+        Yields:
+            Tuple: The path to the ioc file and its xml representation.
+        """
+        for path in [COMPONENT_FOLDER, CONFIG_FOLDER]:
+            for config in [c for c in self.listdir(path) if self.is_dir(c)]:
+                xml_path = os.path.join(config, file_type)
+                try:
+                    yield (xml_path, self.open_xml_file(xml_path))
+                except IOError:
+                    raise IOError("Cannot find {}".format(xml_path))
+                except ExpatError as ex:
+                    raise ExpatError("{} is invalid xml '{}'".format(path, ex))

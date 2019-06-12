@@ -8,6 +8,7 @@ from src.upgrade_archive_use_medium_blob import UpgradeArchiveUseMediumBlob
 from src.upgrade_step_from_4p3p1 import UpgradeStepFrom4p3p1
 from src.upgrade_step_from_5p0p1 import UpgradeMotionSetpoints, UpgradeExpDatabase
 from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
+from src.upgrade_step_from_5p4p0 import ChangeJawsManager
 from src.upgrade_step_rename_moxa1210 import UpgradeMOXA1210IOCs
 from src.upgrade_step_change_moxa12XX_macros import UpgradeMOXA12XXMacros
 from src.upgrade_step_noop import UpgradeStepNoOp
