@@ -68,9 +68,6 @@ class TestUpgradeStepFrom4p3pXMLChanges(unittest.TestCase):
         # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
 
-        #print(self.file_access.write_filename)
-        #print(self.file_access.write_file_contents)
-
         # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))
         assert_that(self.file_access.write_file_contents, is_not(""))
@@ -131,7 +128,6 @@ class TestUpgradeStepFrom4p3p1Globals(unittest.TestCase):
 
         # When:
         self.upgrade_step.change_pimot_macros(self.file_access, self.logger)
-        #print(self.file_access.write_file_contents)
 
         # Then:
         assert_that(self.file_access.write_file_contents, is_not(None))

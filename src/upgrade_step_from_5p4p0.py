@@ -8,5 +8,11 @@ class ChangeJawsManager(UpgradeStep):
     """
 
     def perform(self, file_access, logger):
-        changer = ChangePVsInXML(file_access, logger)
-        changer.change_pv_name("GEMJAWSET", "JAWMAN")
+        try:
+            changer = ChangePVsInXML(file_access, logger)
+            changer.change_pv_name("GEMJAWSET", "JAWMAN")
+        except Exception as e:
+            logger.error("Unable perform upgrade, caught error: {}".format(e))
+            return -1
+
+        return 0

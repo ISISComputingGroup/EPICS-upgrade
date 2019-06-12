@@ -455,8 +455,6 @@ class TestChangeIOCName(unittest.TestCase):
 
         synoptic_file = self.create_synoptic_file_with_multiple_IOCs([ioc_to_change+suffix, unchanged_ioc+suffix])
 
-        #print(synoptic_file)
-
         self.file_access.open_file = Mock(return_value=synoptic_file)
         self.file_access.is_dir = Mock(return_value=True)
         self.file_access.listdir = Mock(return_value=["file1.xml"])
