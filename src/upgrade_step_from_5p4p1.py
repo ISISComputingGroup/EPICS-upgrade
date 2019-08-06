@@ -20,49 +20,113 @@ class UpgradeBannerXml(UpgradeStep):
 
         """
         try:
-            path = os.path.join(file_access.config_base, os.path.join("configurations", "banner.xml"))
-            complete_new = '<?xml version="1.0" ?>\n<banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:blk="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">\n  <items>\n    <item>\n      <button>\n        <name>Stop All Motors</name>\n        <pv>CS:MOT:STOP:ALL</pv>\n        <local>true</local>\n        <pvValue>1</pvValue>\n        <textColour>#000000</textColour>\n        <buttonColour>#e0e0e0</buttonColour>\n        <fontSize>9</fontSize>\n        <width>100</width>\n        <height>25</height>\n      </button>\n    </item>\n    <item>\n      <display>\n        <name>Motors are</name>\n        <pv>CS:MOT:MOVING:STR</pv>\n        <local>true</local>\n        <width>170</width>\n      </display>\n    </item>\n    <item>\n      <display>\n        <name>DAE Simulation mode</name>\n        <pv>DAE:SIM_MODE</pv>\n        <local>true</local>\n        <width>250</width>\n      </display>\n    </item>\n    <item>\n      <display>\n        <name>Manager mode</name>\n        <pv>CS:MANAGER</pv>\n        <local>true</local>\n        <width>250</width>\n      </display>\n    </item>\n  </items>\n</banner>'
-            line_2 = '<banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:blk="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">\n'
-            motor_xml = '    <item>\n      <button>\n        <name>Stop All Motors</name>\n        <pv>CS:MOT:STOP:ALL</pv>\n        <local>true</local>\n        <pvValue>1</pvValue>\n        <textColour>#000000</textColour>\n        <buttonColour>#e0e0e0</buttonColour>\n        <fontSize>9</fontSize>\n        <width>100</width>\n        <height>25</height>\n      </button>\n    </item>\n    <item>\n      <display>\n        <name>Motors are</name>\n        <pv>CS:MOT:MOVING:STR</pv>\n        <local>true</local>\n        <width>170</width>\n      </display>\n    </item>\n'
+            complete_new = '''<?xml version="1.0" ?>
+            <banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:blk="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+              <items>
+                <item>
+                  <button>
+                    <name>Stop All Motors</name>
+                    <pv>CS:MOT:STOP:ALL</pv>
+                    <local>true</local>
+                    <pvValue>1</pvValue>
+                    <textColour>#000000</textColour>
+                    <buttonColour>#e0e0e0</buttonColour>
+                    <fontSize>9</fontSize>
+                    <width>100</width>
+                    <height>25</height>
+                  </button>
+                </item>
+                <item>
+                  <display>
+                    <name>Motors are</name>
+                    <pv>CS:MOT:MOVING:STR</pv>
+                    <local>true</local>
+                    <width>170</width>
+                  </display>
+                </item>
+                <item>
+                  <display>
+                    <name>DAE Simulation mode</name>
+                    <pv>DAE:SIM_MODE</pv>
+                    <local>true</local>
+                    <width>250</width>
+                  </display>
+                </item>
+                <item>
+                  <display>
+                    <name>Manager mode</name>
+                    <pv>CS:MANAGER</pv>
+                    <local>true</local>
+                    <width>250</width>
+                  </display>
+                </item>
+              </items>
+            </banner>
+            '''
+            motor_button = '''    <item>
+                  <button>
+                    <name>Stop All Motors</name>
+                    <pv>CS:MOT:STOP:ALL</pv>
+                    <local>true</local>
+                    <pvValue>1</pvValue>
+                    <textColour>#000000</textColour>
+                    <buttonColour>#e0e0e0</buttonColour>
+                    <fontSize>9</fontSize>
+                    <width>100</width>
+                    <height>25</height>
+                  </button>
+                </item>
+            '''
+            motor_display = '''    <item>
+                  <display>
+                    <name>Motors are</name>
+                    <pv>CS:MOT:MOVING:STR</pv>
+                    <local>true</local>
+                    <width>170</width>
+                  </display>
+                </item>
+            '''
+            banner_path = os.path.join(file_access.config_base, os.path.join("configurations", "banner.xml"))
 
-            ET.register_namespace("", "http://epics.isis.rl.ac.uk/schema/banner/1.0")
-
-            try:
+            motor_button = ET.fromstring(
+                motor_button.replace(" ", "").replace("\n", "").replace("StopAllMotors", "Stop All Motors"))
+            motor_display = ET.fromstring(
+                motor_display.replace(" ", "").replace("\n", "").replace("Motorsare", "Motors are"))
+            if not os.path.exists(banner_path):
+                # In case there isn't a banner xml
+                print("banner.xml not found at " + banner_path + ", making a new banner.xml")
+                with open(banner_path, "w") as f:
+                    f.write(complete_new)
+            elif ET.parse(banner_path).find(".//{http://epics.isis.rl.ac.uk/schema/banner/1.0}button") is not None:
+                # If the xml has already been updated
+                # Do nothing
+                pass
+            else:
                 # Parse the old banner.xml
-                tree = ET.parse(path)
+                tree = ET.parse(banner_path)
 
                 # Create a new tree and copy over from the old, adding width data
                 new_root = ET.Element('banner')
+                new_root.attrib["xmlns"] = "http://epics.isis.rl.ac.uk/schema/banner/1.0"
+                new_root.attrib["xmlns:ioc"] = "http://www.w3.org/2001/XMLSchema-instance"
+                new_root.attrib["xmlns:xi"] = "http://www.w3.org/2001/XInclude"
+
                 new_items = ET.SubElement(new_root, "items")
+                new_items.append(motor_button)
+                new_items.append(motor_display)
                 for items in tree.getroot():
                     for item in items:
                         new_item = ET.SubElement(new_items, "item")
                         new_display = ET.SubElement(new_item, "display")
                         for element in item:
-                            ET.SubElement(new_display, element.tag).text = element.text
+                            ET.SubElement(new_display, element.tag.split("}", 1)[1]).text = element.text
                         ET.SubElement(new_display, "width").text = "250"
 
                 # Get pretty xml using minidom and write to file
                 xmlstr = minidom.parseString(ET.tostring(new_root)).toprettyxml(indent="  ")
-                with open(path, "w") as f:
+                with open(banner_path, "w") as f:
                     f.write(xmlstr)
 
-                with open(path, 'r') as f:
-                    lines = f.readlines()
-
-                # Replace line 2 (not sure if these namespaces are used for anything, except the first, but keeping them anyway)
-                lines[1] = line_2
-
-                # Insert the xml for the motor status and button
-                lines.insert(3, motor_xml)
-
-                with open(path, 'w') as file:
-                    file.writelines(lines)
-
-            except IOError:
-                # In case there isn't a banner xml
-                with open(path, "w") as f:
-                    f.write(complete_new)
 
         except Exception:
             return -1
