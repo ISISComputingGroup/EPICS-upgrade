@@ -21,7 +21,7 @@ class UpgradeBannerXml(UpgradeStep):
         """
         try:
             complete_new = '''<?xml version="1.0" ?>
-            <banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:blk="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+            <banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:ioc="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude">
               <items>
                 <item>
                   <button>
@@ -60,6 +60,14 @@ class UpgradeBannerXml(UpgradeStep):
                     <width>250</width>
                   </display>
                 </item>
+                <item>
+                  <display>
+                    <name>Config</name>
+                    <pv>CS:BLOCKSERVER:CURR_CONFIG_NAME</pv>
+                    <local>true</local>
+                    <width>360</width>
+                  </display>
+                </item>
               </items>
             </banner>
             '''
@@ -86,12 +94,22 @@ class UpgradeBannerXml(UpgradeStep):
                   </display>
                 </item>
             '''
+            config_display = '''<item>
+                  <display>
+                    <name>Config</name>
+                    <pv>CS:BLOCKSERVER:CURR_CONFIG_NAME</pv>
+                    <local>true</local>
+                    <width>360</width>
+                  </display>
+                </item>
+            '''
             banner_path = os.path.join(file_access.config_base, os.path.join("configurations", "banner.xml"))
 
             motor_button = ET.fromstring(
                 motor_button.replace(" ", "").replace("\n", "").replace("StopAllMotors", "Stop All Motors"))
             motor_display = ET.fromstring(
                 motor_display.replace(" ", "").replace("\n", "").replace("Motorsare", "Motors are"))
+            config_display = ET.fromstring(config_display.replace(" ", "").replace("\n", ""))
             if not os.path.exists(banner_path):
                 # In case there isn't a banner xml
                 print("banner.xml not found at " + banner_path + ", making a new banner.xml")
@@ -121,6 +139,8 @@ class UpgradeBannerXml(UpgradeStep):
                         for element in item:
                             ET.SubElement(new_display, element.tag.split("}", 1)[1]).text = element.text
                         ET.SubElement(new_display, "width").text = "250"
+
+                new_items.append(config_display)
 
                 # Get pretty xml using minidom and write to file
                 xmlstr = minidom.parseString(ET.tostring(new_root)).toprettyxml(indent="  ")
