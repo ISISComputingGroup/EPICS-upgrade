@@ -19,6 +19,7 @@ class UpgradeBannerXml(UpgradeStep):
         Returns: exit code 0 success; anything else fail
 
         """
+        print("starting")
         try:
             complete_new = '''<?xml version="1.0" ?>
             <banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:ioc="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -146,7 +147,9 @@ class UpgradeBannerXml(UpgradeStep):
                 xmlstr = minidom.parseString(ET.tostring(new_root)).toprettyxml(indent="  ")
                 with open(banner_path, "w") as f:
                     f.write(xmlstr)
-
+            print("end")
+            return 0
 
         except Exception:
+            print("exceptional")
             return -1
