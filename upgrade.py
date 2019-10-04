@@ -22,6 +22,7 @@ from src.upgrade_step_noop import UpgradeStepNoOp
 
 # Upgrade from 4.3.1 only going forward.
 UPGRADE_STEPS = [
+    # (from this version, use this function to get to next version)
     ("4.3.1", UpgradeStepFrom4p3p1()),
     ("4.3.1.1", UpgradeStepNoOp()),
     ("4.4.0", UpgradeStepNoOp()),
@@ -39,8 +40,8 @@ UPGRADE_STEPS = [
     ("5.4.0", ChangeITCPVs()),
     ("5.4.0.1", UpgradeStepNoOp()),
     ("5.4.1", UpgradeBannerXml()),
-    ("5.4.2", None)
-
+    ("5.5.0", UpgradeStepNoOp()),
+    ("5.6.0", None)
     
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
