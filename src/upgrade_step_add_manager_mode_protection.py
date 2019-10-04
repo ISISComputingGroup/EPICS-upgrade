@@ -1,11 +1,8 @@
 from src.upgrade_step import UpgradeStep
-from file_access import FileAccess
-from local_logger import LocalLogger
 from src.common_upgrades.utils.constants import CONFIG_FOLDER
 from src.common_upgrades.utils.constants import COMPONENT_FOLDER
 
 import os
-from io import open
 import xml.etree.ElementTree as ET
 
 
@@ -25,20 +22,27 @@ class UpgradeStepAddManagerModeProtection(UpgradeStep):
         Returns: exit code 0 success
 
         """
-
         for folder in os.walk(CONFIG_FOLDER):
-            self._add_isProtected_to_meta_in_folders(folder)
+            if (CONFIG_FOLDER != folder[0]):
+                if (self._add_isProtected_to_meta_in_folders(folder, logger)  != 0):
+                    return -1
         for folder in os.walk(COMPONENT_FOLDER):
-            self._add_isProtected_to_meta_in_folders(folder)
+           if (COMPONENT_FOLDER != folder[0]):
+               if (self._add_isProtected_to_meta_in_folders(folder, logger) != 0):
+                   return -1
         return 0
 
-    def _add_isProtected_to_meta_in_folders(self, folder):
+
+    def _add_isProtected_to_meta_in_folders(self, folder, logger):
         try:
-            file = folder[0] + "\meta.xmlb"
-            meta_xml = ET.parse(file)
+            meta_file_path = os.path.join(folder[0] + "\meta.xml")
+            meta_xml = ET.parse(meta_file_path)
             if len(meta_xml.getroot().findall('isProtected')) == 0:
                 protected_tag = ET.SubElement(meta_xml.getroot(), 'isProtected')
                 protected_tag.text = 'false'
-                meta_xml.write(file)
+                meta_xml.write(meta_file_path)
         except IOError as e:
-            print("IOError: {}".format(e))
+            logger.error("IOError: {}".format(e))
+            return -1
+
+        return 0
