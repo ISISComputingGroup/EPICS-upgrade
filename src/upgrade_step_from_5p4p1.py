@@ -2,11 +2,34 @@ import os
 from src.upgrade_step import UpgradeStep
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
+from lxml import etree
+
+
+class BannerXMLNotValidException(Exception):
+
+    def __init__(self, message):
+        super(BannerXMLNotValidException, self).__init__(self, message)
+
 
 class UpgradeBannerXml(UpgradeStep):
     """
     Upgrades banner.xml to work with the new banner customsation
     """
+
+    def validate(self, xml_filepath, schema_filename):
+        """
+        Validates an xml against an xsd
+
+        :param xml_filepath: The path to the xml
+        :param schema_filename: The name of the xsd file assumed to be in the src/schemas folder
+        :rtype: bool
+        :return: Whether the xml is valid against the schema
+        """
+        schema_file = open(os.path.join(os.path.join("src", "schemas"), schema_filename), 'r')
+        schema_raw = etree.XML(schema_file.read())
+        schema = etree.XMLSchema(schema_raw)
+        xml = etree.parse(xml_filepath)
+        return schema.validate(xml)
 
     def perform(self, file_access, logger):
         """
@@ -19,7 +42,6 @@ class UpgradeBannerXml(UpgradeStep):
         Returns: exit code 0 success; anything else fail
 
         """
-        print("starting")
         try:
             complete_new = '''<?xml version="1.0" ?>
             <banner xmlns="http://epics.isis.rl.ac.uk/schema/banner/1.0" xmlns:ioc="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -116,10 +138,14 @@ class UpgradeBannerXml(UpgradeStep):
                 print("banner.xml not found at " + banner_path + ", making a new banner.xml")
                 with open(banner_path, "w") as f:
                     f.write(complete_new)
-            elif ET.parse(banner_path).find(".//{http://epics.isis.rl.ac.uk/schema/banner/1.0}button") is not None:
-                # If the xml has already been updated
-                # Do nothing
-                pass
+            elif self.validate(banner_path, "new_banner.xsd"):
+                # If the banner matches the new schema it has already been updated so do nothing
+                # If the banner is also valid against the old schema this is fine, but print a warning
+                if self.validate(banner_path, "old_banner.xsd"):
+                    print("Warning: schema valid against both old and new schema")
+            elif not self.validate(banner_path, "new_banner.xsd") and not self.validate(banner_path, "old_banner.xsd"):
+                print("Cannot upgrade banner.xml to new schema as it is not valid against the old schema")
+                raise BannerXMLNotValidException("banner.xml not valid against old or new schema")
             else:
                 # Parse the old banner.xml
                 tree = ET.parse(banner_path)
@@ -147,9 +173,8 @@ class UpgradeBannerXml(UpgradeStep):
                 xmlstr = minidom.parseString(ET.tostring(new_root)).toprettyxml(indent="  ")
                 with open(banner_path, "w") as f:
                     f.write(xmlstr)
-            print("end")
             return 0
 
-        except Exception:
-            print("exceptional")
+        except Exception as e:
+            print(e)
             return -1
