@@ -143,9 +143,9 @@ class UpgradeBannerXml(UpgradeStep):
                 # If the banner is also valid against the old schema this is fine, but print a warning
                 if self.validate(banner_path, "old_banner.xsd"):
                     print("Warning: schema valid against both old and new schema")
-            elif not self.validate(banner_path, "new_banner.xsd") and not self.validate(banner_path, "old_banner.xsd"):
+            elif not self.validate(banner_path, "old_banner.xsd"):
                 print("Cannot upgrade banner.xml to new schema as it is not valid against the old schema")
-                raise BannerXMLNotValidException("banner.xml not valid against old or new schema")
+                raise BannerXMLNotValidException("banner.xml not valid against old schema")
             else:
                 # Parse the old banner.xml
                 tree = ET.parse(banner_path)
