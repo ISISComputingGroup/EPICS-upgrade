@@ -13,6 +13,8 @@ from src.upgrade_step_ITC_PVs import ChangeITCPVs
 from src.upgrade_step_rename_moxa1210 import UpgradeMOXA1210IOCs
 from src.upgrade_step_change_moxa12XX_macros import UpgradeMOXA12XXMacros
 from src.upgrade_step_noop import UpgradeStepNoOp
+from src.upgrade_step_add_manager_mode_protection import UpgradeStepAddManagerModeProtection
+
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
 # The last step should have an upgrade class of None (this is how it knows it has reached the end)
@@ -40,9 +42,11 @@ UPGRADE_STEPS = [
     ("5.4.0", ChangeITCPVs()),
     ("5.4.0.1", UpgradeStepNoOp()),
     ("5.5.0", UpgradeStepNoOp()),
-    ("5.6.0", ChangeConfigurationSchema()),
-    ("5.6.0.1", None)
-    
+
+    ("5.6.0", UpgradeStepAddManagerModeProtection()),
+    ("5.6.0.1", ChangeConfigurationSchema()),
+    ("5.6.0.2", None)
+
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
