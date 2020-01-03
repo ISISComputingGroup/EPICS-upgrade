@@ -3,6 +3,7 @@ from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 from src.common_upgrades.utils.constants import CONFIG_ROOT
 import os
+# from io import open
 
 
 class UpgradeStepCheckInitInst(UpgradeStep):
@@ -13,7 +14,7 @@ class UpgradeStepCheckInitInst(UpgradeStep):
 
     def search_files(self, files, root, file_access):
         """
-        Search files from a root folder.
+        Search files from a root folder for pre and post cmd methods.
 
         Args:
             files (List[str]): The names of the files in the root directory.
@@ -22,11 +23,11 @@ class UpgradeStepCheckInitInst(UpgradeStep):
         
         Returns: 0 if pre and post cmd methods in old style are not present; error message if they are.
         """
-        pre_post_search_strings = ["precmd", "postcmd"]
         for file_name in files:
             if file_name.startswith("init_"):
                 search_file = open(os.path.join(root, file_name))
-                if any(search_string in search_file.read() for search_string in pre_post_search_strings):
+                search_file_contents = search_file.read()
+                if "precmd" in search_file_contents or "postcmd" in search_file_contents:
                     return "Pre or post cmd methods found in {} convert to new style of inserting these methods".format(search_file.name)
         return 0
 
@@ -40,16 +41,16 @@ class UpgradeStepCheckInitInst(UpgradeStep):
         
         Returns: 0 if pre and post cmd methods in old style are not present; error message if they are.
         """
-        for root, dirs, files in os.walk(folder):
-            # Search files for pre and post cmd methods
-            file_search_return = self.search_files(files, root, file_access)
-            if file_search_return != 0:
-                return file_search_return
-            # Recurse to search in further directories
-            for directory in dirs:
-                directories_search_return = self.search_folder(os.path.join(root, directory), file_access)
-                if directories_search_return != 0:
-                    return directories_search_return
+        root, dirs, files = os.walk(folder)
+        # Search files for pre and post cmd methods
+        file_search_return = self.search_files(files, root, file_access)
+        if file_search_return != 0:
+            return file_search_return
+        # Recurse to search in further directories
+        for directory in dirs:
+            directories_search_return = self.search_folder(os.path.join(root, directory), file_access)
+            if directories_search_return != 0:
+                return directories_search_return
         return 0
 
 
