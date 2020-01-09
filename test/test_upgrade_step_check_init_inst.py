@@ -24,7 +24,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             ("root", ["dir1", "dir2"], ["init_file1"]),
             ("root\\dir1", ["dir3"], ["init_file2", "init_file3"]),
             ("root\\dir2", [], ["init_file4"]),
-            ("root\\dir3", [], [])
+            ("root\\dir3", [], []),
         ]
 
     def test_GIVEN_no_file_called_init_inst_WHEN_search_files_THEN_zero_returned(self):
@@ -82,35 +82,43 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
     def test_GIVEN_directory_structure_and_no_cmd_WHEN_search_folders_THEN_files_and_folders_walked_and_zero_returned(self):
         # Arrange
         file_search_returns = [0, 0, 0, 0] # One return for each of file1, 2, 3 and 4
-        with patch('os.walk', side_effect=self.directory_structure) as mocked_walk,\
+        with patch('os.walk', return_value=self.directory_structure) as mocked_walk,\
              patch('src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files', side_effect=file_search_returns) as mocked_search_files:
             # Act
             search_return = self.upgrade_step.search_folder("any", self.file_access)
             # Assert
-            assert_that(mocked_walk.call_count, equal_to(4), "Four directories to search, each should be called")
             assert_that(mocked_search_files.call_count, equal_to(4), "Four files to search, each should be called")
             assert_that(search_return, equal_to(0), "Should pass successfully")
     
     def test_GIVEN_directory_structure_and_file_at_top_level_contains_precmd_WHEN_search_folders_THEN_error_returned(self):
         # Arrange
         file_search_returns = ["Error precmd", 0, 0, 0] # One return for each of file1, 2, 3 and 4
-        with patch('os.walk', side_effect=self.directory_structure) as mocked_walk,\
+        with patch('os.walk', return_value=self.directory_structure) as mocked_walk,\
              patch('src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files', side_effect=file_search_returns) as mocked_search_files:
             # Act
             search_return = self.upgrade_step.search_folder("any", self.file_access)
             # Assert
-            assert_that(mocked_walk.call_count, equal_to(1), "First file contains precmd, therefore stop at find")
-            assert_that(mocked_search_files.call_count, equal_to(1), "First file contains precmd, therefore stop at find")
-            assert_that(search_return, equal_to(file_search_returns[0]), "Return error from searched file")
+            assert_that(mocked_search_files.call_count, equal_to(4), "Should search all files")
+            assert_that(search_return, equal_to(file_search_returns[0]+"\n"), "Return error from searched file")
 
     def test_GIVEN_directory_structure_and_file_at_second_level_contains_postcmd_WHEN_search_folders_THEN_error_returned(self):
         # Arrange
         file_search_returns = [0, 0, "Error postcmd", 0] # One return for each of file1, 2, 3 and 4
-        with patch('os.walk', side_effect=self.directory_structure) as mocked_walk,\
+        with patch('os.walk', return_value=self.directory_structure) as mocked_walk,\
              patch('src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files', side_effect=file_search_returns) as mocked_search_files:
             # Act
             search_return = self.upgrade_step.search_folder("any", self.file_access)
             # Assert
-            assert_that(mocked_walk.call_count, equal_to(3), "Third file contains precmd, therefore stop at find")
-            assert_that(mocked_search_files.call_count, equal_to(3), "Third file contains precmd, therefore stop at find")
-            assert_that(search_return, equal_to(file_search_returns[2]), "Return error from searched file")
+            assert_that(mocked_search_files.call_count, equal_to(4), "Should search all files")
+            assert_that(search_return, equal_to(file_search_returns[2]+"\n"), "Return error from searched file")
+
+    def test_GIVEN_directory_structure_and_two_files_contain_cmd_WHEN_search_folders_THEN_error_returned(self):
+        # Arrange
+        file_search_returns = ["Error precmd", 0, "Error postcmd", 0] # One return for each of file1, 2, 3 and 4
+        with patch('os.walk', return_value=self.directory_structure) as mocked_walk,\
+             patch('src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files', side_effect=file_search_returns) as mocked_search_files:
+            # Act
+            search_return = self.upgrade_step.search_folder("any", self.file_access)
+            # Assert
+            assert_that(mocked_search_files.call_count, equal_to(4), "Should search all files")
+            assert_that(search_return, equal_to(file_search_returns[0]+"\n"+file_search_returns[2]+"\n"), "Return error from searched file")
