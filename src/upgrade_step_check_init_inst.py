@@ -3,7 +3,6 @@ from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 from src.common_upgrades.utils.constants import CONFIG_ROOT
 import os
-# from io import open
 
 
 class UpgradeStepCheckInitInst(UpgradeStep):
@@ -28,12 +27,13 @@ class UpgradeStepCheckInitInst(UpgradeStep):
                 search_file = open(os.path.join(root, file_name))
                 search_file_contents = search_file.read()
                 if "precmd" in search_file_contents or "postcmd" in search_file_contents:
-                    return "Pre or post cmd methods found in {} convert to new style of inserting these methods".format(search_file.name)
+                    return "Pre or post cmd methods found in {} convert to new style of inserting these methods, " +
+                      "see https://github.com/ISISComputingGroup/ibex_user_manual/wiki/genie_python-Commands 'Pre and post command hooks'".format(search_file.name)
         return 0
 
     def search_folder(self, folder, file_access):
         """
-        Recursively search folders for the search string.
+        Search folders for the search string.
 
         Args:
             folder (str): The folder to search through.
@@ -41,17 +41,13 @@ class UpgradeStepCheckInitInst(UpgradeStep):
         
         Returns: 0 if pre and post cmd methods in old style are not present; error message if they are.
         """
-        root, dirs, files = os.walk(folder)
-        # Search files for pre and post cmd methods
-        file_search_return = self.search_files(files, root, file_access)
-        if file_search_return != 0:
-            return file_search_return
-        # Recurse to search in further directories
-        for directory in dirs:
-            directories_search_return = self.search_folder(os.path.join(root, directory), file_access)
-            if directories_search_return != 0:
-                return directories_search_return
-        return 0
+        file_returns = ""
+        for root, _, files in os.walk(folder):
+            # Search files for pre and post cmd methods
+            file_search_return = self.search_files(files, root, file_access)
+            if file_search_return != 0:
+                file_returns += "{}\n".format(file_search_return)
+        return 0 if file_returns == "" else file_returns
 
 
     def perform(self, file_access, logger):
