@@ -34,14 +34,6 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         # Act and Assert
         assert_that(self.upgrade_step.search_files(file_names, root, self.file_access),
             equal_to(0), "File starting with init_inst is not in filenames, so no pre or post cmd would be found by genie")
-    
-    def test_GIVEN_no_file_called_init_inst_containing_precmd_WHEN_search_files_THEN_zero_returned(self):
-        # Arrange
-        file_names = ["init", "my_init", "another_file"]
-        root = "myfolder"
-        # Act and Assert
-        assert_that(self.upgrade_step.search_files(file_names, root, self.file_access),
-            equal_to(0), "File starting with init_inst is not in filenames, so no pre or post cmd would be found by genie")
         
     @patch('__builtin__.open', mock_open(read_data=""), create=True)
     def test_GIVEN_file_with_name_none_containing_pre_post_cmd_WHEN_search_files_THEN_zero_returned(self):
