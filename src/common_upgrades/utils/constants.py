@@ -5,6 +5,8 @@ CONFIG_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "configurations"))
 COMPONENT_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "components"))
 SYNOPTIC_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "synoptics"))
 
+SCRIPTS_ROOT = os.environ["ICPINSTSCRIPTROOT"]
+
 IOC_FILE = "iocs.xml"
 BLOCK_FILE = "blocks.xml"
 GLOBALS_FILENAME = os.path.abspath(os.path.join(CONFIG_ROOT, "globals.txt"))

@@ -1,7 +1,7 @@
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
-from src.common_upgrades.utils.constants import CONFIG_ROOT
+from src.common_upgrades.utils.constants import SCRIPTS_ROOT
 import os
 
 
@@ -61,5 +61,5 @@ class UpgradeStepCheckInitInst(UpgradeStep):
         Returns: 0 if pre and post cmd methods in old style are not present; error message if they are.
 
         """
-        return self.search_folder(os.path.join(CONFIG_ROOT, "Python"), file_access)
-        
+        return self.search_folder(SCRIPTS_ROOT, file_access)
+
