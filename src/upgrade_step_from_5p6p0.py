@@ -1,3 +1,5 @@
+import shutil
+
 from src.upgrade_step import UpgradeStep
 
 
@@ -37,4 +39,19 @@ class ChangeConfigurationSchema(UpgradeStep):
 
                 et.write(filename)
 
+        return 0
+
+
+class CopyDashboardDatabase(UpgradeStep):
+    """
+    Step that changes the PVs associated with the jawsmanager as they have been renamed.
+    """
+
+    def perform(self, file_access, logger):
+        dashboard_db_path = os.path.join(os.environ["ICPCONFIGROOT"], "dashboard.db")
+        if not os.path.exists(dashboard_db_path):
+            shutil.copyfile(os.path.join(os.path.basename(os.path.abspath(__file__)), "..", "data", "dashboard.db"),
+                            dashboard_db_path)
+        else:
+            print("Not copying dashboard DB to '{}' as it already exists".format(dashboard_db_path))
         return 0
