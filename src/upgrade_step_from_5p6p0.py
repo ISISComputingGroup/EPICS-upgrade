@@ -38,7 +38,6 @@ class ChangeConfigurationSchema(UpgradeStep):
                     ioc.attrib["remotePvPrefix"] = ""
 
                 et.write(filename)
-
         return 0
 
 

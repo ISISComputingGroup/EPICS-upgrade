@@ -13,14 +13,26 @@ record(stringin, "$(P)CS:DASHBOARD:BANNER:LEFT:VALUE") {
     field(INP, "$(P)DAE:RUNNUMBER CP MS")
 }
 
+record(scalcout, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_LCAL") {
+    field(INPA, "$(P)DAE:SIM_MODE CP MS")
+    field(BB, "Simulated")
+    field(CC, "")
+    field(CALC, "(A=1)?BB:CC")
+}
+
 record(stringin, "$(P)CS:DASHBOARD:BANNER:MIDDLE:LABEL") {
-    field(VAL, "")
-    field(PINI, "YES")
+    field(INP, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_LCAL.SVAL CP MS")
+}
+
+record(scalcout, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL") {
+    field(INPA, "$(P)DAE:SIM_MODE CP MS")
+    field(BB, "DAE")
+    field(CC, "")
+    field(CALC, "(A=1)?BB:CC")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:MIDDLE:VALUE") {
-    field(VAL, "")
-    field(PINI, "YES")
+    field(INP, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL.SVAL CP MS")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:RIGHT:LABEL") {
