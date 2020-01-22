@@ -1,12 +1,6 @@
-record(scalcout, "$(P)CS:DASHBOARD:BANNER:LEFT:_CALC") {
-    field(INPA, "$(P)DAE:RUNSTATE CP MS")
-    field(BB, "Run:")
-    field(CC, "Next run:")
-    field(CALC, "(A=2||A=3||A=4||A=5)?BB:CC")
-}
-
 record(stringin, "$(P)CS:DASHBOARD:BANNER:LEFT:LABEL") {
-    field(INP, "$(P)CS:DASHBOARD:BANNER:LEFT:_CALC.SVAL CP MS")
+    field(VAL, "Run:")
+    field(PINI, "YES")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:LEFT:VALUE") {
