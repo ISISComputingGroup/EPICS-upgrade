@@ -7,10 +7,12 @@ record(scalcout, "$(P)CS:DASHBOARD:BANNER:LEFT:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:LEFT:LABEL") {
     field(INP, "$(P)CS:DASHBOARD:BANNER:LEFT:_CALC.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:LEFT:VALUE") {
     field(INP, "$(P)DAE:RUNNUMBER CP MS")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_LCAL") {
@@ -22,6 +24,7 @@ record(scalcout, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_LCAL") {
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:MIDDLE:LABEL") {
     field(INP, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_LCAL.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL") {
@@ -33,11 +36,13 @@ record(scalcout, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL") {
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:MIDDLE:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:RIGHT:LABEL") {
     field(VAL, "Kicker:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(bi, "$(P)CS:DASHBOARD:BANNER:RIGHT:_CALC") {
@@ -48,6 +53,7 @@ record(bi, "$(P)CS:DASHBOARD:BANNER:RIGHT:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:BANNER:RIGHT:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:BANNER:RIGHT:_CALC CP MS")
+	info(archive, "VAL")
 }
 
 
@@ -55,6 +61,7 @@ record(stringin, "$(P)CS:DASHBOARD:BANNER:RIGHT:VALUE") {
 record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {
     field(VAL, "Good / Raw Frames:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:TAB:1:1:_CALC") {
@@ -66,6 +73,7 @@ record(scalcout, "$(P)CS:DASHBOARD:TAB:1:1:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:TAB:1:1:_CALC.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 
@@ -73,6 +81,7 @@ record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:VALUE") {
 record(stringin, "$(P)CS:DASHBOARD:TAB:2:1:LABEL") {
     field(VAL, "MEvents:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:TAB:2:1:_CALC") {
@@ -82,6 +91,7 @@ record(scalcout, "$(P)CS:DASHBOARD:TAB:2:1:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:2:1:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:TAB:2:1:_CALC.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 
@@ -90,6 +100,7 @@ record(stringin, "$(P)CS:DASHBOARD:TAB:2:1:VALUE") {
 record(stringin, "$(P)CS:DASHBOARD:TAB:3:1:LABEL") {
     field(VAL, "Count Rate:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:TAB:3:1:_CALC") {
@@ -99,6 +110,7 @@ record(scalcout, "$(P)CS:DASHBOARD:TAB:3:1:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:3:1:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:TAB:3:1:_CALC.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 
@@ -107,16 +119,19 @@ record(stringin, "$(P)CS:DASHBOARD:TAB:3:1:VALUE") {
 record(stringin, "$(P)CS:DASHBOARD:TAB:1:2:LABEL") {
     field(VAL, "Inst. Time:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:1:2:VALUE") {
     field(INP, "$(P)CS:IOC:INSTETC_01:DEVIOS:TOD CP MS")
+	info(archive, "VAL")
 }
 
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:2:2:LABEL") {
     field(VAL, "Run Time:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:TAB:2:2:_CALC") {
@@ -127,12 +142,14 @@ record(scalcout, "$(P)CS:DASHBOARD:TAB:2:2:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:2:2:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:TAB:2:2:_CALC.SVAL CP MS")
+	info(archive, "VAL")
 }
 
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:3:2:LABEL") {
     field(VAL, "Period:")
     field(PINI, "YES")
+	info(archive, "VAL")
 }
 
 record(scalcout, "$(P)CS:DASHBOARD:TAB:3:2:_CALC") {
@@ -144,4 +161,5 @@ record(scalcout, "$(P)CS:DASHBOARD:TAB:3:2:_CALC") {
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:3:2:VALUE") {
     field(INP, "$(P)CS:DASHBOARD:TAB:3:2:_CALC.SVAL CP MS")
+	info(archive, "VAL")
 }
