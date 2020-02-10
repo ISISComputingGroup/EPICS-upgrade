@@ -76,7 +76,7 @@ record(scalcout, "$(P)CS:DASHBOARD:TAB:2:1:_CALC") {
     field(INAA, "$(P)DAE:BEAMCURRENT CP MS")
     field(BB, " / ")
     field(INCC, "$(P)DAE:GOODUAH CP MS")
-    field(CALC, "PRINTF('%.3f', AA)+STR(BB)+PRINTF('%d', CC)")
+    field(CALC, "PRINTF('%.3f', AA)+STR(BB)+PRINTF('%.3f', CC)")
 }
 
 record(stringin, "$(P)CS:DASHBOARD:TAB:2:1:VALUE") {
