@@ -55,8 +55,11 @@ UPGRADE_STEPS = [
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
-if __name__ == "__main__":
 
+def perform_upgrade():
+    """
+    Attempt to perform an upgrade of the configurations directory
+    """
     config_root = os.path.abspath(os.path.join(os.environ["ICPCONFIGROOT"], os.pardir))
     log_dir = os.path.join(os.environ["ICPVARDIR"], "logs", "upgrade")
 
@@ -65,3 +68,8 @@ if __name__ == "__main__":
 
     upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS)
     sys.exit(upgrade.upgrade())
+
+
+if __name__ == "__main__":
+
+    perform_upgrade()
