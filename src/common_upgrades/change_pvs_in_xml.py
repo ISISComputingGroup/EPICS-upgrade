@@ -17,9 +17,29 @@ class ChangePVsInXML(object):
         self._file_access = file_access
         self._logger = logger
 
+    def _replace_text_in_elements(self, old_text, new_text, element_name, input_files):
+        """
+        Replaces all instances of old_text with new_text in all element_name elements of one or more XML files
+        Args:
+            old_text: String, old text to find
+            new_text: String, new text to substitute
+            element_name: String, tag name of the elements where to look for old_text
+            input_files: Iterable, XML files where to substitute text
+        """
+        for path, xml in input_files:
+            for node in xml.getElementsByTagName(element_name):
+                if node.firstChild.nodeType != node.TEXT_NODE:
+                    continue
+                current_pv_value = node.firstChild.nodeValue
+                if old_text in current_pv_value:
+                    replacement = current_pv_value.replace(old_text, new_text)
+                    node.firstChild.replaceWholeText(replacement)
+
+            self._file_access.write_xml_file(path, xml)
+
     def change_pv_name(self, old_pv_name, new_pv_name):
         """
-        Replaces all instances of old_pv_name with new_pv_name in an XML tree
+        Replaces all instances of old_pv_name with new_pv_name in the blocks config and all synoptics
         Args:
             old_pv_name: String, the old pv name
             new_pv_name: String, The desired new pv name
@@ -27,15 +47,13 @@ class ChangePVsInXML(object):
         Returns:
             None
         """
-        for path, block_xml in self._file_access.get_config_files(BLOCK_FILE):
-            for block in block_xml.getElementsByTagName("block"):
-                current_pv = block.getElementsByTagName("read_pv")[0]
-                if current_pv.firstChild.nodeType != current_pv.TEXT_NODE:
-                    continue
-                current_pv_value = current_pv.firstChild.nodeValue
-                if old_pv_name in current_pv_value:
-                    replacement = current_pv_value.replace(old_pv_name, new_pv_name)
-                    current_pv.firstChild.replaceWholeText(replacement)
+        self.change_pv_name_in_blocks(old_pv_name, new_pv_name)
+        self.change_pv_names_in_synoptics(old_pv_name, new_pv_name)
 
-            self._file_access.write_xml_file(path, block_xml)
+    def change_pv_name_in_blocks(self, old_pv_name, new_pv_name):
+        block_config = self._file_access.get_config_files(BLOCK_FILE)
+        self._replace_text_in_elements(old_pv_name, new_pv_name, "read_pv", block_config)
 
+    def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):
+        synoptics = self._file_access.get_synoptic_files()
+        self._replace_text_in_elements(old_pv_name, new_pv_name, "address", synoptics)

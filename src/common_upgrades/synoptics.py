@@ -1,6 +1,3 @@
-SYNOPTICS_PATH = "configurations\synoptics"
-
-
 class Synoptics(object):
     """
     Manipulate an instrument's synoptics
@@ -9,19 +6,6 @@ class Synoptics(object):
     def __init__(self, file_access, logger):
         self.file_access = file_access
         self.logger = logger
-
-    def _get_synoptic_files(self):
-        """
-        Get a list of synoptic files associated with this instrument
-        
-        Returns:
-            List(String): A list of file paths associated with instrument synoptics
-        """
-        try:
-            return [filename for filename in self.file_access.listdir(SYNOPTICS_PATH) if filename.endswith('.xml')]
-        except OSError:
-            self.logger.error("Unable to find the synoptics directory")
-            raise OSError
 
     def update_opi_paths(self, paths_to_update):
         """
@@ -37,20 +21,20 @@ class Synoptics(object):
         """
         result = 0
         try:
-            filenames = self._get_synoptic_files()
+            synoptics = self.file_access.get_synoptic_files()
         except OSError:
             result = -1
         else:
-            for filename in filenames:
+            for path, xml in synoptics:
                 try:
-                    self._update_opi_paths_in_file(filename, paths_to_update)
+                    self._update_opi_paths_in_file(path, xml, paths_to_update)
                 except KeyError as e:
-                    self.logger.error("Cannot upgrade synoptic {0}: {1}".format(filename, e))
+                    self.logger.error("Cannot upgrade synoptic {0}: {1}".format(path, e))
                     result = -2
                     break
         return result
 
-    def _update_opi_paths_in_file(self, filename, paths_to_update):
+    def _update_opi_paths_in_file(self, path, xml, paths_to_update):
         """
         Replaces an opi path with the relevant key in a given file
         
@@ -61,7 +45,6 @@ class Synoptics(object):
         Returns:
             None
         """
-        xml = self.file_access.open_xml_file(filename)
         for target_element in xml.getElementsByTagName("target"):
             name_element = target_element.getElementsByTagName("name")[0]
             name = name_element.firstChild.nodeValue
@@ -73,4 +56,4 @@ class Synoptics(object):
                 except KeyError:
                     raise KeyError("Unknown opi path encountered, '{0}'. Replace with corresponding <key> from"
                                    " opi_info.xml".format(name))
-        self.file_access.write_xml_file(filename, xml)
+        self.file_access.write_xml_file(path, xml)
