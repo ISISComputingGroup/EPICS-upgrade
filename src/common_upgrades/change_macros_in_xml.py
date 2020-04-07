@@ -3,6 +3,8 @@ from xml.parsers.expat import ExpatError
 
 from src.common_upgrades.utils.constants import FILTER_REGEX, IOC_FILE, SYNOPTIC_FOLDER
 
+#TEMPORARY!!!!!!!!!!!!
+import xml.dom.minidom
 
 def change_macro_name(macro, old_macro_name, new_macro_name):
     """
@@ -61,7 +63,6 @@ class ChangeMacrosInXML(object):
         Returns:
             None.
         """
-
         for path, ioc_xml in self._file_access.get_config_files(IOC_FILE):
             for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
                 macros = ioc.getElementsByTagName("macros")[0]
@@ -71,6 +72,29 @@ class ChangeMacrosInXML(object):
                         change_macro_value(macro, old_macro.value, new_macro.value)
 
             self._file_access.write_xml_file(path, ioc_xml)
+            
+    def change_specific_macros(self, ioc_name, macro_to_change):
+        """
+        Finds all iocs in config with the name ioc_name, then gets the macro with name
+        macro_to_change.name and changes its value to macro_to_change.value. Differs from
+        change_macros in that it will only change the value of the one macro specified.
+        
+        Args:
+            ioc_name: Name of the IOC to change macros within.
+            macro_to_change: Macro object with name attribute equal to name of macro to change
+            and value attribute equal to desired new value.
+        Returns:
+            None.
+        """
+    
+        for path, ioc_xml in self._file_access.get_config_files(IOC_FILE):
+            for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
+                macros = ioc.getElementsByTagName("macros")[0]
+                for macro in macros.getElementsByTagName("macro"):
+                    if macro.getAttribute("name") == macro_to_change.name:
+                        macro.setAttribute("value", macro_to_change.value)
+
+            self._file_access.write_xml_file(path, ioc_xml)    
 
     def change_ioc_name(self, old_ioc_name, new_ioc_name):
         """
