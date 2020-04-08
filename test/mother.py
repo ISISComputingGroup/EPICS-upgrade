@@ -67,6 +67,8 @@ class FileAccessStub(object):
     def get_config_files(self, type):
         yield type, self.open_xml_file(type)
 
+    def get_synoptic_files(self):
+        yield "", self.open_xml_file("")
 
 def create_xml_with_iocs(iocs):
     """
