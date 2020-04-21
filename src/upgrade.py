@@ -62,6 +62,7 @@ class Upgrade(object):
         self._logger.info("Config at initial version {0}".format(current_version))
         upgrade = False
         final_upgrade_version = None
+        release_notes = []
         with SqlConnection():
             for version, upgrade_step in self._upgrade_steps:
 
@@ -71,6 +72,11 @@ class Upgrade(object):
                         self._logger.info("Current config is on latest version, no upgrade needed")
 
                 if upgrade:
+                    #Create list of release note urls for major updates. The first if is to exclude the starting version from the list.
+                    if final_upgrade_version:
+                        if len(version.split('.')) == 3:
+                            release_url = "https://github.com/ISISComputingGroup/IBEX/wiki/Release-Notes-v" + version
+                            release_notes.append(release_url)
                     final_upgrade_version = version
                     if upgrade_step is not None:
 
@@ -84,6 +90,11 @@ class Upgrade(object):
         if upgrade:
             self._file_access.write_version_number(final_upgrade_version, VERSION_FILENAME)
             self._logger.info("Finished upgrade. Now on version {0}".format(final_upgrade_version))
+            release_notes_string = ""
+            for item in release_notes:
+                release_notes_string += item + "\n"
+            self._logger.info("Please email the instrument scientists and let them know that their instruments" + \
+                                "have been upgraded with the following release notes (if any):\n" + release_notes_string)
             return 0
         else:
             self._logger.error("Unknown version number {0}".format(current_version))
