@@ -306,6 +306,35 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         assert_that(result, has_length(1), "changed macro count")
         assert_that(result[0].get("name"), is_("GALILADDR"))
 
+    def test_that_GIVEN_xml_with_multiple_macros_THEN_only_value_of_named_macro_is_changed(self):
+        # Given:
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"}))
+        ioc_name = "GALIL"
+        macro_to_change = [
+            (Macro("GALILADDR"), Macro("GALILADDR", "1"))
+        ]
+
+        self.file_access.open_file = Mock(return_value=xml)
+        self.file_access.write_file = Mock()
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
+
+        # When:
+        self.macro_changer.change_macros(ioc_name, macro_to_change)
+
+        # Then:
+        written_xml = ET.fromstring(self.file_access.write_file_contents)
+        result_galiladdr = written_xml.findall(".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE})
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
+
+        assert_that(result_galiladdr, has_length(1), "changed macro count")
+        assert_that(result_galiladdr[0].get("name"), is_("GALILADDR"))
+        assert_that(result_galiladdr[0].get("value"), is_("1"))
+
+        assert_that(result_mtrctrl, has_length(1), "changed macro count")
+        assert_that(result_mtrctrl[0].get("name"), is_("MTRCTRL"))
+        assert_that(result_mtrctrl[0].get("value"), is_("0"))
+
+
     def test_that_GIVEN_xml_with_multiple_old_ioc_macros_THEN_all_macros_are_updated(self):
         # Given:
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDRXX": "", "MTRCTRLXX": ""}))

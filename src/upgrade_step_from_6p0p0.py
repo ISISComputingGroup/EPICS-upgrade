@@ -14,9 +14,9 @@ class SetDanfysikDisableAutoonoffMacros(UpgradeStep):
             hostname = socket.gethostname()
             ioc_name = "DFKPS"
             if hostname=="NDXEMU":
-                macro_to_change = Macro("DISABLE_AUTOONOFF", "0")
                 change_macros_in_xml = ChangeMacrosInXML(file_access, logger)
-                change_macros_in_xml.change_specific_macros(ioc_name, macro_to_change)
-            return 0
-        except:
+                change_macros_in_xml.change_macros(ioc_name, [(Macro("DISABLE_AUTOONOFF"), Macro("DISABLE_AUTOONOFF", "0"))])
+                return 0
+        except Exception as e:
+            logger.error("Unable to perform upgrade, caught error: {}".format(e))
             return 1

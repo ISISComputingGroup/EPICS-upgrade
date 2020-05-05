@@ -34,7 +34,7 @@ UPGRADE_STEPS = [
     ("4.4.1", UpgradeStepNoOp()),
     ("5.0.0", UpgradeStepNoOp()),
     ("5.0.1", UpgradeMotionSetpoints()),
-    ("5.0.2", UpgradeStepNoOp()),
+    ("5.0.2", UpgradeExpDatabase()),
     ("5.1.0", RemoveOldExpPopulator()),
     ("5.1.0.1", UpgradeStepNoOp()),
     ("5.1.0.2", UpgradeStepNoOp()),
