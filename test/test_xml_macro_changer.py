@@ -499,6 +499,85 @@ class TestChangeIOCName(unittest.TestCase):
         assert_that((unchanged_ioc in output_file), is_(True))
 
 
+class TestAddMacro(unittest.TestCase):
+    def setUp(self):
+        self.file_access = FileAccessStub()
+        self.logger = LoggingStub()
+        self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
+
+    def test_GIVEN_one_ioc_THEN_add_macro(self):
+        # Given:
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"}))
+        ioc_name = "GALIL"
+        macro_to_add = Macro("TEST", "1")
+        pattern = "^(0|1)$"
+        description = "Test description"
+        default = "0"
+
+        self.file_access.open_file = Mock(return_value=xml)
+        self.file_access.write_file = Mock()
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
+
+        # When:
+        self.macro_changer.add_macro(ioc_name, macro_to_add, pattern, description, default)
+
+        # Then:
+        written_xml = ET.fromstring(self.file_access.write_file_contents)
+        result_galiladdr = written_xml.findall(".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE})
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
+        result_test = written_xml.findall(".//ns:macros/*[@name='TEST']", {"ns": NAMESPACE})
+
+        assert_that(result_galiladdr, has_length(1), "changed macro count")
+        assert_that(result_galiladdr[0].get("name"), is_("GALILADDR"))
+        assert_that(result_galiladdr[0].get("value"), is_("0"))
+
+        assert_that(result_mtrctrl, has_length(1), "changed macro count")
+        assert_that(result_mtrctrl[0].get("name"), is_("MTRCTRL"))
+        assert_that(result_mtrctrl[0].get("value"), is_("0"))
+
+        assert_that(result_test, has_length(1), "changed macro count")
+        assert_that(result_test[0].get("name"), is_(macro_to_add.name))
+        assert_that(result_test[0].get("value"), is_(macro_to_add.value))
+        assert_that(result_test[0].get("pattern"), is_(pattern))
+        assert_that(result_test[0].get("description"), is_(description))
+        assert_that(result_test[0].get("defaultValue"), is_(default))
+        assert_that(result_test[0].get("hasDefault"), is_("yes"))
+
+    def test_GIVEN_one_ioc_that_already_has_macro_THEN_dont_add_macro(self):
+        # Given:
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0", "TEST": "0"}))
+        ioc_name = "GALIL"
+        macro_to_add = Macro("TEST", "1")
+        pattern = "^(0|1)$"
+        description = "Test description"
+        default = "0"
+
+        self.file_access.open_file = Mock(return_value=xml)
+        self.file_access.write_file = Mock()
+        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
+
+        # When:
+        self.macro_changer.add_macro(ioc_name, macro_to_add, pattern, description, default)
+
+        # Then:
+        written_xml = ET.fromstring(self.file_access.write_file_contents)
+        result_galiladdr = written_xml.findall(".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE})
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
+        result_test = written_xml.findall(".//ns:macros/*[@name='TEST']", {"ns": NAMESPACE})
+
+        assert_that(result_galiladdr, has_length(1), "changed macro count")
+        assert_that(result_galiladdr[0].get("name"), is_("GALILADDR"))
+        assert_that(result_galiladdr[0].get("value"), is_("0"))
+
+        assert_that(result_mtrctrl, has_length(1), "changed macro count")
+        assert_that(result_mtrctrl[0].get("name"), is_("MTRCTRL"))
+        assert_that(result_mtrctrl[0].get("value"), is_("0"))
+
+        assert_that(result_test, has_length(1), "changed macro count")
+        assert_that(result_test[0].get("name"), is_("TEST"))
+        assert_that(result_test[0].get("value"), is_("0"))
+
+
 if __name__ == '__main__':
 
     unittest.main()
