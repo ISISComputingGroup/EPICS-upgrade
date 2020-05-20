@@ -87,13 +87,7 @@ class ChangeMacrosInXML(object):
                     new_macro = ioc_xml.createElement("macro")
                     new_macro.setAttribute("name", macro_to_add.name)
                     new_macro.setAttribute("value", macro_to_add.value)
-                    new_macro.setAttribute("pattern", pattern)
-                    new_macro.setAttribute("description", description)
-                    if default_value is not None:
-                        new_macro.setAttribute("hasDefault", "yes")
-                        new_macro.setAttribute("defaultValue", default_value)
-                    else:
-                        new_macro.setAttribute("hasDefault", "no")
+
                     macros.appendChild(new_macro)
 
             self._file_access.write_xml_file(path, ioc_xml)

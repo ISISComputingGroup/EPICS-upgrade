@@ -538,10 +538,6 @@ class TestAddMacro(unittest.TestCase):
         assert_that(result_test, has_length(1), "changed macro count")
         assert_that(result_test[0].get("name"), is_(macro_to_add.name))
         assert_that(result_test[0].get("value"), is_(macro_to_add.value))
-        assert_that(result_test[0].get("pattern"), is_(pattern))
-        assert_that(result_test[0].get("description"), is_(description))
-        assert_that(result_test[0].get("defaultValue"), is_(default))
-        assert_that(result_test[0].get("hasDefault"), is_("yes"))
 
     def test_GIVEN_one_ioc_that_already_has_macro_THEN_dont_add_macro(self):
         # Given:
