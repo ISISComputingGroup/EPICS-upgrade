@@ -36,7 +36,7 @@ UPGRADE_STEPS = [
     ("5.0.1", UpgradeMotionSetpoints()),
     ("5.0.2", UpgradeExpDatabase()),
     ("5.1.0", RemoveOldExpPopulator()),
-    ("5.1.0.1", UpgradeStepNoOp()),
+    ("5.1.0.1", UpgradeArchiveUseMediumBlob()),
     ("5.1.0.2", UpgradeStepNoOp()),
     ("5.1.1", UpgradeMOXA1210IOCs()),  # should have been 5.1.0.3 but we cant change it now
     ("5.1.1.1", UpgradeMOXA12XXMacros()),

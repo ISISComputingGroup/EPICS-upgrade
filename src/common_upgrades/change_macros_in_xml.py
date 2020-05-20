@@ -1,5 +1,4 @@
 import re
-import xml.dom
 from xml.parsers.expat import ExpatError
 
 from src.common_upgrades.utils.constants import FILTER_REGEX, IOC_FILE, SYNOPTIC_FOLDER
@@ -44,7 +43,7 @@ def find_macro_with_name(macros, name_to_find):
         macros: XML element containing list of macros
         name: Name of macro to find
     Returns:
-        True or False
+        True if macro was found
     """
     for macro in macros.getElementsByTagName("macro"):
         if macro.getAttribute("name") == name_to_find:
@@ -84,19 +83,18 @@ class ChangeMacrosInXML(object):
         for path, ioc_xml in self._file_access.get_config_files(IOC_FILE):
             for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
                 macros = ioc.getElementsByTagName("macros")[0]
-                if find_macro_with_name(macros, macro_to_add.name):
-                    break
-                new_macro = ioc_xml.createElement("macro")
-                new_macro.setAttribute("name", macro_to_add.name)
-                new_macro.setAttribute("value", macro_to_add.value)
-                new_macro.setAttribute("pattern", pattern)
-                new_macro.setAttribute("description", description)
-                if default_value:
-                    new_macro.setAttribute("hasDefault", "yes")
-                    new_macro.setAttribute("defaultValue", default_value)
-                else:
-                    new_macro.setAttribute("hasDefault", "no")
-                macros.appendChild(new_macro)
+                if not find_macro_with_name(macros, macro_to_add.name):
+                    new_macro = ioc_xml.createElement("macro")
+                    new_macro.setAttribute("name", macro_to_add.name)
+                    new_macro.setAttribute("value", macro_to_add.value)
+                    new_macro.setAttribute("pattern", pattern)
+                    new_macro.setAttribute("description", description)
+                    if default_value is not None:
+                        new_macro.setAttribute("hasDefault", "yes")
+                        new_macro.setAttribute("defaultValue", default_value)
+                    else:
+                        new_macro.setAttribute("hasDefault", "no")
+                    macros.appendChild(new_macro)
 
             self._file_access.write_xml_file(path, ioc_xml)
 

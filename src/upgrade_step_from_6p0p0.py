@@ -13,7 +13,7 @@ class SetDanfysikDisableAutoonoffMacros(UpgradeStep):
         try:
             hostname = socket.gethostname()
             ioc_name = "DFKPS"
-            if hostname=="NDXEMU":
+            if hostname == "NDXEMU":
                 change_macros_in_xml = ChangeMacrosInXML(file_access, logger)
                 change_macros_in_xml.add_macro(ioc_name, Macro("DISABLE_AUTOONOFF", "0"), "^(0|1)$", "Disable automatic PSU on/off feature", "1")
                 change_macros_in_xml.change_macros(ioc_name, [(Macro("DISABLE_AUTOONOFF"), Macro("DISABLE_AUTOONOFF", "0"))])
