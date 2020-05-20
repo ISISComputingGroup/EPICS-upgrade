@@ -10,6 +10,7 @@ from src.upgrade_step_from_5p0p1 import UpgradeMotionSetpoints, UpgradeExpDataba
 from src.upgrade_step_from_5p1p0 import RemoveOldExpPopulator
 from src.upgrade_step_from_5p4p1 import UpgradeBannerXml
 from src.upgrade_step_from_5p6p0 import ChangeConfigurationSchema, CopyDashboardDatabase
+from src.upgrade_step_from_6p0p0 import SetDanfysikDisableAutoonoffMacros
 from src.upgrade_step_ITC_PVs import ChangeITCPVs
 from src.upgrade_step_rename_moxa1210 import UpgradeMOXA1210IOCs
 from src.upgrade_step_change_moxa12XX_macros import UpgradeMOXA12XXMacros
@@ -50,7 +51,8 @@ UPGRADE_STEPS = [
     ("5.6.0.3", UpgradeStepCheckInitInst()),
     ("5.6.0.4", CopyDashboardDatabase()),
     ("5.6.0.5", UpgradeStepNoOp()),
-    ("6.0.0", None),
+    ("6.0.0", SetDanfysikDisableAutoonoffMacros()),
+    ("6.0.0.1", None)
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
