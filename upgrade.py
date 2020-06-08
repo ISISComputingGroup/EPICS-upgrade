@@ -51,7 +51,6 @@ UPGRADE_STEPS = [
     ("5.6.0.3", UpgradeStepCheckInitInst()),
     ("5.6.0.4", CopyDashboardDatabase()),
     ("5.6.0.5", UpgradeStepNoOp()),
-    ("6.0.0", UpgradeStepNoOp()),
     ("6.0.0", SetDanfysikDisableAutoonoffMacros()),
     ("6.0.0.1", UpgradeStepNoOp()),
     ("7.0.0", None),
