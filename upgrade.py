@@ -52,7 +52,8 @@ UPGRADE_STEPS = [
     ("5.6.0.4", CopyDashboardDatabase()),
     ("5.6.0.5", UpgradeStepNoOp()),
     ("6.0.0", SetDanfysikDisableAutoonoffMacros()),
-    ("6.0.0.1", None)
+    ("6.0.0.1", UpgradeStepNoOp()),
+    ("7.0.0", None),
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
