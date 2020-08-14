@@ -54,7 +54,7 @@ class FileAccess(object):
             self._logger.info("Writing new version number {0}".format(version))
             f.write("{}\n".format(version))
 
-    def write_file(self, filename, file_contents):
+    def write_file(self, filename, file_contents, mode = "w"):
         """
         Write file contents (will overwrite existing files)
 
@@ -65,10 +65,20 @@ class FileAccess(object):
         Returns:
 
         """
-        with open(os.path.join(self.config_base, filename), mode="w") as f:
+        with open(os.path.join(self.config_base, filename), mode=mode) as f:
             self._logger.info("Writing file {0}".format(filename))
             for line in file_contents:
                 f.write("{}\n".format(line))
+
+    def line_exists(self, filename, string):
+        """
+        Check if string exists as a line in file
+        """
+        with open(os.path.join(self.config_base, filename), "r") as f:
+            for line in f:
+                if line == string:
+                    return True
+        return False
 
     def open_xml_file(self, filename):
         """
