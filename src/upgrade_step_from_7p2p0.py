@@ -1,9 +1,10 @@
-import socket
-import os
-
-from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
-from src.common_upgrades.utils.macro import Macro
 from src.upgrade_step import UpgradeStep
+from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
+from src.common_upgrades.utils.constants import MOTION_SET_POINTS_FOLDER
+from future.builtins import input
+
+ERROR_CODE = -1
+SUCCESS_CODE = 0
 
 
 class IgnoreRcpttSynoptics(UpgradeStep):
@@ -11,8 +12,6 @@ class IgnoreRcpttSynoptics(UpgradeStep):
     Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed.
     """
 
-    ERROR_CODE = -1
-    SUCCESS_CODE = 0
     file_name = ".gitignore"
     text_content = ['*.py[co]',
                     'rcptt_*/',
@@ -45,8 +44,60 @@ class IgnoreRcpttSynoptics(UpgradeStep):
                     file_access.write_file(self.file_name, ["rcptt_*"], "a")
 
             logger.info("Step completed")
-            return self.SUCCESS_CODE
+            return SUCCESS_CODE
 
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))
-            return self.ERROR_CODE
+            return ERROR_CODE
+
+
+class UpgradeMotionSetPoints(UpgradeStep):
+    """
+    Changes blocks to point at renamed PVs. Warns about changed setup.
+    """
+
+    def perform(self, file_access, logger):
+        """
+        Perform the upgrade step
+        Args:
+            file_access (FileAccess): file access
+            logger (LocalLogger): logger
+
+        Returns: exit code 0 success; anything else fail
+
+        """
+        try:
+            logger.info("Changing motion set point PVs")
+
+            changer = ChangePVsInXML(file_access, logger)
+            num_of_changes = changer.change_pv_name("COORD1", "COORD0")
+            changer.change_pv_name("COORD2", "COORD1")
+
+            changer.change_pv_name("COORD0:NO_OFFSET", "COORD0:NO_OFF")
+            changer.change_pv_name("COORD1:NO_OFFSET", "COORD1:NO_OFF")
+
+            changer.change_pv_name("COORD0:RBV:OFFSET", "COORD0:RBV:OFF")
+            changer.change_pv_name("COORD1:RBV:OFFSET", "COORD1:RBV:OFF")
+
+            changer.change_pv_name("COORD0:LOOKUP:SET:RBV", "COORD0:SET:RBV")
+            changer.change_pv_name("COORD1:LOOKUP:SET:RBV", "COORD1:SET:RBV")
+
+            if file_access.exists(MOTION_SET_POINTS_FOLDER):
+                print("{} folder exists. Motion set point configuration has changed significantly in this version and must be manually fixed".format(MOTION_SET_POINTS_FOLDER))
+                print("See https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Motion-Set-points#upgrading-from-720 for how to do this")
+                input("Press any key to confirm this is done.")
+
+            # CoordX:MTR is gone, hard to automatically replace so just raise as issue
+            number_of_motor_refs = changer.change_pv_name("COORD0:MTR", "COORD0:MTR")
+            number_of_motor_refs += changer.change_pv_name("COORD1:MTR", "COORD1:MTR")
+
+            if number_of_motor_refs > 0:
+                print("The PV COORDX:MTR has been found in a config/synoptic but no longer exists")
+                print("Manually replace with a reference to the underlying axis and rerun the upgrade")
+                return ERROR_CODE
+
+            return SUCCESS_CODE
+
+        except Exception as e:
+            logger.error("Unable to perform upgrade, caught error: {}".format(e))
+            return ERROR_CODE
