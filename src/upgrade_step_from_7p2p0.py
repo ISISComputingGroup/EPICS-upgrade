@@ -83,8 +83,14 @@ class UpgradeMotionSetPoints(UpgradeStep):
             changer.change_pv_name("COORD1:LOOKUP:SET:RBV", "COORD1:SET:RBV")
 
             if file_access.exists(MOTION_SET_POINTS_FOLDER):
-                print("{} folder exists. Motion set point configuration has changed significantly in this version and must be manually fixed".format(MOTION_SET_POINTS_FOLDER))
-                print("See https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Motion-Set-points#upgrading-from-720 for how to do this")
+                print(
+                    "{} folder exists. Motion set point configuration has changed significantly"
+                    " in this version and must be manually fixed".format(MOTION_SET_POINTS_FOLDER)
+                )
+                print(
+                    "See https://github.com/ISISComputingGroup/ibex_developers_manual/"
+                    "wiki/Motion-Set-points#upgrading-from-720 for how to do this"
+                )
                 input("Press any key to confirm this is done.")
 
             # CoordX:MTR is gone, hard to automatically replace so just raise as issue
