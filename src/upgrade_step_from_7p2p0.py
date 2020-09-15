@@ -83,6 +83,8 @@ class UpgradeMotionSetPoints(UpgradeStep):
             changer.change_pv_name("COORD1:LOOKUP:SET:RBV", "COORD1:SET:RBV")
 
             if file_access.exists(MOTION_SET_POINTS_FOLDER):
+                print()
+                print()
                 print(
                     "{} folder exists. Motion set point configuration has changed significantly"
                     " in this version and must be manually fixed".format(MOTION_SET_POINTS_FOLDER)

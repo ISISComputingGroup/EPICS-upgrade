@@ -1,25 +1,6 @@
 from src.common_upgrades.utils.constants import BLOCK_FILE
 
 
-def node_text_filter(filter_text, element_name, input_files):
-    """
-    A generator that gives all the instances of filter_text within the element_name elements of the input_files.
-    Args:
-        filter_text: String, ext to find
-        element_name: String, tag name of the elements where to look for filter_text
-        input_files: Iterable, XML files where to search
-
-    Returns:
-        Generator giving node instances
-    """
-    for path, xml in input_files:
-        for node in xml.getElementsByTagName(element_name):
-            if node.firstChild.nodeType != node.TEXT_NODE:
-                continue
-            current_pv_value = node.firstChild.nodeValue
-            if filter_text in current_pv_value:
-                yield node
-
 
 class ChangePVsInXML(object):
     """
@@ -39,6 +20,26 @@ class ChangePVsInXML(object):
         self.block_config = self._file_access.get_config_files(BLOCK_FILE)
         self.synoptics = self._file_access.get_synoptic_files()
 
+    def node_text_filter(self, filter_text, element_name, input_files):
+        """
+        A generator that gives all the instances of filter_text within the element_name elements of the input_files.
+        Args:
+            filter_text: String, ext to find
+            element_name: String, tag name of the elements where to look for filter_text
+            input_files: Iterable, XML files where to search
+
+        Returns:
+            Generator giving node instances
+        """
+        for path, xml in input_files:
+            for node in xml.getElementsByTagName(element_name):
+                if node.firstChild.nodeType != node.TEXT_NODE:
+                    continue
+                current_pv_value = node.firstChild.nodeValue
+                if filter_text in current_pv_value:
+                    self._logger.info("{} found in {}".format(filter_text, path))
+                    yield node
+
     def _replace_text_in_elements(self, old_text, new_text, element_name, input_files):
         """
         Replaces all instances of old_text with new_text in all element_name elements of one or more XML files
@@ -48,7 +49,7 @@ class ChangePVsInXML(object):
             element_name: String, tag name of the elements where to look for old_text
             input_files: Iterable, XML files where to substitute text
         """
-        for node in node_text_filter(old_text, element_name, input_files):
+        for node in self.node_text_filter(old_text, element_name, input_files):
             replacement = node.firstChild.nodeValue.replace(old_text, new_text)
             node.firstChild.replaceWholeText(replacement)
 
@@ -82,6 +83,6 @@ class ChangePVsInXML(object):
         """
         num_of_instances = 0
         for pv_name in pv_names:
-            num_of_instances += len(node_text_filter(pv_name, "read_pv", self.block_config))
-            num_of_instances += len(node_text_filter(pv_name, "address", self.synoptics))
+            num_of_instances += len(self.node_text_filter(pv_name, "read_pv", self.block_config))
+            num_of_instances += len(self.node_text_filter(pv_name, "address", self.synoptics))
         return num_of_instances
