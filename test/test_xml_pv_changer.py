@@ -59,20 +59,31 @@ class TestChangePVs(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.pv_changer = ChangePVsInXML(self.file_access, self.logger)
 
     def _test_changing_pv(self, starting_blocks, pv_to_change, new_pv, expected_blocks):
         self._test_changing_blocks(starting_blocks, pv_to_change, new_pv, expected_blocks)
         self._test_changing_synoptics(starting_blocks, pv_to_change, new_pv, expected_blocks)
 
+    def _create_xml_with_starting_blocks(self, starting_blocks, is_config=True):
+        if is_config:
+            file_xml, individual_xml = BLOCK_FILE_XML, BLOCK_XML
+        else:
+            file_xml, individual_xml = SYNOPTIC_FILE_XML, SYNOPTIC_XML
+        self.file_access.open_file = Mock(return_value=create_pv_xml(file_xml, individual_xml, starting_blocks))
+        self.file_access.write_file = Mock()
+        file_returned = [("file1.xml", self.file_access.open_xml_file(None))]
+        if is_config:
+            self.file_access.get_config_files = Mock(return_value=file_returned)
+        else:
+            self.file_access.get_synoptic_files = Mock(return_value=file_returned)
+
     def _test_changing_blocks(self, starting_blocks, pv_to_change, new_pv, expected_blocks):
         # Given:
-        self.file_access.open_file = Mock(return_value=create_pv_xml(BLOCK_FILE_XML, BLOCK_XML, starting_blocks))
-        self.file_access.write_file = Mock()
-        self.file_access.get_config_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
+        self._create_xml_with_starting_blocks(starting_blocks)
 
         # When:
-        self.pv_changer.change_pv_name_in_blocks(pv_to_change, new_pv)
+        pv_changer = ChangePVsInXML(self.file_access, self.logger)
+        pv_changer.change_pv_name_in_blocks(pv_to_change, new_pv)
 
         # Then:
         expected_xml = create_pv_xml(BLOCK_FILE_XML, BLOCK_XML, expected_blocks)
@@ -80,12 +91,11 @@ class TestChangePVs(unittest.TestCase):
 
     def _test_changing_synoptics(self, starting_blocks, pv_to_change, new_pv, expected_blocks):
         # Given:
-        self.file_access.open_file = Mock(return_value=create_pv_xml(SYNOPTIC_FILE_XML, SYNOPTIC_XML, starting_blocks))
-        self.file_access.write_file = Mock()
-        self.file_access.get_synoptic_files = Mock(return_value=[("file1.xml", self.file_access.open_xml_file(None))])
+        self._create_xml_with_starting_blocks(starting_blocks, False)
 
         # When:
-        self.pv_changer.change_pv_names_in_synoptics(pv_to_change, new_pv)
+        pv_changer = ChangePVsInXML(self.file_access, self.logger)
+        pv_changer.change_pv_names_in_synoptics(pv_to_change, new_pv)
 
         # Then:
         expected_xml = create_pv_xml(SYNOPTIC_FILE_XML, SYNOPTIC_XML, expected_blocks)
@@ -107,6 +117,26 @@ class TestChangePVs(unittest.TestCase):
     def test_GIVEN_block_with_name_that_could_be_changed_WHEN_pv_is_changed_THEN_name_is_not(self):
         self._test_changing_pv([("CHANGEME", "BLAH")], "CHANGEME", "CHANGED",
                                [("CHANGEME", "BLAH")])
+
+    def GIVEN_two_blocks_with_pvs_that_obey_filter_WHEN_pv_counted_THEN_returns_two_and_xml_unchanged(self):
+        starting_blocks = [("BLOCKNAME", "CHANGEME:BUT:NOT:ME"), ("BLOCKNAME_1", "ALSO:CHANGEME:BUT:NOT:ME")]
+        self._create_xml_with_starting_blocks(BLOCK_FILE_XML, BLOCK_XML, starting_blocks)
+
+        pv_changer = ChangePVsInXML(self.file_access, self.logger)
+        number_of_pvs = pv_changer.get_number_of_instances_of_pv("CHANGEME")
+
+        assert_that(number_of_pvs, is_(2))
+        self.file_access.write_file.assert_not_called()
+
+    def GIVEN_block_with_name_that_obeys_filter_WHEN_pv_counted_THEN_returns_zero_and_xml_unchanged(self):
+        starting_blocks = [("CHANGEME", "BLAH")]
+        self._create_xml_with_starting_blocks(BLOCK_FILE_XML, BLOCK_XML, starting_blocks)
+
+        pv_changer = ChangePVsInXML(self.file_access, self.logger)
+        number_of_pvs = pv_changer.get_number_of_instances_of_pv("CHANGEME")
+
+        assert_that(number_of_pvs, is_(0))
+        self.file_access.write_file.assert_not_called()
 
 
 if __name__ == '__main__':

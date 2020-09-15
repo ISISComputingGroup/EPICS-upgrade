@@ -70,7 +70,7 @@ class UpgradeMotionSetPoints(UpgradeStep):
             logger.info("Changing motion set point PVs")
 
             changer = ChangePVsInXML(file_access, logger)
-            num_of_changes = changer.change_pv_name("COORD1", "COORD0")
+
             changer.change_pv_name("COORD2", "COORD1")
 
             changer.change_pv_name("COORD0:NO_OFFSET", "COORD0:NO_OFF")
@@ -94,10 +94,7 @@ class UpgradeMotionSetPoints(UpgradeStep):
                 input("Press any key to confirm this is done.")
 
             # CoordX:MTR is gone, hard to automatically replace so just raise as issue
-            number_of_motor_refs = changer.change_pv_name("COORD0:MTR", "COORD0:MTR")
-            number_of_motor_refs += changer.change_pv_name("COORD1:MTR", "COORD1:MTR")
-
-            if number_of_motor_refs > 0:
+            if changer.get_number_of_instances_of_pv(["COORD0:MTR", "COORD1:MTR"]) > 0:
                 print("The PV COORDX:MTR has been found in a config/synoptic but no longer exists")
                 print("Manually replace with a reference to the underlying axis and rerun the upgrade")
                 return ERROR_CODE
