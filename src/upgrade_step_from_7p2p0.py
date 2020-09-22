@@ -71,6 +71,7 @@ class UpgradeMotionSetPoints(UpgradeStep):
 
             changer = ChangePVsInXML(file_access, logger)
 
+            changer.change_pv_name("COORD1", "COORD0")
             changer.change_pv_name("COORD2", "COORD1")
 
             changer.change_pv_name("COORD0:NO_OFFSET", "COORD0:NO_OFF")
