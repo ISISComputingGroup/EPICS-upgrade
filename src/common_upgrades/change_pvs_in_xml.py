@@ -68,9 +68,21 @@ class ChangePVsInXML(object):
         self.change_pv_names_in_synoptics(old_pv_name, new_pv_name)
 
     def change_pv_name_in_blocks(self, old_pv_name, new_pv_name):
+        """
+        Move any blocks pointing at old_pv_name to point at new_pv_name.
+        Args:
+            old_pv_name: The old PV to remove references to
+            new_pv_name: The new PV to replace it with
+        """
         self._replace_text_in_elements(old_pv_name, new_pv_name, "read_pv", self.block_config)
 
     def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):
+        """
+        Move any synoptic PV targets from pointing at old_pv_name to point to new_pv_name.
+        Args:
+            old_pv_name: The old PV to remove references to
+            new_pv_name: The new PV to replace it with
+        """
         self._replace_text_in_elements(old_pv_name, new_pv_name, "address", self.synoptics)
 
     def get_number_of_instances_of_pv(self, pv_names):
