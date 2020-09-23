@@ -2,7 +2,7 @@ import os
 from xml.dom import minidom
 import shutil
 from xml.parsers.expat import ExpatError
-
+import six
 from src.common_upgrades.utils.constants import CONFIG_FOLDER, COMPONENT_FOLDER, SYNOPTIC_FOLDER
 
 
@@ -189,3 +189,57 @@ class FileAccess(object):
         """
         for synoptic_path in [filename for filename in self.listdir(SYNOPTIC_FOLDER) if filename.endswith('.xml')]:
             yield synoptic_path, self._get_xml(synoptic_path)
+
+
+class CachingFileAccess(object):
+    """
+    Context that uses the given file access object but does not actually write to file until the context is left
+    without an error.
+    """
+    def __init__(self, file_access):
+        self.cached_writes = dict()
+        self._file_access = file_access
+
+    def __enter__(self):
+        self.old_write_method = self._file_access.write_xml_file
+        self.old_open_method = self._file_access.open_xml_file
+        self._file_access.write_xml_file = self.write_xml_file
+        self._file_access.open_xml_file = self.open_xml_file
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._file_access.write_xml_file = self.old_write_method
+        self._file_access.open_xml_file = self.old_open_method
+        if exc_type is None:
+            self.write()
+
+    def open_xml_file(self, filename):
+        """
+        Open a file and returns the xml it contains (returns the cached file if it exists)
+
+        Args:
+            filename: filename to open
+
+        Returns:
+            contents of file as an xml tree
+        """
+        if filename in six.iterkeys(self.cached_writes):
+            return self.cached_writes[filename]
+        else:
+            return self.old_open_method(filename)
+
+    def write_xml_file(self, filename, xml):
+        """
+        Caches a write of xml to a file
+
+        Args:
+            filename: filename to save
+            xml: xml to save
+        """
+        self.cached_writes[filename] = xml
+
+    def write(self):
+        """
+        Write all cached writes to the file.
+        """
+        for filename, xml in six.iteritems(self.cached_writes):
+            self._file_access.write_xml_file(filename, xml)

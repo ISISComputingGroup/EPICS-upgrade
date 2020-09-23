@@ -1,7 +1,7 @@
 import os
 import unittest
 from mock import MagicMock as Mock
-from test.test_utils import test_changing_blocks, test_changing_synoptics
+from test.test_utils import test_changing_synoptics_and_blocks, test_action_does_not_write
 from mother import LoggingStub, FileAccessStub
 from src.upgrade_step_from_7p2p0 import IgnoreRcpttSynoptics, UpgradeMotionSetPoints
 from functools import partial
@@ -51,8 +51,7 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
         def action():
             self.upgrade_step.perform(self.file_access, self.logger)
 
-        test_changing_blocks(self.file_access, action, starting_blocks, expected_blocks)
-        test_changing_synoptics(self.file_access, action, starting_blocks, expected_blocks)
+        test_changing_synoptics_and_blocks(self.file_access, action, starting_blocks, expected_blocks)
 
     def test_GIVEN_coord_2_WHEN_step_performed_THEN_convert_to_coord_1(self):
         starting_blocks = [("BLOCK_NAME", "COORD2:SOMETHING"), ("BLOCK_NAME_2", "COORD2")]
@@ -61,8 +60,7 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
         def action():
             self.upgrade_step.perform(self.file_access, self.logger)
 
-        test_changing_blocks(self.file_access, action, starting_blocks, expected_blocks)
-        test_changing_synoptics(self.file_access, action, starting_blocks, expected_blocks)
+        test_changing_synoptics_and_blocks(self.file_access, action, starting_blocks, expected_blocks)
 
     def test_GIVEN_coord_2_renamed_PVs_WHEN_step_performed_THEN_convert_to_coord_1(self):
         starting_blocks = [("BLOCK_NAME", "COORD2:NO_OFFSET"), ("BLOCK_NAME_2", "COORD2:RBV:OFFSET"),
@@ -73,8 +71,7 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
         def action():
             self.upgrade_step.perform(self.file_access, self.logger)
 
-        test_changing_blocks(self.file_access, action, starting_blocks, expected_blocks)
-        test_changing_synoptics(self.file_access, action, starting_blocks, expected_blocks)
+        test_changing_synoptics_and_blocks(self.file_access, action, starting_blocks, expected_blocks)
 
     def test_GIVEN_coord_1_renamed_PVs_WHEN_step_performed_THEN_convert_to_coord_0(self):
         starting_blocks = [("BLOCK_NAME", "COORD1:NO_OFFSET"), ("BLOCK_NAME_2", "COORD1:RBV:OFFSET"),
@@ -85,8 +82,16 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
         def action():
             self.upgrade_step.perform(self.file_access, self.logger)
 
-        test_changing_blocks(self.file_access, action, starting_blocks, expected_blocks)
-        test_changing_synoptics(self.file_access, action, starting_blocks, expected_blocks)
+        test_changing_synoptics_and_blocks(self.file_access, action, starting_blocks, expected_blocks)
+
+    def test_GIVEN_config_contains_underlying_mtr_WHEN_step_performed_THEN_error_code_returned_and_(self):
+        starting_blocks = [("BLOCK_NAME", "COORD1:NO_OFFSET"), ("BLOCK_NAME_2", "COORD1:RBV:OFFSET"),
+                           ("BLOCK_NAME_3", "COORD1:LOOKUP:SET:RBV"), ("BLOCK_NAME_4", "COORD1:MTR")]
+
+        def action():
+            self.upgrade_step.perform(self.file_access, self.logger)
+
+        test_action_does_not_write(self.file_access, action, starting_blocks)
 
 
 if __name__ == '__main__':

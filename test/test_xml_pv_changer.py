@@ -2,7 +2,7 @@ import unittest
 from hamcrest import *
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from test.mother import LoggingStub, FileAccessStub
-from test.test_utils import create_xml_with_starting_blocks, test_changing_blocks, test_changing_synoptics
+from test.test_utils import create_xml_with_starting_blocks, test_changing_synoptics_and_blocks
 
 
 class TestChangePVs(unittest.TestCase):
@@ -11,16 +11,11 @@ class TestChangePVs(unittest.TestCase):
         self.logger = LoggingStub()
 
     def _test_changing_pv(self, starting_blocks, pv_to_change, new_pv, expected_blocks):
-        def block_action():
+        def action():
             pv_changer = ChangePVsInXML(self.file_access, self.logger)
-            pv_changer.change_pv_name_in_blocks(pv_to_change, new_pv)
+            pv_changer.change_pv_name(pv_to_change, new_pv)
 
-        def synoptic_action():
-            pv_changer = ChangePVsInXML(self.file_access, self.logger)
-            pv_changer.change_pv_names_in_synoptics(pv_to_change, new_pv)
-
-        test_changing_blocks(self.file_access, block_action, starting_blocks, expected_blocks)
-        test_changing_synoptics(self.file_access, synoptic_action, starting_blocks, expected_blocks)
+        test_changing_synoptics_and_blocks(self.file_access, action, starting_blocks, expected_blocks)
 
     def test_GIVEN_multiple_different_blocks_in_configuration_WHEN_ones_pv_is_changed_THEN_only_that_block_changes(self):
         self._test_changing_pv([("BLOCKNAME", "BLOCK_PV"), ("BLOCKNAME_2", "CHANGEME")], "CHANGEME", "CHANGED",

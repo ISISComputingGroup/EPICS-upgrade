@@ -1,5 +1,5 @@
 from src.common_upgrades.utils.constants import BLOCK_FILE
-
+import six
 
 
 class ChangePVsInXML(object):
@@ -17,28 +17,26 @@ class ChangePVsInXML(object):
         """
         self._file_access = file_access
         self._logger = logger
-        self.block_config = self._file_access.get_config_files(BLOCK_FILE)
-        self.synoptics = self._file_access.get_synoptic_files()
 
-    def node_text_filter(self, filter_text, element_name, input_files):
+    def node_text_filter(self, filter_text, element_name, path, xml):
         """
         A generator that gives all the instances of filter_text within the element_name elements of the input_files.
         Args:
             filter_text: String, ext to find
             element_name: String, tag name of the elements where to look for filter_text
-            input_files: Iterable, XML files where to search
+            path: Path to the xml to check
+            xml: The contents of the xml
 
         Returns:
             Generator giving node instances
         """
-        for path, xml in input_files:
-            for node in xml.getElementsByTagName(element_name):
-                if node.firstChild.nodeType != node.TEXT_NODE:
-                    continue
-                current_pv_value = node.firstChild.nodeValue
-                if filter_text in current_pv_value:
-                    self._logger.info("{} found in {}".format(filter_text, path))
-                    yield node
+        for node in xml.getElementsByTagName(element_name):
+            if node.firstChild.nodeType != node.TEXT_NODE:
+                continue
+            current_pv_value = node.firstChild.nodeValue
+            if filter_text in current_pv_value:
+                self._logger.info("{} found in {}".format(filter_text, path))
+                yield node
 
     def _replace_text_in_elements(self, old_text, new_text, element_name, input_files):
         """
@@ -49,11 +47,11 @@ class ChangePVsInXML(object):
             element_name: String, tag name of the elements where to look for old_text
             input_files: Iterable, XML files where to substitute text
         """
-        for node in self.node_text_filter(old_text, element_name, input_files):
-            replacement = node.firstChild.nodeValue.replace(old_text, new_text)
-            node.firstChild.replaceWholeText(replacement)
-
         for path, xml in input_files:
+            for node in self.node_text_filter(old_text, element_name, path, xml):
+                replacement = node.firstChild.nodeValue.replace(old_text, new_text)
+                node.firstChild.replaceWholeText(replacement)
+
             self._file_access.write_xml_file(path, xml)
 
     def change_pv_name(self, old_pv_name, new_pv_name):
@@ -74,7 +72,8 @@ class ChangePVsInXML(object):
             old_pv_name: The old PV to remove references to
             new_pv_name: The new PV to replace it with
         """
-        self._replace_text_in_elements(old_pv_name, new_pv_name, "read_pv", self.block_config)
+        self._replace_text_in_elements(old_pv_name, new_pv_name, "read_pv",
+                                       self._file_access.get_config_files(BLOCK_FILE))
 
     def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):
         """
@@ -83,7 +82,7 @@ class ChangePVsInXML(object):
             old_pv_name: The old PV to remove references to
             new_pv_name: The new PV to replace it with
         """
-        self._replace_text_in_elements(old_pv_name, new_pv_name, "address", self.synoptics)
+        self._replace_text_in_elements(old_pv_name, new_pv_name, "address", self._file_access.get_synoptic_files())
 
     def get_number_of_instances_of_pv(self, pv_names):
         """
@@ -95,6 +94,9 @@ class ChangePVsInXML(object):
         """
         num_of_instances = 0
         for pv_name in pv_names:
-            num_of_instances += len(self.node_text_filter(pv_name, "read_pv", self.block_config))
-            num_of_instances += len(self.node_text_filter(pv_name, "address", self.synoptics))
+            for path, xml in self._file_access.get_config_files(BLOCK_FILE):
+                num_of_instances += len(list(self.node_text_filter(pv_name, "read_pv", path, xml)))
+            for path, xml in self._file_access.get_synoptic_files():
+                num_of_instances += len(list(self.node_text_filter(pv_name, "address", path, xml)))
+
         return num_of_instances

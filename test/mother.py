@@ -27,10 +27,13 @@ class FileAccessStub(object):
     Stub for file access
     """
 
+    SYNOPTIC_FILENAME = "synoptic_file"
+
     def __init__(self):
         self.wrote_version = None
         self.write_filename = None
         self.write_file_contents = None
+        self.write_file_dict = dict()
         self.existing_files = None
 
     def write_version_number(self, version, filename):
@@ -39,6 +42,7 @@ class FileAccessStub(object):
     def write_file(self, filename, contents):
         self.write_filename = filename
         self.write_file_contents = "\n".join(contents)
+        self.write_file_dict[self.write_filename] = self.write_file_contents
 
     def open_file(self, filename):
         return EXAMPLE_GLOBALS_FILE.splitlines()
@@ -46,6 +50,7 @@ class FileAccessStub(object):
     def write_xml_file(self, filename, xml):
         self.write_filename = filename
         self.write_file_contents = xml.toxml()
+        self.write_file_dict[self.write_filename] = self.write_file_contents
 
     def open_xml_file(self, filename):
         return minidom.parseString(self.open_file(filename))
@@ -68,7 +73,7 @@ class FileAccessStub(object):
         yield type, self.open_xml_file(type)
 
     def get_synoptic_files(self):
-        yield "", self.open_xml_file("")
+        yield "synoptic_file", self.open_xml_file("synoptic_file")
 
 
 def create_xml_with_iocs(iocs):
