@@ -57,8 +57,10 @@ UPGRADE_STEPS = [
     ("7.0.0", UpgradeStepNoOp()),
     ("7.1.0", UpgradeStepNoOp()),
     ("7.2.0", IgnoreRcpttSynoptics()),
+    ("7.2.1", UpgradeStepNoOp()), # This is in the correct order as 7.2.1 happened before the upgrade of the motion setpoints
     ("7.2.0.1", UpgradeMotionSetPoints()),
-    ("7.2.0.2", None)
+    ("7.2.0.2", UpgradeStepNoOp()),
+    ("7.2.1.1", None)
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]

@@ -31,7 +31,7 @@ class ChangePVsInXML(object):
             Generator giving node instances
         """
         for node in xml.getElementsByTagName(element_name):
-            if node.firstChild.nodeType != node.TEXT_NODE:
+            if node.firstChild is None or node.firstChild.nodeType != node.TEXT_NODE:
                 continue
             current_pv_value = node.firstChild.nodeValue
             if filter_text in current_pv_value:
