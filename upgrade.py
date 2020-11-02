@@ -57,6 +57,7 @@ UPGRADE_STEPS = [
     ("7.0.0", UpgradeStepNoOp()),
     ("7.1.0", UpgradeStepNoOp()),
     ("7.2.0", IgnoreRcpttSynoptics()),
+    ("7.2.1", UpgradeStepNoOp()), # This is in the correct order as 7.2.1 happened before the upgrade of the motion setpoints
     ("7.2.0.1", UpgradeMotionSetPoints()),
     ("7.2.0.2", None)
 
