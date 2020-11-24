@@ -16,7 +16,7 @@ from src.upgrade_step_ITC_PVs import ChangeITCPVs
 from src.upgrade_step_rename_moxa1210 import UpgradeMOXA1210IOCs
 from src.upgrade_step_change_moxa12XX_macros import UpgradeMOXA12XXMacros
 from src.upgrade_step_noop import UpgradeStepNoOp
-from src.upgrade_step_add_manager_mode_protection import UpgradeStepAddManagerModeProtection
+from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
 from src.upgrade_step_check_init_inst import UpgradeStepCheckInitInst
 
 
@@ -46,7 +46,7 @@ UPGRADE_STEPS = [
     ("5.4.0", ChangeITCPVs()),
     ("5.4.0.1", UpgradeStepNoOp()),
     ("5.5.0", UpgradeStepNoOp()),
-    ("5.6.0", UpgradeStepAddManagerModeProtection()),
+    ("5.6.0", UpgradeStepAddMetaXmlElement("isProtected", "false")),
     ("5.6.0.1", ChangeConfigurationSchema()),
     ("5.6.0.2", UpgradeBannerXml()),
     ("5.6.0.3", UpgradeStepCheckInitInst()),
@@ -60,7 +60,8 @@ UPGRADE_STEPS = [
     ("7.2.1", UpgradeStepNoOp()), # This is in the correct order as 7.2.1 happened before the upgrade of the motion setpoints
     ("7.2.0.1", UpgradeMotionSetPoints()),
     ("7.2.0.2", UpgradeStepNoOp()),
-    ("7.2.1.1", None)
+    ("7.2.1.1", UpgradeStepAddMetaXmlElement("configuresBlockGWAndArchiver", "false")),
+    ("7.2.2", None)
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
