@@ -1,6 +1,7 @@
 import os
 
 from src.upgrade_step import UpgradeStep
+from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from src.common_upgrades.utils.constants import MOTION_SET_POINTS_FOLDER
 from src.file_access import CachingFileAccess
@@ -128,23 +129,5 @@ class ChangeReflOPITarget(UpgradeStep):
         Returns: exit code 0 success; anything else fail
 
         """
-
-        try:
-            logger.info("Changing OPI target for reflectometry device screen")
-            configs_dir = os.getenv("ICPCONFIGROOT")
-            device_screens_file = os.path.join(configs_dir, "devices", "screens.xml")
-
-            if file_access.exists(device_screens_file):
-                try:
-                    content = file_access.open_file(device_screens_file)
-                    content = [line.replace(self.REFL_OPI_TARGET_OLD, self.REFL_OPI_TARGET_NEW) for line in content]
-                    file_access.write_file(device_screens_file, content)
-                except OSError:
-                    return ERROR_CODE
-
-            logger.info("Step completed")
-            return SUCCESS_CODE
-
-        except Exception as e:
-            logger.error("Unable to perform upgrade, caught error: {}".format(e))
-            return ERROR_CODE
+        changer = SynopticsAndDeviceScreens(file_access, logger)
+        return changer.update_opi_keys({self.REFL_OPI_TARGET_OLD: self.REFL_OPI_TARGET_NEW})
