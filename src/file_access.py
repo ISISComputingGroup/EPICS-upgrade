@@ -3,7 +3,8 @@ from xml.dom import minidom
 import shutil
 from xml.parsers.expat import ExpatError
 import six
-from src.common_upgrades.utils.constants import CONFIG_FOLDER, COMPONENT_FOLDER, SYNOPTIC_FOLDER
+from src.common_upgrades.utils.constants import CONFIG_FOLDER, COMPONENT_FOLDER, SYNOPTIC_FOLDER, \
+    DEVICE_SCREEN_FILE, DEVICE_SCREENS_FOLDER
 
 
 class FileAccess(object):
@@ -189,6 +190,13 @@ class FileAccess(object):
         """
         for synoptic_path in [filename for filename in self.listdir(SYNOPTIC_FOLDER) if filename.endswith('.xml')]:
             yield synoptic_path, self._get_xml(synoptic_path)
+
+    def get_device_screens(self):
+        """
+        Returns the device screen file.
+        """
+        device_screens_path = os.path.join(DEVICE_SCREENS_FOLDER, DEVICE_SCREEN_FILE)
+        return device_screens_path, self._get_xml(device_screens_path)
 
 
 class CachingFileAccess(object):
