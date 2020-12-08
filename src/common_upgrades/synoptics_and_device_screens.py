@@ -38,7 +38,8 @@ class SynopticsAndDeviceScreens(object):
                     result = -2
                     break
             try:
-                self._update_keys_in_device_screens(device_screens[0], device_screens[1], keys_to_update)
+                if device_screens:
+                    self._update_keys_in_device_screens(device_screens[0], device_screens[1], keys_to_update)
             except Exception as e:
                 self.logger.error("Cannot upgrade device screens {}: {}".format(path, e))
                 result = -2

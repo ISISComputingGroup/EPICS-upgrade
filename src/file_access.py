@@ -193,10 +193,13 @@ class FileAccess(object):
 
     def get_device_screens(self):
         """
-        Returns the device screen file.
+        Returns the device screen file if it exists, else None.
         """
         device_screens_path = os.path.join(DEVICE_SCREENS_FOLDER, DEVICE_SCREEN_FILE)
-        return device_screens_path, self._get_xml(device_screens_path)
+        if os.path.exists(device_screens_path):
+            return device_screens_path, self._get_xml(device_screens_path)
+        else:
+            return None
 
 
 class CachingFileAccess(object):
