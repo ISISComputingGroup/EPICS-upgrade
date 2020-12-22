@@ -7,7 +7,7 @@ import os
 
 import sys
 module_ = "builtins"
-module_ = module_ if module_ in sys.modules else '__builtin__'
+module_ = module_ if module_ in sys.modules else 'builtins'
 
 try:
     import unittest.mock as mock
@@ -35,7 +35,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         assert_that(self.upgrade_step.search_files(file_names, root, self.file_access),
             equal_to(0), "File starting with init_inst is not in filenames, so no pre or post cmd would be found by genie")
         
-    @patch('__builtin__.open', mock_open(read_data=""), create=True)
+    @patch('builtins.open', mock_open(read_data=""), create=True)
     def test_GIVEN_file_with_name_none_containing_pre_post_cmd_WHEN_search_files_THEN_zero_returned(self):
         # Arrange
         file_names = ["init", "init_larmor", "another_file"]
@@ -44,7 +44,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         assert_that(self.upgrade_step.search_files(file_names, root, self.file_access),
             equal_to(0), "pre or post cmd not in init_larmor file, therefore this is ok")
 
-    @patch('__builtin__.open', mock_open(read_data="precmd"), create=True)
+    @patch('builtins.open', mock_open(read_data="precmd"), create=True)
     def test_GIVEN_file_with_name_containing_precmd_WHEN_search_files_THEN_error_returned(self):
         # Arrange
         file_names = ["init", "init_zoom", "another_file"]
@@ -53,7 +53,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         assert_that(self.upgrade_step.search_files(file_names, root, self.file_access),
             is_not(equal_to(0)), "pre cmd in init_zoom file, therefore error message should be returned")
 
-    @patch('__builtin__.open', mock_open(read_data="postcmd"))
+    @patch('builtins.open', mock_open(read_data="postcmd"))
     def test_GIVEN_file_with_name_containing_postcmd_WHEN_search_files_THEN_error_returned(self):
         # Arrange
         file_names = ["init", "init_inst", "another_file"]
@@ -62,7 +62,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         assert_that(self.upgrade_step.search_files(file_names, root, self.file_access),
             is_not(equal_to(0)), "postcmd in init_inst file, therefore error message should be returned")
 
-    @patch('__builtin__.open', mock_open(read_data="postcmd precmd"))
+    @patch('builtins.open', mock_open(read_data="postcmd precmd"))
     def test_GIVEN_file_with_name_containing_pre_and_post_cmd_WHEN_search_files_THEN_error_returned(self):
         # Arrange
         file_names = ["init", "init_iris", "another_file"]

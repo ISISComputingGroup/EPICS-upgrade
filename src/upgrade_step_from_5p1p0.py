@@ -48,7 +48,7 @@ class RemoveOldExpPopulator(UpgradeStep):
         try:
             service_status = QueryServiceStatus(service_name)
         except Exception as e:
-            if isinstance(e, pywintypes.error) and e[0] == SERVICE_DOES_NOT_EXIST:
+            if isinstance(e, pywintypes.error) and e.args[0] == SERVICE_DOES_NOT_EXIST:
                 self.logger.info("RB populator service not installed, no need to uninstall")
                 return
             else:
