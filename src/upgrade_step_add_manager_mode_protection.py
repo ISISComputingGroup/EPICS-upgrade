@@ -23,12 +23,12 @@ class UpgradeStepAddManagerModeProtection(UpgradeStep):
 
         """
         for folder in os.walk(CONFIG_FOLDER):
-            if (CONFIG_FOLDER != folder[0]):
-                if (self._add_isProtected_to_meta_in_folders(folder, logger)  != 0):
+            if CONFIG_FOLDER != folder[0]:
+                if self._add_isProtected_to_meta_in_folders(folder, logger)  != 0:
                     return -1
         for folder in os.walk(COMPONENT_FOLDER):
-           if (COMPONENT_FOLDER != folder[0]):
-               if (self._add_isProtected_to_meta_in_folders(folder, logger) != 0):
+           if COMPONENT_FOLDER != folder[0]:
+               if self._add_isProtected_to_meta_in_folders(folder, logger) != 0:
                    return -1
         return 0
 

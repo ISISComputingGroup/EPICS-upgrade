@@ -61,7 +61,7 @@ MACRO_XML = """
 
 def generate_many_iocs(configs):
     for config, iocs in configs.items():
-        yield (config, create_xml_with_iocs(iocs))
+        yield config, create_xml_with_iocs(iocs)
 
 
 def create_galil_ioc(galil_num, macros):
