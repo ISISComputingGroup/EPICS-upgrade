@@ -2,8 +2,19 @@
 install:
 	@echo Nothing to be done for upgrade scripts as pure python
 
+ifdef OS
+   RM = del \Q \S
+   FixPath = $(subst /,\,$1)
+else
+   ifeq ($(shell uname), Linux)
+      RM = rm -rf
+      FixPath = $1
+   endif
+endif
+
+
 clean:
-	-del *.pyc *.pyd *.pyo
+	$(RM) *.pyc *.pyd *.pyo
 
 .DEFAULT:
 	@echo Nothing to be done for upgrade scripts as pure python
