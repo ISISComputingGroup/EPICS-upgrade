@@ -1,6 +1,6 @@
 from src.upgrade_step import UpgradeStep
-from file_access import FileAccess
-from local_logger import LocalLogger
+from .file_access import FileAccess
+from .local_logger import LocalLogger
 
 
 class UpgradeStepNoOp(UpgradeStep):

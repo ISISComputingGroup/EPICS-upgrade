@@ -11,7 +11,7 @@ INCORRECT_ADDING = "{} now contains {} {} iocs it should contain exactly 1."
 ADD_AFTER_MISSING = "{} contains {} {} iocs it must contain exactly 1."
 
 
-class AddToBaseIOCs():
+class AddToBaseIOCs:
     """
     Add the ioc autostart to _base ioc so that it autostarts
     """

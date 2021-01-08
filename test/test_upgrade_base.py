@@ -46,7 +46,7 @@ class TestUpgradeBase(unittest.TestCase):
         result = self.upgrade().upgrade()
 
         assert_that(result, is_not(0), "Success")
-        assert_that(self.logger.log_err, contains("Unknown version number {0}".format(unknown_version)))
+        assert_that(self.logger.log_err, contains_exactly("Unknown version number {0}".format(unknown_version)))
 
     def test_GIVEN_config_contains_latest_version_number_WHEN_load_THEN_program_exits_successfully(self):
         expected_version = "3.3.0"

@@ -1,4 +1,7 @@
+import os
+
 from src.upgrade_step import UpgradeStep
+from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from src.common_upgrades.utils.constants import MOTION_SET_POINTS_FOLDER
 from src.file_access import CachingFileAccess
@@ -109,3 +112,22 @@ class UpgradeMotionSetPoints(UpgradeStep):
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))
             return ERROR_CODE
+
+
+class ChangeReflOPITarget(UpgradeStep):
+
+    REFL_OPI_TARGET_OLD = "Reflectometry Front Panel"
+    REFL_OPI_TARGET_NEW = "Reflectometry OPI"
+
+    def perform(self, file_access, logger):
+        """
+        Perform the upgrade step
+        Args:
+            file_access (FileAccess): file access
+            logger (LocalLogger): logger
+
+        Returns: exit code 0 success; anything else fail
+
+        """
+        changer = SynopticsAndDeviceScreens(file_access, logger)
+        return changer.update_opi_keys({self.REFL_OPI_TARGET_OLD: self.REFL_OPI_TARGET_NEW})
