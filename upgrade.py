@@ -27,8 +27,10 @@ UPGRADE_STEPS = [
     ("7.2.0.1", UpgradeMotionSetPoints()),
     ("7.2.0.2", UpgradeStepNoOp()),
     ("7.2.1.1", ChangeReflOPITarget()),
-    ("7.2.1.2", UpgradeStepAddMetaXmlElement("configuresBlockGWAndArchiver", "false")),
-    ("7.2.1.3", None)
+    ("7.2.1.2", UpgradeStepNoOp()),
+    ("7.3.0", UpgradeStepNoOp()),
+    ("7.3.1", UpgradeStepAddMetaXmlElement("configuresBlockGWAndArchiver", "false")),
+    ("7.4.0", None),
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
