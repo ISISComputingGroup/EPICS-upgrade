@@ -7,6 +7,7 @@ from src.upgrade import Upgrade
 from src.upgrade_step_from_6p0p0 import SetDanfysikDisableAutoonoffMacros
 from src.upgrade_step_from_7p2p0 import IgnoreRcpttSynoptics, UpgradeMotionSetPoints, ChangeReflOPITarget
 from src.upgrade_step_noop import UpgradeStepNoOp
+from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
 # The last step should have an upgrade class of None (this is how it knows it has reached the end)
@@ -27,7 +28,9 @@ UPGRADE_STEPS = [
     ("7.2.0.2", UpgradeStepNoOp()),
     ("7.2.1.1", ChangeReflOPITarget()),
     ("7.2.1.2", UpgradeStepNoOp()),
-	("7.3.0", None)
+    ("7.3.0", UpgradeStepNoOp()),
+    ("7.3.1", UpgradeStepAddMetaXmlElement("configuresBlockGWAndArchiver", "false")),
+    ("7.4.0", None),
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
