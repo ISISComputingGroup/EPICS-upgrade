@@ -30,7 +30,8 @@ UPGRADE_STEPS = [
     ("7.2.1.2", UpgradeStepNoOp()),
     ("7.3.0", UpgradeStepNoOp()),
     ("7.3.1", UpgradeStepAddMetaXmlElement("configuresBlockGWAndArchiver", "false")),
-    ("7.4.0", None),
+    ("7.4.0", UpgradeStepNoOp()),
+    ("7.5.0", None),
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
