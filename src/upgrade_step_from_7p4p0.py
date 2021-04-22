@@ -16,7 +16,7 @@ class SetISOBUSForILM200(UpgradeStep):
             if hostname == "NDXIMAT":
                 ioc_name = "ILM200"
                 change_macros_in_xml = ChangeMacrosInXML(file_access, logger)
-                change_macros_in_xml.add_macro(ioc_name, Macro("USE_IOSBUS", "No"), "^(Yes|No)$", "ISOBUS address (default: @1)", "@1")
+                change_macros_in_xml.add_macro(ioc_name, Macro("USE_IOSBUS", "No"), "^(Yes|No)$", "Whether to use ISOBUS for communications (default: Yes)", "Yes")
             return 0
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))
