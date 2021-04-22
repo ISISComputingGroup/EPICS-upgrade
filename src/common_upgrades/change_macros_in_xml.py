@@ -35,6 +35,24 @@ def change_macro_value(macro, old_macro_value, new_macro_value):
             macro.setAttribute("value", new_macro_value)
 
 
+def manipulate_macro_value(macro, old_macro_value, manipulation_function):
+    """
+    Manipulate the macros in the given xml with the manipulation_function.
+
+    Args:
+        macro : The macro xml node to change.
+        old_macro_value: The macro value to change.
+        manipulation_function: A function to manipulate the value with.
+    """
+    if manipulation_function is not None:
+        value = macro.getAttribute("value")
+        new_macro_value = manipulation_function(value)
+        if old_macro_value is None:
+            macro.setAttribute("value", new_macro_value)
+        elif re.match(old_macro_value, value) is not None:
+            macro.setAttribute("value", new_macro_value)
+
+
 def find_macro_with_name(macros, name_to_find):
     """
     Find whether macro with name attribute equal to argument name_to_find exists
@@ -114,6 +132,29 @@ class ChangeMacrosInXML(object):
                             change_macro_value(macro, old_macro.value, new_macro.value)
 
             self._file_access.write_xml_file(path, ioc_xml)
+    
+    def manipulate_macro_values(self, ioc_name, macros_to_change):
+        """
+        Manipulate the value of the given macro names for a specified IOC in all xml files.
+
+        Args:
+            ioc_name: Name of the IOC to change macros within.
+            macros_to_change: List of 2-tuples of old_macro Macro class and a manipulation function to change the value with.
+        Returns:
+            None.
+        """
+        for path, ioc_xml in self._file_access.get_config_files(IOC_FILE):
+            for ioc in self.ioc_tag_generator(path, ioc_xml, ioc_name):
+                macros = ioc.getElementsByTagName("macros")[0]
+                for macro in macros.getElementsByTagName("macro"):
+                    name = macro.getAttribute("name")
+                    for old_macro, manipulation_function in macros_to_change:
+                        #Check if current macro name starts with name of macro to be changed
+                        if re.match(old_macro.name, name) is not None:
+                            manipulate_macro_value(macro, old_macro.value, manipulation_function)
+
+            self._file_access.write_xml_file(path, ioc_xml)
+
 
     def change_ioc_name(self, old_ioc_name, new_ioc_name):
         """
