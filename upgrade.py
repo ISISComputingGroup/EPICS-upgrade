@@ -33,7 +33,8 @@ UPGRADE_STEPS = [
     ("7.3.1", UpgradeStepAddMetaXmlElement("configuresBlockGWAndArchiver", "false")),
     ("7.4.0", UpgradeStepNoOp()),
     ("7.4.1", SetISOBUSForILM200()),
-    ("7.4.1.1", None)
+    ("7.4.1.1", UpgradeStepNoOp()),
+    ("8.0.0", None)
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
