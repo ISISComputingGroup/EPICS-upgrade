@@ -24,10 +24,9 @@ class RenameGalilMulCmd(UpgradeStep):
     """
     def perform(self, file_access, logger): 
         try:
-            file_access.rename_file("configurations\\galilmul\\galilmul1.cmd", "configurations\\galilmul\\galilmul01.cmd", False)
-            file_access.rename_file("configurations\\galilmul\\galilmul2.cmd", "configurations\\galilmul\\galilmul02.cmd", False)
+            file_access.rename_file("configurations\\galilmul\\galilmul1.cmd", "configurations\\galilmul\\galilmul01.cmd")
+            file_access.rename_file("configurations\\galilmul\\galilmul2.cmd", "configurations\\galilmul\\galilmul02.cmd")
             
             return 0
         except Exception as e:
-            logger.error("Unable to perform upgrade, caught error: {}".format(e))
-            return 1
+            pass

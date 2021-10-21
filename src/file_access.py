@@ -24,7 +24,7 @@ class FileAccess(object):
         self.config_base = config_root
         self._logger = logger
     
-    def rename_file(self, filename, new_name, raise_error=True):
+    def rename_file(self, filename, new_name):
         """
         
         Rename a file
@@ -35,11 +35,7 @@ class FileAccess(object):
             raise_error: to raise error or not
         
         """
-        try:
-            os.rename(filename, new_name)
-        except FileNotFoundError as error:
-            if raise_error:
-                raise raise_error
+        os.rename(filename, new_name)
 
     def open_file(self, filename):
         """
