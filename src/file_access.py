@@ -32,7 +32,6 @@ class FileAccess(object):
         Args:
             filename: current filename
             new_name: new filename to rename to
-            raise_error: to raise error or not
         
         """
         os.rename(filename, new_name)
