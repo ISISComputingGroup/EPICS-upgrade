@@ -23,6 +23,18 @@ class FileAccess(object):
         """
         self.config_base = config_root
         self._logger = logger
+    
+    def rename_file(self, filename, new_name):
+        """
+        
+        Rename a file
+        
+        Args:
+            filename: current filename
+            new_name: new filename to rename to
+        
+        """
+        os.rename(filename, new_name)
 
     def open_file(self, filename):
         """
