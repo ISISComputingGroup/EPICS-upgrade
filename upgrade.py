@@ -17,6 +17,10 @@ from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
 # To add a step which does nothing use UpgradeStepNoOp this is often used to get from the latest dev
 # configuration to the latest production configuration
 
+# Do not consider dropping the previous last entry even if adding a new step that does nothing.
+# Though that version may not have been deployed to any instruments, the config version will exist on a 
+# system test build server and probably some developer's machines too
+
 # Upgrade from 6.0.0 only going forward.
 UPGRADE_STEPS = [
     # (from this version, use this function to get to next version)
@@ -37,6 +41,7 @@ UPGRADE_STEPS = [
     ("7.4.1.1", UpgradeStepNoOp()),
     ("8.0.0", UpgradeStepNoOp()),
     ("9.0.0", ChangeLETCollimatorCmd()),
+    ("9.0.1", UpgradeStepNoOp()),
     ("10.0.0", None),
 
 
