@@ -67,21 +67,38 @@ class FileAccess(object):
             self._logger.info("Writing new version number {0}".format(version))
             f.write("{}\n".format(version))
 
-    def write_file(self, filename, file_contents, mode = "w"):
+    def write_file(self, filename, file_contents, mode = "w", file_full=False):
         """
         Write file contents (will overwrite existing files)
 
         Args:
             filename: filename to write to
             file_contents: the file contents to write as a list of strings (no new lines needed)
+            file_full: if true then file_contents should be a list of strings (no new lines needed),
+            if false then it should be a string to be written directly
 
         Returns:
 
         """
         with open(os.path.join(self.config_base, filename), mode=mode) as f:
             self._logger.info("Writing file {0}".format(filename))
-            for line in file_contents:
-                f.write("{}\n".format(line))
+            if not file_full:
+                for line in file_contents:
+                    f.write("{}\n".format(line))
+            else:
+                f.write(file_contents)
+
+    def create_directories(self, path):
+        """
+        Create directories starting at config base path
+
+        Args:
+            path: path for directories to be created
+
+        Returns:
+
+        """
+        os.makedirs(os.path.dirname(os.path.join(self.config_base, path)), exist_ok=True)
 
     def line_exists(self, filename, string):
         """
@@ -90,6 +107,16 @@ class FileAccess(object):
         with open(os.path.join(self.config_base, filename), "r") as f:
             for line in f:
                 if line == string:
+                    return True
+        return False
+
+    def file_contains(self, filename, string):
+        """
+        Check if a string exists in a file
+        """
+        with open(os.path.join(self.config_base, filename), "r") as f:
+            for line in f:
+                if string in line:
                     return True
         return False
 
