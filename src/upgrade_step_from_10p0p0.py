@@ -6,7 +6,7 @@ class RemoveReflDeviceScreen(UpgradeStep):
     Remove reflectometry device screen from all configs and components
     """
 
-    path = "configurations\\devices\\screens.xml"
+    path = "configurations/devices/screens.xml"
 
     def perform(self, file_access, logger):
         xml_tree = file_access.open_xml_file(self.path)
