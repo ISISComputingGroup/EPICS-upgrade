@@ -64,6 +64,14 @@ class TestRemoveReflDeviceScreen(unittest.TestCase):
         self.file_access.delete_folder(CONFIG_ROOT)
         self.assertFalse(self.file_access.exists(SCREEN_FILE_PATH))
 
+    def test_GIVEN_no_device_screen_in_config_THEN_nothing_happens_without_errors(self):
+        # Given
+        if self.file_access.exists(SCREEN_FILE_PATH):
+            self.file_access.remove_file(os.path.join(CONFIG_ROOT, SCREEN_FILE_PATH))
+            self.file_access.delete_folder(CONFIG_ROOT)
+        self.assertFalse(self.file_access.exists(SCREEN_FILE_PATH))
+        # Then
+        self.upgrade_step.perform(self.file_access, self.logger)
 
 
 if __name__ == '__main__':
