@@ -1,4 +1,5 @@
 from src.upgrade_step import UpgradeStep
+import os
 
 
 class RemoveReflDeviceScreen(UpgradeStep):
@@ -6,7 +7,7 @@ class RemoveReflDeviceScreen(UpgradeStep):
     Remove reflectometry device screen from all configs and components
     """
 
-    path = "configurations/devices/screens.xml"
+    path = os.path.join("configurations", "devices", "screens.xml")
 
     def perform(self, file_access, logger):
         if file_access.exists(self.path):
