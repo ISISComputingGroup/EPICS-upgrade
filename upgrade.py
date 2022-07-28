@@ -44,7 +44,8 @@ UPGRADE_STEPS = [
     ("9.0.0", ChangeLETCollimatorCmd()),
     ("9.0.1", UpgradeStepNoOp()),
     ("10.0.0", RemoveReflDeviceScreen()),
-    ("11.0.0", None),
+    ("11.0.0", UpgradeStepNoOp()),
+    ("11.0.1", None),
 
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
