@@ -47,6 +47,7 @@ UPGRADE_STEPS = [
     ("10.0.0", RemoveReflDeviceScreen()),
     ("11.0.0", RenameMercurySoftwarePressureControlMacros()),
     ("11.0.1", UpgradeStepNoOp()),
+    ("11.1.0", UpgradeStepNoOp()),
     ("12.0.0", None),
 
 
