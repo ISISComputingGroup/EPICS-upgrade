@@ -45,9 +45,9 @@ UPGRADE_STEPS = [
     ("9.0.0", ChangeLETCollimatorCmd()),
     ("9.0.1", UpgradeStepNoOp()),
     ("10.0.0", RemoveReflDeviceScreen()),
-    ("11.0.0", RenameMercurySoftwarePressureControlMacros()),
+    ("11.0.0", UpgradeStepNoOp()),
     ("11.0.1", UpgradeStepNoOp()),
-    ("11.1.0", UpgradeStepNoOp()),
+    ("11.1.0", RenameMercurySoftwarePressureControlMacros()),
     ("12.0.0", None),
 
 
