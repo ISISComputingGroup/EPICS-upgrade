@@ -54,7 +54,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         batch_files = ("jaws.cmd",)
         matches = [True]
         batch_files_contents= [
-            ["""dbLoadRecords("/jaws.db","P=$(MYPVPREFIX)MOT:,MACRO=MACRO:,IFINIT_FROM_AS=$(IFINIT_JAWS_FROM_AS=#),IFNOTINIT_FROM_AS=$(IFNOTINIT_JAWS_FROM_AS=)"")"""]
+            ["""dbLoadRecords("/jaws.db","P=$(MYPVPREFIX)MOT:,MACRO=MACRO:,IFINIT_FROM_AS=$(IFINIT_JAWS_FROM_AS=#),IFNOTINIT_FROM_AS=$(IFNOTINIT_JAWS_FROM_AS=)")"""]
         ]
 
         self.assertEqual(self._perform(substitution_files, batch_files, matches, batch_files_contents), 0)
@@ -66,7 +66,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         batch_files = ("jaws.cmd",)
         matches = [False]
         batch_files_contents= [
-            ["""dbLoadRecords("/other.db","P=$(MYPVPREFIX)MOT:,MACRO=MACRO:"")"""]
+            ["""dbLoadRecords("/other.db","P=$(MYPVPREFIX)MOT:,MACRO=MACRO:")"""]
         ]
 
         self.assertEqual(self._perform(substitution_files, batch_files, matches, batch_files_contents), 0)
@@ -78,7 +78,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         batch_files = ("jaws.cmd",)
         matches = [True]
         batch_files_contents= [
-            ["""dbLoadRecords("/jaws.db","P=$(MYPVPREFIX)MOT:,MACRO=MACRO:"") # Load with a comment after."""]
+            ["""dbLoadRecords("/jaws.db","P=$(MYPVPREFIX)MOT:,MACRO=MACRO:") # Load with a comment after."""]
         ]
 
         self.assertNotEqual(self._perform(substitution_files, batch_files, matches, batch_files_contents), 0)
