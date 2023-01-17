@@ -30,6 +30,7 @@ class FileAccessStub(object):
     SYNOPTIC_FILENAME = "synoptic_file"
 
     def __init__(self):
+        self.config_base = None
         self.wrote_version = None
         self.write_filename = None
         self.write_file_contents = None
