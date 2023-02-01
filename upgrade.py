@@ -50,7 +50,7 @@ UPGRADE_STEPS = [
     ("11.0.1", UpgradeStepNoOp()),
     ("11.1.0", RenameMercurySoftwarePressureControlMacros()),
     ("12.0.0", UpgradeJawsForPositionAutosave()),
-    ("12.0.0.1", None),
+    ("12.0.1", None),
 
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
