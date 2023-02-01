@@ -240,6 +240,22 @@ class FileAccess(object):
         else:
             return None
 
+    def get_file_paths(self, directory: str, extension: str = None):
+        """
+        Generator giving the paths of all files inside a directory, recursively searching all subdirectories.
+
+        Args:
+            directory: The directory to search.
+            extension: Optional file extension to filter by.
+
+        Yields:
+            str: The path to the file.
+        """
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if extension is None or file.endswith(extension):
+                    yield os.path.join(root, file)
+
 
 class CachingFileAccess(object):
     """

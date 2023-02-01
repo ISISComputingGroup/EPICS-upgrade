@@ -1,5 +1,8 @@
 import os
 
+EPICS_ROOT = os.environ["EPICS_ROOT"]
+SUPPORT_ROOT = os.path.abspath(os.path.join(EPICS_ROOT, "support"))
+
 CONFIG_ROOT = os.environ["ICPCONFIGROOT"]
 CONFIG_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "configurations"))
 COMPONENT_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "components"))
