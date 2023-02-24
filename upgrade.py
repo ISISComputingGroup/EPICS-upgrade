@@ -2,6 +2,7 @@ import os
 import sys
 
 from src.file_access import FileAccess
+from src.git_utils import RepoFactory
 from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
 from src.upgrade_step_from_6p0p0 import SetDanfysikDisableAutoonoffMacros
@@ -61,6 +62,7 @@ if __name__ == "__main__":
 
     logger = LocalLogger(log_dir)
     file_access = FileAccess(logger, config_root)
+    git_repo = RepoFactory.get_repo(config_root)
 
-    upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS)
+    upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS, git_repo=git_repo)
     sys.exit(upgrade.upgrade())
