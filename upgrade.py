@@ -11,8 +11,10 @@ from src.upgrade_step_from_9p0p0 import ChangeLETCollimatorCmd
 from src.upgrade_step_from_10p0p0 import RemoveReflDeviceScreen
 from src.upgrade_step_from_11p0p0 import RenameMercurySoftwarePressureControlMacros
 from src.upgrade_step_from_12p0p0 import UpgradeJawsForPositionAutosave
+from src.upgrade_step_from_12p0p1 import AddOscCollimMovingIndicator
 from src.upgrade_step_noop import UpgradeStepNoOp
 from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
+
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
 # The last step should have an upgrade class of None (this is how it knows it has reached the end)
@@ -50,7 +52,8 @@ UPGRADE_STEPS = [
     ("11.0.1", UpgradeStepNoOp()),
     ("11.1.0", RenameMercurySoftwarePressureControlMacros()),
     ("12.0.0", UpgradeJawsForPositionAutosave()),
-    ("12.0.1", None),
+    ("12.0.1", AddOscCollimMovingIndicator()),
+    ("13.0.0", None),
 
 
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
