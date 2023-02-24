@@ -83,13 +83,7 @@ class Upgrade(object):
                         if result != 0:
                             return result
                         self._file_access.write_version_number(version, VERSION_FILENAME)
-
-                        self._git_repo.git.add(A=True)
-                        commit_message = f"IBEX Upgrade from {last_updated_version} to {version}"
-                        self._git_repo.index.commit(commit_message)
-                        tag_name = f"{self._git_repo.active_branch}_{version}"
-                        self._git_repo.create_tag(tag_name, message=commit_message, force=True)
-                        self._git_repo.remote(name='origin').push()
+                        self._commit_tag_and_push(last_updated_version, version)
                 last_updated_version = version
 
         if upgrade:
@@ -99,3 +93,11 @@ class Upgrade(object):
         else:
             self._logger.error("Unknown version number {0}".format(current_version))
             return -1
+
+    def _commit_tag_and_push(self, last_updated_version, version):
+        self._git_repo.git.add(A=True)
+        commit_message = f"IBEX Upgrade from {last_updated_version} to {version}"
+        self._git_repo.index.commit(commit_message)
+        tag_name = f"{self._git_repo.active_branch}_{version}"
+        self._git_repo.create_tag(tag_name, message=commit_message, force=True)
+        self._git_repo.remote(name='origin').push()
