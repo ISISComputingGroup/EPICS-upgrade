@@ -87,7 +87,8 @@ class Upgrade(object):
                         self._git_repo.git.add(A=True)
                         commit_message = f"IBEX Upgrade from {last_updated_version} to {version}"
                         self._git_repo.index.commit(commit_message)
-                        self._git_repo.create_tag(version, message=commit_message, force=True)
+                        tag_name = f"{self._git_repo.active_branch}_{version}"
+                        self._git_repo.create_tag(tag_name, message=commit_message, force=True)
                         self._git_repo.remote(name='origin').push()
                 last_updated_version = version
 
