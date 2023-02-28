@@ -4,7 +4,6 @@ Mother for test objects
 
 from xml.dom import minidom
 
- 
 
 class LoggingStub(object):
     """
