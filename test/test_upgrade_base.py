@@ -9,15 +9,17 @@ from mother import LoggingStub, FileAccessStub
 
 class TestUpgradeBase(unittest.TestCase):
 
-    def setUp(self):
+    @unittest.mock.patch("git.Repo")
+    def setUp(self, repo):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
+        self.git_repo = repo
         self.first_version = "3.2.0"
 
     def upgrade(self, upgrade_steps=None):
         if upgrade_steps is None:
             upgrade_steps = [(self.first_version, None)]
-        return Upgrade(self.file_access, self.logger, upgrade_steps)
+        return Upgrade(self.file_access, self.logger, upgrade_steps, self.git_repo)
 
 
     def test_GIVEN_config_contains_no_version_number_WHEN_load_THEN_version_number_added(self):
@@ -110,14 +112,14 @@ class TestUpgradeBase(unittest.TestCase):
 
     def test_GIVEN_empty_upgrade_steps_WHEN_init_THEN_error(self):
         try:
-            Upgrade(None, None, [])
+            Upgrade(None, None, [], None)
             raise AssertionError("Expecting UpgradeError got nothing")
         except UpgradeError:
             pass
 
     def test_GIVEN_no_final_version_in_upgrade_steps_WHEN_init_THEN_error(self):
         try:
-            Upgrade(None, None, [("blah", Mock(UpgradeStep))])
+            Upgrade(None, None, [("blah", Mock(UpgradeStep))], None)
             raise AssertionError("Expecting UpgradeError got nothing")
         except UpgradeError:
             pass
