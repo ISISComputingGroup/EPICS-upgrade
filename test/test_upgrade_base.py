@@ -4,14 +4,16 @@ from mock import MagicMock as Mock
 
 from src.upgrade import Upgrade, UpgradeError
 from src.upgrade_step import UpgradeStep
-from mother import LoggingStub, FileAccessStub, GitRepoStub
+from mother import LoggingStub, FileAccessStub
 
 
 class TestUpgradeBase(unittest.TestCase):
-    def setUp(self):
+
+    @unittest.mock.patch("git.Repo")
+    def setUp(self, repo):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.git_repo = GitRepoStub()
+        self.git_repo = repo
         self.first_version = "3.2.0"
 
     def upgrade(self, upgrade_steps=None):

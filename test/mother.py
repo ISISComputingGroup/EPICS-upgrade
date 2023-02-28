@@ -4,35 +4,7 @@ Mother for test objects
 
 from xml.dom import minidom
 
-
-class GitRepoStub():
-    class GitStub():
-        def add(*args, **kwargs):
-            pass
-
-    class GitIndexStub():
-        def commit(*args, **kwargs):
-            pass
-
-    class GitRemoteStub():
-        def __init__(self):
-            pass
-
-        def push(*args, **kwargs):
-            pass
-        
-    def __init__(self):
-        self.git = self.GitStub()
-        self.index = self.GitIndexStub()
-        self.active_branch = "test"
-        self._remote = self.GitRemoteStub()
-
-    def create_tag(*args, **kwargs):
-        pass
-    
-    def remote(self, *args, **kwargs):
-        return self._remote
-    
+ 
 
 class LoggingStub(object):
     """
