@@ -64,7 +64,6 @@ class Upgrade(object):
         self._logger.info("Config at initial version {0}".format(current_version))
         upgrade = False
         final_upgrade_version = None
-        last_updated_version = current_version
         with SqlConnection():
             for version, upgrade_step in self._upgrade_steps:
 
@@ -83,21 +82,21 @@ class Upgrade(object):
                         if result != 0:
                             return result
                         self._file_access.write_version_number(version, VERSION_FILENAME)
-                        self._commit_tag_and_push(last_updated_version, version)
-                last_updated_version = version
+                        self._commit_tag_and_push(version)
 
         if upgrade:
             self._file_access.write_version_number(final_upgrade_version, VERSION_FILENAME)
             self._logger.info("Finished upgrade. Now on version {0}".format(final_upgrade_version))
+            self._commit_tag_and_push(final_upgrade_version, final=True)
             return 0
         else:
             self._logger.error("Unknown version number {0}".format(current_version))
             return -1
 
-    def _commit_tag_and_push(self, last_updated_version, version):
+    def _commit_tag_and_push(self,  version, final=False):
         self._git_repo.git.add(A=True)
-        commit_message = f"IBEX Upgrade from {last_updated_version} to {version}"
+        commit_message = f"IBEX Upgrade {'from' if not final else 'to'} {version}"
         self._git_repo.index.commit(commit_message)
-        tag_name = f"{self._git_repo.active_branch}_{version}"
+        tag_name = f"{self._git_repo.active_branch}_{version}{'_upgrade' if not final else ''}"
         self._git_repo.create_tag(tag_name, message=commit_message, force=True)
         self._git_repo.remote(name='origin').push()

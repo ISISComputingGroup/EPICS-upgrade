@@ -9,7 +9,7 @@ from mother import LoggingStub, FileAccessStub
 
 class TestUpgradeBase(unittest.TestCase):
 
-    @unittest.mock.patch("git.Repo")
+    @unittest.mock.patch("git.Repo", autospec=True)
     def setUp(self, repo):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
@@ -49,6 +49,7 @@ class TestUpgradeBase(unittest.TestCase):
 
         assert_that(result, is_not(0), "Success")
         assert_that(self.logger.log_err, contains_exactly("Unknown version number {0}".format(unknown_version)))
+        self.git_repo.index.commit.assert_not_called()
 
     def test_GIVEN_config_contains_latest_version_number_WHEN_load_THEN_program_exits_successfully(self):
         expected_version = "3.3.0"
@@ -77,6 +78,9 @@ class TestUpgradeBase(unittest.TestCase):
         upgrade_step.perform.assert_called_once()
         assert_that(self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version)))
         assert_that(self.file_access.wrote_version, is_(final_version), "Version written to file at the end")
+        expected_commit_calls = [unittest.mock.call(f'IBEX Upgrade from {original_version}'),
+                                 unittest.mock.call(f'IBEX Upgrade to {final_version}')]
+        self.git_repo.index.commit.assert_has_calls(expected_commit_calls, any_order=False)
 
     def test_GIVEN_config_contains_older_version_number_but_not_earliest_and_multiple_steps_WHEN_upgrade_THEN_all_upgrade_steps_equal_to_or_later_than_current_steps_are_done(self):
         original_version = "3.2.1"
