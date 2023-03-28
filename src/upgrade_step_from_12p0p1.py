@@ -3,6 +3,7 @@ import socket
 
 from src.upgrade_step import UpgradeStep
 
+
 class AddOscCollimMovingIndicator(UpgradeStep):
     """
     Update oscillatingCollimator.cmd on LET and MERLIN to load stability check DB
@@ -13,9 +14,10 @@ class AddOscCollimMovingIndicator(UpgradeStep):
     def perform(self, file_access, logger):
         try:
             hostname = socket.gethostname()
-            #if hostname == "NDXLET" or hostname == "NDXMERLIN":
-            file_access.write_file(self.path, self.new_lines, mode="a")
+            if hostname == "NDXLET" or hostname == "NDXMERLIN":
+                file_access.write_file(self.path, self.new_lines, mode="a")
             return 0
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))
             return 1
+        
