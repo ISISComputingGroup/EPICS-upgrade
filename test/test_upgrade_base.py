@@ -144,6 +144,15 @@ class TestUpgradeBase(unittest.TestCase):
 
         assert_that(result, is_(expect_error_code), "Fail exit")
 
+    def test_GIVEN_version_number_THEN_upgrade_check_works(self):
+        import upgrade, check_version
+        
+        result_not_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-2][0])
+        result_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-1][0])
+
+        assert_that(result_not_match, is_(1), "Did not fail with incorrect version numbers")
+        assert_that(result_match, is_(0), "Did not pass with correct version numbers")
+
 
 if __name__ == '__main__':
     unittest.main()
