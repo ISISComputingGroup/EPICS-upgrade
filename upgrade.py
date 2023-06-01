@@ -24,8 +24,12 @@ from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
 # configuration to the latest production configuration
 
 # Do not consider dropping the previous last entry even if adding a new step that does nothing.
-# Though that version may not have been deployed to any instruments, the config version will exist on a 
-# system test build server and probably some developer's machines too
+# Though that version may not have been deployed to any instruments, the config version will exist
+# on a system test build server and probably some developer's machines too
+
+# also make sure that the  config_version.txt  in the master configurations git repository
+# on control-svcs used for creating a new instrument settings area is at least the lowest
+# versions below or else you will not be able to upgrade a newly created instrument
 
 # Upgrade from 6.0.0 only going forward.
 UPGRADE_STEPS = [

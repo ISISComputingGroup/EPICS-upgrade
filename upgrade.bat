@@ -1,6 +1,6 @@
 setlocal
 
-call C:\Instrument\Apps\EPICS\config_env.bat
+call %~dp0..\..\..\config_env.bat
 
 set PYTHONUNBUFFERED=1
 
