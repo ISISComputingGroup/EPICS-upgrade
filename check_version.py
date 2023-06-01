@@ -10,4 +10,4 @@ def compare_version_number(version_to_check):
 
 if __name__ == "__main__":
     version_to_check = str(sys.argv[1])
-    compare_version_number(version_to_check)
+    sys.exit(compare_version_number(version_to_check))
