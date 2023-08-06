@@ -2,7 +2,8 @@
 Helpful sql utilities
 """
 from getpass import getpass
-
+import os
+import re
 import mysql.connector
 
 
@@ -57,6 +58,46 @@ def run_sql(logger, sql):
     SqlConnection.get_session(logger).commit()
     cursor.close()
 
+def run_sql_list(logger, sql_list):
+    """
+    Sends a list of SQL statement to the database.
+    Args:
+        logger: the logger to use to log messages
+        sql_list: The statement to send
+    """
+    cursor = SqlConnection.get_session(logger).cursor()
+
+    for sql in sql_list:
+        for result in cursor.execute(sql, multi=True):
+            pass
+
+    SqlConnection.get_session(logger).commit()
+    cursor.close()
+
+def run_sql_file(logger, file):
+    """
+    Sends an SQL statement to the database.
+    Args:
+        logger: the logger to use to log messages
+        file: The file of sql statement to send
+    """
+    if not os.path.exists(file):
+        logger.error("Failed to open {file}")
+        return -1
+    statement_list = []
+    lines = []
+    with open(file) as f:
+        lines = f.readlines()
+    statement = ''
+    for line in lines:
+        if re.match(r'--', line) or re.match(r'#', line):
+            continue
+        statement = statement + line
+        if re.search(r';[ ]*$', line):
+            statement_list.append(statement)
+            statement = ''
+    
+    run_sql_list(logger, statement_list)
 
 def add_new_user(logger, user, password):
     """
