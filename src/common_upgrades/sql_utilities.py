@@ -42,6 +42,7 @@ class SqlConnection:
         # close connection if this class created it
         if SqlConnection._connection is not None:
             SqlConnection._connection.close()
+            SqlConnection._connection = None
 
 
 def run_sql(logger, sql):
@@ -82,7 +83,7 @@ def run_sql_file(logger, file):
         file: The file of sql statement to send
     """
     if not os.path.exists(file):
-        logger.error("Failed to open {file}")
+        logger.error(f"Failed to open {file}")
         return -1
     statement_list = []
     lines = []
@@ -96,8 +97,10 @@ def run_sql_file(logger, file):
         if re.search(r';[ ]*$', line):
             statement_list.append(statement)
             statement = ''
-    
+
+    logger.info(f"Applying DB schema from {file}")
     run_sql_list(logger, statement_list)
+    return 0
 
 def add_new_user(logger, user, password):
     """

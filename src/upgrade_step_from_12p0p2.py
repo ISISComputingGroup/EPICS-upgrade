@@ -14,8 +14,9 @@ class UpgradeFrom12p0p2(UpgradeStep):
         # add JMS2RDB Tables
         try:
             file = os.path.join(EPICS_ROOT, "CSS", "master", "AlarmJMS2RDB", "MySQL-Log-DDL.sql")
+            logger.info("Updating JMS2RDB schema")
             with SqlConnection() as s:
-                run_sql_file(logger, file)
+                return run_sql_file(logger, file)
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))
             return 1
