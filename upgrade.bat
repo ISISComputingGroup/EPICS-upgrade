@@ -1,7 +1,9 @@
 setlocal
 
-call %~dp0..\..\..\config_env.bat
+cd /d %~dp0
+
+call ..\..\..\config_env.bat
 
 set PYTHONUNBUFFERED=1
 
-C:\Instrument\Apps\Python3\python.exe -u upgrade.py
+%PYTHON3% -u upgrade.py

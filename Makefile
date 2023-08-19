@@ -12,4 +12,4 @@ clean:
 	runtests
 
 runtests:
-	$(PYTHON3) run_tests.py
+	$(PYTHON3) -u run_tests.py
