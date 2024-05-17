@@ -1,5 +1,4 @@
 from src.common_upgrades.utils.constants import BLOCK_FILE
-import six
 
 
 class ChangePVsInXML(object):
