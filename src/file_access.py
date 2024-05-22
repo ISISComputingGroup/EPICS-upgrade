@@ -2,7 +2,6 @@ import os
 from xml.dom import minidom
 import shutil
 from xml.parsers.expat import ExpatError
-import six
 from src.common_upgrades.utils.constants import CONFIG_FOLDER, COMPONENT_FOLDER, SYNOPTIC_FOLDER, \
     DEVICE_SCREEN_FILE, DEVICE_SCREENS_FOLDER
 
@@ -288,7 +287,7 @@ class CachingFileAccess(object):
         Returns:
             contents of file as an xml tree
         """
-        if filename in six.iterkeys(self.cached_writes):
+        if filename in self.cached_writes.keys():
             return self.cached_writes[filename]
         else:
             return self.old_open_method(filename)
@@ -307,5 +306,5 @@ class CachingFileAccess(object):
         """
         Write all cached writes to the file.
         """
-        for filename, xml in six.iteritems(self.cached_writes):
+        for filename, xml in self.cached_writes.items():
             self._file_access.write_xml_file(filename, xml)

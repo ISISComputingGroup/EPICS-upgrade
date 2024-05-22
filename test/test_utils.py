@@ -1,4 +1,3 @@
-import six
 from hamcrest import *
 from src.common_upgrades.utils.constants import BLOCK_FILE
 
@@ -79,5 +78,5 @@ def test_changing_synoptics_and_blocks(file_access, action, starting_blocks, exp
 def test_action_does_not_write(file_access, action, starting_blocks):
     _set_starting_blocks_and_perform_action(file_access, action, starting_blocks)
 
-    assert_that(file_access.SYNOPTIC_FILENAME, not_(is_in(six.iterkeys(file_access.write_file_dict))))
-    assert_that(BLOCK_FILE, not_(is_in(six.iterkeys(file_access.write_file_dict))))
+    assert_that(file_access.SYNOPTIC_FILENAME, not_(is_in(file_access.write_file_dict.keys())))
+    assert_that(BLOCK_FILE, not_(is_in(file_access.write_file_dict.keys())))
