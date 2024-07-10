@@ -29,7 +29,7 @@ class SqlConnection:
         """
         while SqlConnection._connection is None:
             try:
-                root_pass = getpass("Please enter db root password: ")
+                root_pass = os.getenv("MYSQL_PASSWORD") or getpass("Please enter db root password: ")
                 SqlConnection._connection = mysql.connector.connect(user='root', password=root_pass)
             except Exception as e:
                 logger.error("Failed to connect to database: {}".format(e))
