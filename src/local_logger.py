@@ -4,8 +4,7 @@ import sys
 
 
 class LocalLogger(object):
-    """A local logging object which will write to the screen and a file
-    """
+    """A local logging object which will write to the screen and a file"""
 
     def __init__(self, log_dir):
         """The logging directory in to which to write the log file

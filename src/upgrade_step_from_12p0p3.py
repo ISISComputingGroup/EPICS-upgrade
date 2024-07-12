@@ -6,8 +6,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class UpgradeFrom12p0p3(UpgradeStep):
-    """add sql tables for MOXA
-    """
+    """add sql tables for MOXA"""
 
     def perform(self, file_access, logger):
         # add MOXA Tables

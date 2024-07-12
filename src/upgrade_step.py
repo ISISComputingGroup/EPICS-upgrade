@@ -2,8 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class UpgradeStep(object):
-    """An upgrade step base object to be inherited from
-    """
+    """An upgrade step base object to be inherited from"""
 
     __metaclass__ = ABCMeta
 

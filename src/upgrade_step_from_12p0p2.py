@@ -6,8 +6,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class UpgradeFrom12p0p2(UpgradeStep):
-    """add sql tables for JMS2RDB
-    """
+    """add sql tables for JMS2RDB"""
 
     def perform(self, file_access, logger):
         # add JMS2RDB Tables

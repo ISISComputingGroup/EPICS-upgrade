@@ -10,8 +10,7 @@ ADD_AFTER_MISSING = "{} contains {} {} iocs it must contain exactly 1."
 
 
 class AddToBaseIOCs:
-    """Add the ioc autostart to _base ioc so that it autostarts
-    """
+    """Add the ioc autostart to _base ioc so that it autostarts"""
 
     def __init__(self, ioc_to_add, add_after_ioc, xml_to_add):
         self._ioc_to_add = ioc_to_add

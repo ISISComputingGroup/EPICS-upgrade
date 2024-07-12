@@ -1,4 +1,3 @@
-
 from future.builtins import input
 
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
@@ -12,8 +11,7 @@ SUCCESS_CODE = 0
 
 
 class IgnoreRcpttSynoptics(UpgradeStep):
-    """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed.
-    """
+    """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed."""
 
     file_name = ".gitignore"
     text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
@@ -48,8 +46,7 @@ class IgnoreRcpttSynoptics(UpgradeStep):
 
 
 class UpgradeMotionSetPoints(UpgradeStep):
-    """Changes blocks to point at renamed PVs. Warns about changed setup.
-    """
+    """Changes blocks to point at renamed PVs. Warns about changed setup."""
 
     def perform(self, file_access, logger):
         """Perform the upgrade step

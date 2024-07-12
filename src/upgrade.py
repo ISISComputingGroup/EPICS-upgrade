@@ -6,15 +6,13 @@ VERSION_FILENAME = os.path.join("configurations", "config_version.txt")
 
 
 class UpgradeError(Exception):
-    """There is an error in the upgrade
-    """
+    """There is an error in the upgrade"""
 
     pass
 
 
 class Upgrade(object):
-    """Use upgrade steps to upgrade a configuration
-    """
+    """Use upgrade steps to upgrade a configuration"""
 
     def __init__(self, file_access, logger, upgrade_steps, git_repo):
         """Constructor

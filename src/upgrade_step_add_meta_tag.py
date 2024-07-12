@@ -6,8 +6,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class UpgradeStepAddMetaXmlElement(UpgradeStep):
-    """An upgrade step that adds a passed element to the meta.xml for a configuration.
-    """
+    """An upgrade step that adds a passed element to the meta.xml for a configuration."""
 
     def __init__(self, tag, tag_value):
         self.tag = tag

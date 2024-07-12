@@ -5,8 +5,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class AddOscCollimMovingIndicator(UpgradeStep):
-    """Update oscillatingCollimator.cmd on LET and MERLIN to load stability check DB
-    """
+    """Update oscillatingCollimator.cmd on LET and MERLIN to load stability check DB"""
 
     path = os.path.join("configurations", "galil", "oscillatingCollimator.cmd")
     new_lines = [

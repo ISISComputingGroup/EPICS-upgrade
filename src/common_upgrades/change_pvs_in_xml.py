@@ -2,8 +2,7 @@ from src.common_upgrades.utils.constants import BLOCK_FILE
 
 
 class ChangePVsInXML(object):
-    """Changes pvs in XML files.
-    """
+    """Changes pvs in XML files."""
 
     def __init__(self, file_access, logger):
         """Initialise.

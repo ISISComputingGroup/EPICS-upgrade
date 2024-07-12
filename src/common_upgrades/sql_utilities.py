@@ -1,5 +1,4 @@
-"""Helpful sql utilities
-"""
+"""Helpful sql utilities"""
 
 import os
 import re
@@ -9,8 +8,7 @@ import mysql.connector
 
 
 class SqlConnection:
-    """Class to allow sql access. Should be used in the top scope and sessions are got using get_session.
-    """
+    """Class to allow sql access. Should be used in the top scope and sessions are got using get_session."""
 
     _connection = None
 

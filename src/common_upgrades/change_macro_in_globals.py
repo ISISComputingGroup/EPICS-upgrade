@@ -4,8 +4,7 @@ from src.common_upgrades.utils.constants import GLOBALS_FILENAME
 
 
 class ChangeMacroInGlobals(object):
-    """An interface to replace arbitrary macros in a globals.txt file
-    """
+    """An interface to replace arbitrary macros in a globals.txt file"""
 
     def __init__(self, file_access, logger):
         """Initialise.

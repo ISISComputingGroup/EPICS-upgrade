@@ -13,8 +13,7 @@ from src.common_upgrades.utils.constants import (
 
 
 class FileAccess(object):
-    """File access for the configuration
-    """
+    """File access for the configuration"""
 
     def __init__(self, logger, config_root):
         """Constructor
@@ -97,8 +96,7 @@ class FileAccess(object):
         os.makedirs(os.path.dirname(os.path.join(self.config_base, path)), exist_ok=True)
 
     def line_exists(self, filename, string):
-        """Check if string exists as a line in file
-        """
+        """Check if string exists as a line in file"""
         with open(os.path.join(self.config_base, filename), "r") as f:
             for line in f:
                 if line == string:
@@ -106,8 +104,7 @@ class FileAccess(object):
         return False
 
     def file_contains(self, filename, string):
-        """Check if a string exists in a file
-        """
+        """Check if a string exists in a file"""
         with open(os.path.join(self.config_base, filename), "r") as f:
             for line in f:
                 if string in line:
@@ -217,8 +214,7 @@ class FileAccess(object):
             yield synoptic_path, self._get_xml(synoptic_path)
 
     def get_device_screens(self):
-        """Returns the device screen file if it exists, else None.
-        """
+        """Returns the device screen file if it exists, else None."""
         device_screens_path = os.path.join(DEVICE_SCREENS_FOLDER, DEVICE_SCREEN_FILE)
         if os.path.exists(device_screens_path):
             return device_screens_path, self._get_xml(device_screens_path)
@@ -286,7 +282,6 @@ class CachingFileAccess(object):
         self.cached_writes[filename] = xml
 
     def write(self):
-        """Write all cached writes to the file.
-        """
+        """Write all cached writes to the file."""
         for filename, xml in self.cached_writes.items():
             self._file_access.write_xml_file(filename, xml)

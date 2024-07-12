@@ -2,8 +2,7 @@ from functools import partial
 
 
 class SynopticsAndDeviceScreens(object):
-    """Manipulate an instrument's synoptics and device_screens
-    """
+    """Manipulate an instrument's synoptics and device_screens"""
 
     def __init__(self, file_access, logger):
         self.file_access = file_access

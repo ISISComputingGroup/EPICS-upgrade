@@ -2,8 +2,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class UpgradeStepNoOp(UpgradeStep):
-    """An upgrade step that does nothing. This can be used to add a upgrade to the latest production version.
-    """
+    """An upgrade step that does nothing. This can be used to add a upgrade to the latest production version."""
 
     def perform(self, file_access, logger):
         """No nothing return sucess
