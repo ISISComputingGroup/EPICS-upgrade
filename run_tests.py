@@ -22,9 +22,10 @@ import sys
 os.environ["MYDIRBLOCK"] = ".."
 sys.path.insert(0, os.path.abspath(".."))
 # Standard imports
-import unittest
-import xmlrunner
 import argparse
+import unittest
+
+import xmlrunner
 
 DEFAULT_DIRECTORY = os.path.join("..", "..", "..", "test-reports")
 

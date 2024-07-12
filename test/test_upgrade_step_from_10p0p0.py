@@ -1,6 +1,8 @@
 import os
 import unittest
-from mother import LoggingStub, FileAccessStub
+
+from mother import LoggingStub
+
 from src.file_access import FileAccess
 from src.upgrade_step_from_10p0p0 import RemoveReflDeviceScreen
 

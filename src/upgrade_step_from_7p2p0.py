@@ -1,27 +1,25 @@
-import os
 
-from src.upgrade_step import UpgradeStep
-from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
+from future.builtins import input
+
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
+from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
 from src.common_upgrades.utils.constants import MOTION_SET_POINTS_FOLDER
 from src.file_access import CachingFileAccess
-from future.builtins import input
+from src.upgrade_step import UpgradeStep
 
 ERROR_CODE = -1
 SUCCESS_CODE = 0
 
 
 class IgnoreRcpttSynoptics(UpgradeStep):
-    """
-    Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed.
+    """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed.
     """
 
     file_name = ".gitignore"
     text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
 
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step
+        """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
             logger (LocalLogger): logger
@@ -50,13 +48,11 @@ class IgnoreRcpttSynoptics(UpgradeStep):
 
 
 class UpgradeMotionSetPoints(UpgradeStep):
-    """
-    Changes blocks to point at renamed PVs. Warns about changed setup.
+    """Changes blocks to point at renamed PVs. Warns about changed setup.
     """
 
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step
+        """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
             logger (LocalLogger): logger
@@ -118,8 +114,7 @@ class ChangeReflOPITarget(UpgradeStep):
     REFL_OPI_TARGET_NEW = "Reflectometry OPI"
 
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step
+        """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
             logger (LocalLogger): logger

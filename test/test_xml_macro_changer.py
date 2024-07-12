@@ -1,17 +1,18 @@
 import unittest
-from hamcrest import *
+import xml.etree.ElementTree as ET
 from functools import partial
+from xml.dom import minidom
+
+from hamcrest import *
+from mock import MagicMock as Mock
+
 from src.common_upgrades.change_macros_in_xml import (
     ChangeMacrosInXML,
     change_macro_name,
     change_macro_value,
 )
 from src.common_upgrades.utils.macro import Macro
-from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
-from xml.dom import minidom
-from mock import MagicMock as Mock
-import xml.etree.ElementTree as ET
-
+from test.mother import FileAccessStub, LoggingStub, create_xml_with_iocs
 
 NAMESPACE = "http://epics.isis.rl.ac.uk/schema/iocs/1.0"
 
@@ -390,8 +391,8 @@ class TestChangeIOCName(unittest.TestCase):
         self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
     def create_synoptic_file_with_multiple_IOCs(self, iocs):
-        """
-        Mocks out a synoptic file with multiple IOCs in it.
+        """Mocks out a synoptic file with multiple IOCs in it.
+
         Args:
             iocs: List of strings with the IOC names in it
 
@@ -399,7 +400,6 @@ class TestChangeIOCName(unittest.TestCase):
             formatted_synoptic_file: A mock XML document containing a sample synoptic
 
         """
-
         synoptics = "".join([SYOPTIC_XML.format(ioc) for ioc in iocs])
         formatted_synoptic_file = SYNOPTIC_FILE_XML.format(synoptics=synoptics)
 

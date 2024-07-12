@@ -1,17 +1,14 @@
+import datetime
 import os
 import sys
 
-import datetime
-
 
 class LocalLogger(object):
-    """
-    A local logging object which will write to the screen and a file
+    """A local logging object which will write to the screen and a file
     """
 
     def __init__(self, log_dir):
-        """
-        The logging directory in to which to write the log file
+        """The logging directory in to which to write the log file
 
         Args:
             log_dir: the directory for the file
@@ -26,8 +23,7 @@ class LocalLogger(object):
         self._log_file = log_file
 
     def error(self, message):
-        """
-        Write the message as an error (to standard err with ERROR in front of it)
+        """Write the message as an error (to standard err with ERROR in front of it)
 
         Args:
             message: message to write (no new lines needed)
@@ -41,8 +37,7 @@ class LocalLogger(object):
         sys.stderr.write(formatted_message)
 
     def info(self, message):
-        """
-        Write the message as info (to standard out with INFO in front of it)
+        """Write the message as info (to standard out with INFO in front of it)
 
         Args:
             message: message to write (no new lines needed)
@@ -50,7 +45,6 @@ class LocalLogger(object):
         Returns:
 
         """
-
         formatted_message = " INFO: {0}{1}".format(message, os.linesep)
         with open(self._log_file, mode="a") as f:
             f.write(formatted_message)

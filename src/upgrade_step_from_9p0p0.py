@@ -1,10 +1,10 @@
 import socket
+
 from src.upgrade_step import UpgradeStep
 
 
 class ChangeLETCollimatorCmd(UpgradeStep):
-    """
-    Change the LET/MERLIN collimator code to load in the new LET/MERLIN-specific db file.
+    """Change the LET/MERLIN collimator code to load in the new LET/MERLIN-specific db file.
     """
 
     def perform(self, file_access, logger):
@@ -26,8 +26,7 @@ class ChangeLETCollimatorCmd(UpgradeStep):
 
 
 class RenameGalilMulCmd(UpgradeStep):
-    """
-    Rename all galilmul1.cmd -> galilmul01.cmd
+    """Rename all galilmul1.cmd -> galilmul01.cmd
     """
 
     def perform(self, file_access, logger):
@@ -42,5 +41,5 @@ class RenameGalilMulCmd(UpgradeStep):
             )
 
             return 0
-        except Exception as e:
+        except Exception:
             pass

@@ -1,14 +1,12 @@
 import os
-import socket
 
-from src.upgrade_step import UpgradeStep
 from src.common_upgrades.sql_utilities import SqlConnection, run_sql_file
 from src.common_upgrades.utils.constants import EPICS_ROOT
+from src.upgrade_step import UpgradeStep
 
 
 class UpgradeFrom12p0p3(UpgradeStep):
-    """
-    add sql tables for MOXA
+    """add sql tables for MOXA
     """
 
     def perform(self, file_access, logger):

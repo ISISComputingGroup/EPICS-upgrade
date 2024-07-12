@@ -1,15 +1,14 @@
 import os
 import re
 
-from src.upgrade_step import UpgradeStep
 from src.common_upgrades.utils.constants import SUPPORT_ROOT
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
+from src.upgrade_step import UpgradeStep
 
 
 class UpgradeJawsForPositionAutosave(UpgradeStep):
-    """
-    Update all batch files that load a database file using 'slits.template' to support autosave.
+    """Update all batch files that load a database file using 'slits.template' to support autosave.
     """
 
     def perform(self, file_access: FileAccess, logger: LocalLogger):

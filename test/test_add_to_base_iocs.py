@@ -1,16 +1,16 @@
 import unittest
-from hamcrest import *
-from mock import MagicMock as Mock
 from xml.parsers.expat import ExpatError
 
+from hamcrest import *
+from mock import MagicMock as Mock
+
 from src.common_upgrades.add_to_base_iocs import (
-    AddToBaseIOCs,
+    ADD_AFTER_MISSING,
     ALREADY_CONTAINS,
     FILE_TO_CHECK_STR,
-    ADD_AFTER_MISSING,
+    AddToBaseIOCs,
 )
-from test.mother import LoggingStub, FileAccessStub, create_xml_with_iocs
-
+from test.mother import FileAccessStub, LoggingStub, create_xml_with_iocs
 
 TEST_XML_TO_ADD = """\
     <ioc autostart="true" name="TO_ADD" restart="true" simlevel="none">

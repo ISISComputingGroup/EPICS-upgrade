@@ -1,8 +1,9 @@
 import unittest
-from mock import patch, MagicMock
-from src.common_upgrades.sql_utilities import SqlConnection, run_sql
 
 import mysql.connector
+from mock import MagicMock, patch
+
+from src.common_upgrades.sql_utilities import SqlConnection, run_sql
 
 
 class TestSQLUtils(unittest.TestCase):

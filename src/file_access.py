@@ -1,24 +1,23 @@
 import os
-from xml.dom import minidom
 import shutil
+from xml.dom import minidom
 from xml.parsers.expat import ExpatError
+
 from src.common_upgrades.utils.constants import (
-    CONFIG_FOLDER,
     COMPONENT_FOLDER,
-    SYNOPTIC_FOLDER,
+    CONFIG_FOLDER,
     DEVICE_SCREEN_FILE,
     DEVICE_SCREENS_FOLDER,
+    SYNOPTIC_FOLDER,
 )
 
 
 class FileAccess(object):
-    """
-    File access for the configuration
+    """File access for the configuration
     """
 
     def __init__(self, logger, config_root):
-        """
-        Constructor
+        """Constructor
 
         Args:
             logger: the logger to use
@@ -29,9 +28,7 @@ class FileAccess(object):
         self._logger = logger
 
     def rename_file(self, filename, new_name):
-        """
-
-        Rename a file
+        """Rename a file
 
         Args:
             filename: current filename
@@ -41,9 +38,7 @@ class FileAccess(object):
         os.rename(filename, new_name)
 
     def open_file(self, filename):
-        """
-
-        Open a file and return the object
+        """Open a file and return the object
 
         Args:
             filename: filename to open
@@ -58,8 +53,7 @@ class FileAccess(object):
         return lines
 
     def write_version_number(self, version, filename):
-        """
-        Write the version number to the file
+        """Write the version number to the file
         Args:
             version: version to write
             filename: filename to write to (relative to config root)
@@ -72,8 +66,7 @@ class FileAccess(object):
             f.write("{}\n".format(version))
 
     def write_file(self, filename, file_contents, mode="w", file_full=False):
-        """
-        Write file contents (will overwrite existing files)
+        """Write file contents (will overwrite existing files)
 
         Args:
             filename: filename to write to
@@ -93,8 +86,7 @@ class FileAccess(object):
                 f.write(file_contents)
 
     def create_directories(self, path):
-        """
-        Create directories starting at config base path
+        """Create directories starting at config base path
 
         Args:
             path: path for directories to be created
@@ -105,8 +97,7 @@ class FileAccess(object):
         os.makedirs(os.path.dirname(os.path.join(self.config_base, path)), exist_ok=True)
 
     def line_exists(self, filename, string):
-        """
-        Check if string exists as a line in file
+        """Check if string exists as a line in file
         """
         with open(os.path.join(self.config_base, filename), "r") as f:
             for line in f:
@@ -115,8 +106,7 @@ class FileAccess(object):
         return False
 
     def file_contains(self, filename, string):
-        """
-        Check if a string exists in a file
+        """Check if a string exists in a file
         """
         with open(os.path.join(self.config_base, filename), "r") as f:
             for line in f:
@@ -125,8 +115,7 @@ class FileAccess(object):
         return False
 
     def open_xml_file(self, filename):
-        """
-        Open a file and returns the xml it contains
+        """Open a file and returns the xml it contains
 
         Args:
             filename: filename to open
@@ -137,9 +126,7 @@ class FileAccess(object):
         return minidom.parse(os.path.join(self.config_base, filename))
 
     def write_xml_file(self, filename, xml):
-        """
-
-        Saves xml to a file
+        """Saves xml to a file
 
         Args:
             filename: filename to save
@@ -147,7 +134,6 @@ class FileAccess(object):
 
         Returns:
         """
-
         # this can not use pretty print because that will cause it to gain tabs and newlines
         with open(os.path.join(self.config_base, filename), mode="w") as f:
             self._logger.info("Writing xml file {0}".format(filename))
@@ -156,8 +142,7 @@ class FileAccess(object):
             f.write("\n")
 
     def listdir(self, dir):
-        """
-        Returns a list of files in a directory
+        """Returns a list of files in a directory
 
         Args:
             dir (String): The directory to list
@@ -168,8 +153,7 @@ class FileAccess(object):
         return [os.path.join(dir, f) for f in os.listdir(os.path.join(self.config_base, dir))]
 
     def remove_file(self, filename):
-        """
-        Removes a file from the file system.
+        """Removes a file from the file system.
 
         Args:
             filename (str): The file to remove, relative to the config directory
@@ -178,8 +162,7 @@ class FileAccess(object):
         os.remove(os.path.join(self.config_base, filename))
 
     def delete_folder(self, path):
-        """
-        Deletes a folder recursively.
+        """Deletes a folder recursively.
 
         Args:
             path (String): The folder to remove
@@ -187,8 +170,7 @@ class FileAccess(object):
         shutil.rmtree(path)
 
     def is_dir(self, path):
-        """
-        Checks whether a path is a directory or file.
+        """Checks whether a path is a directory or file.
 
         Args:
             path (str): The path relative to the configuration directory.
@@ -210,8 +192,7 @@ class FileAccess(object):
             raise ExpatError("{} is invalid xml '{}'".format(path, ex))
 
     def get_config_files(self, file_type):
-        """
-        Generator giving all the config files of a given type.
+        """Generator giving all the config files of a given type.
 
         Args:
             file_type: The type of file that you want to get e.g. iocs.xml
@@ -225,8 +206,7 @@ class FileAccess(object):
                 yield xml_path, self._get_xml(xml_path)
 
     def get_synoptic_files(self):
-        """
-        Generator giving all the synoptic config files
+        """Generator giving all the synoptic config files
 
         Yields:
             Tuple: The path to the synoptic file and its xml representation.
@@ -237,8 +217,7 @@ class FileAccess(object):
             yield synoptic_path, self._get_xml(synoptic_path)
 
     def get_device_screens(self):
-        """
-        Returns the device screen file if it exists, else None.
+        """Returns the device screen file if it exists, else None.
         """
         device_screens_path = os.path.join(DEVICE_SCREENS_FOLDER, DEVICE_SCREEN_FILE)
         if os.path.exists(device_screens_path):
@@ -247,8 +226,7 @@ class FileAccess(object):
             return None
 
     def get_file_paths(self, directory: str, extension: str = None):
-        """
-        Generator giving the paths of all files inside a directory, recursively searching all subdirectories.
+        """Generator giving the paths of all files inside a directory, recursively searching all subdirectories.
 
         Args:
             directory: The directory to search.
@@ -264,8 +242,7 @@ class FileAccess(object):
 
 
 class CachingFileAccess(object):
-    """
-    Context that uses the given file access object but does not actually write to file until the context is left
+    """Context that uses the given file access object but does not actually write to file until the context is left
     without an error.
     """
 
@@ -286,8 +263,7 @@ class CachingFileAccess(object):
             self.write()
 
     def open_xml_file(self, filename):
-        """
-        Open a file and returns the xml it contains (returns the cached file if it exists)
+        """Open a file and returns the xml it contains (returns the cached file if it exists)
 
         Args:
             filename: filename to open
@@ -301,8 +277,7 @@ class CachingFileAccess(object):
             return self.old_open_method(filename)
 
     def write_xml_file(self, filename, xml):
-        """
-        Caches a write of xml to a file
+        """Caches a write of xml to a file
 
         Args:
             filename: filename to save
@@ -311,8 +286,7 @@ class CachingFileAccess(object):
         self.cached_writes[filename] = xml
 
     def write(self):
-        """
-        Write all cached writes to the file.
+        """Write all cached writes to the file.
         """
         for filename, xml in self.cached_writes.items():
             self._file_access.write_xml_file(filename, xml)

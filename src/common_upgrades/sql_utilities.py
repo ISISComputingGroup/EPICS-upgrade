@@ -1,16 +1,15 @@
-"""
-Helpful sql utilities
+"""Helpful sql utilities
 """
 
-from getpass import getpass
 import os
 import re
+from getpass import getpass
+
 import mysql.connector
 
 
 class SqlConnection:
-    """
-    Class to allow sql access. Should be used in the top scope and sessions are got using get_session.
+    """Class to allow sql access. Should be used in the top scope and sessions are got using get_session.
     """
 
     _connection = None
@@ -20,8 +19,8 @@ class SqlConnection:
 
     @staticmethod
     def get_session(logger):
-        """
-        Get the database session; creates one if needed.
+        """Get the database session; creates one if needed.
+
         Args:
             logger: the logger to use
 
@@ -49,8 +48,8 @@ class SqlConnection:
 
 
 def run_sql(logger, sql):
-    """
-    Sends an SQL statement to the database.
+    """Sends an SQL statement to the database.
+
     Args:
         logger: the logger to use to log messages
         sql: The statement to send
@@ -64,8 +63,8 @@ def run_sql(logger, sql):
 
 
 def run_sql_list(logger, sql_list):
-    """
-    Sends a list of SQL statement to the database.
+    """Sends a list of SQL statement to the database.
+
     Args:
         logger: the logger to use to log messages
         sql_list: The statement to send
@@ -81,8 +80,8 @@ def run_sql_list(logger, sql_list):
 
 
 def run_sql_file(logger, file):
-    """
-    Sends an SQL statement to the database.
+    """Sends an SQL statement to the database.
+
     Args:
         logger: the logger to use to log messages
         file: The file of sql statement to send
@@ -109,8 +108,7 @@ def run_sql_file(logger, file):
 
 
 def add_new_user(logger, user, password):
-    """
-    Adds a user with all permissions to the exp_user database
+    """Adds a user with all permissions to the exp_user database
     Args:
         logger: the logger to use to log messages
         user: The name of the user in form 'username'@'host'

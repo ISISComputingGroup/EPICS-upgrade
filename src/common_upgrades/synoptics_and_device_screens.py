@@ -2,8 +2,7 @@ from functools import partial
 
 
 class SynopticsAndDeviceScreens(object):
-    """
-    Manipulate an instrument's synoptics and device_screens
+    """Manipulate an instrument's synoptics and device_screens
     """
 
     def __init__(self, file_access, logger):
@@ -17,8 +16,7 @@ class SynopticsAndDeviceScreens(object):
         )
 
     def update_opi_keys(self, keys_to_update):
-        """
-        Update the OPI keys in all synoptics and device screens
+        """Update the OPI keys in all synoptics and device screens
 
         Args:
             keys_to_update (Dict)): The OPI keys that need updating as a dictionary with {old_key: new_key}
@@ -52,8 +50,7 @@ class SynopticsAndDeviceScreens(object):
         return result
 
     def _update_opi_keys_in_xml(self, path, xml, keys_to_update, root_tag, key_tag):
-        """
-        Replaces an opi key with a different key
+        """Replaces an opi key with a different key
 
         Args:
             path (String): path to file to update

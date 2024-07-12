@@ -5,11 +5,12 @@ from src.file_access import FileAccess
 from src.git_utils import RepoFactory
 from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
+from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
 from src.upgrade_step_from_6p0p0 import SetDanfysikDisableAutoonoffMacros
 from src.upgrade_step_from_7p2p0 import (
+    ChangeReflOPITarget,
     IgnoreRcpttSynoptics,
     UpgradeMotionSetPoints,
-    ChangeReflOPITarget,
 )
 from src.upgrade_step_from_7p4p0 import SetISOBUSForILM200
 from src.upgrade_step_from_9p0p0 import ChangeLETCollimatorCmd
@@ -20,8 +21,6 @@ from src.upgrade_step_from_12p0p1 import AddOscCollimMovingIndicator
 from src.upgrade_step_from_12p0p2 import UpgradeFrom12p0p2
 from src.upgrade_step_from_12p0p3 import UpgradeFrom12p0p3
 from src.upgrade_step_noop import UpgradeStepNoOp
-from src.upgrade_step_add_meta_tag import UpgradeStepAddMetaXmlElement
-
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
 # The last step should have an upgrade class of None (this is how it knows it has reached the end)

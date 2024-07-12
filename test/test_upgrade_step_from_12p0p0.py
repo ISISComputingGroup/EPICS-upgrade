@@ -1,7 +1,8 @@
 import unittest
-import mock
 
+import mock
 from mother import FileAccessStub, LoggingStub
+
 from src.upgrade_step_from_12p0p0 import UpgradeJawsForPositionAutosave
 
 

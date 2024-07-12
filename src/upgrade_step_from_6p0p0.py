@@ -6,8 +6,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class SetDanfysikDisableAutoonoffMacros(UpgradeStep):
-    """
-    Set the DISABLE_AUTONOFF macro to true for EMU or add it if not present. When this macro is true,
+    """Set the DISABLE_AUTONOFF macro to true for EMU or add it if not present. When this macro is true,
     settings will be displayed on the Danfysik OPI allowing automatic power turn on/off.
     """
 

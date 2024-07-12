@@ -1,19 +1,19 @@
-import unittest
-from hamcrest import assert_that, equal_to, is_not
-from mock import MagicMock, patch, mock_open
-from mother import LoggingStub, FileAccessStub
-from src.upgrade_step_check_init_inst import UpgradeStepCheckInitInst
-import os
-
 import sys
+import unittest
+
+from hamcrest import assert_that, equal_to, is_not
+from mock import mock_open, patch
+from mother import FileAccessStub, LoggingStub
+
+from src.upgrade_step_check_init_inst import UpgradeStepCheckInitInst
 
 module_ = "builtins"
 module_ = module_ if module_ in sys.modules else "builtins"
 
 try:
     import unittest.mock as mock
-except (ImportError,) as e:
-    import mock
+except (ImportError,):
+    pass
 
 
 class TestUpgradeStepCheckInitInst(unittest.TestCase):

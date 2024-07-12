@@ -1,14 +1,12 @@
-from src.upgrade_step import UpgradeStep
-from src.common_upgrades.utils.constants import CONFIG_FOLDER
-from src.common_upgrades.utils.constants import COMPONENT_FOLDER
-
 import os
 import xml.etree.ElementTree as ET
 
+from src.common_upgrades.utils.constants import COMPONENT_FOLDER, CONFIG_FOLDER
+from src.upgrade_step import UpgradeStep
+
 
 class UpgradeStepAddMetaXmlElement(UpgradeStep):
-    """
-    An upgrade step that adds a passed element to the meta.xml for a configuration.
+    """An upgrade step that adds a passed element to the meta.xml for a configuration.
     """
 
     def __init__(self, tag, tag_value):
@@ -17,8 +15,7 @@ class UpgradeStepAddMetaXmlElement(UpgradeStep):
         super(UpgradeStepAddMetaXmlElement, self).__init__()
 
     def perform(self, file_access, logger):
-        """
-        Change meta.xml configuration schema to have self.tag element
+        """Change meta.xml configuration schema to have self.tag element
 
         Args:
             file_access (FileAccess): file access

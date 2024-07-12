@@ -1,10 +1,10 @@
-import os
 import unittest
+
 from mock import MagicMock as Mock
-from test.test_utils import test_changing_synoptics_and_blocks, test_action_does_not_write
-from mother import LoggingStub, FileAccessStub
+from mother import FileAccessStub, LoggingStub
+
 from src.upgrade_step_from_7p2p0 import IgnoreRcpttSynoptics, UpgradeMotionSetPoints
-from functools import partial
+from test.test_utils import test_action_does_not_write, test_changing_synoptics_and_blocks
 
 
 class TestIgnoreRcpttSynoptics(unittest.TestCase):

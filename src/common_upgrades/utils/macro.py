@@ -1,6 +1,5 @@
 class Macro(object):
-    """
-    Macro Object
+    """Macro Object
 
     Attributes:
         name: Macro name. E.g. GALILADDR.

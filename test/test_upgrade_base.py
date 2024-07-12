@@ -1,10 +1,11 @@
 import unittest
+
 from hamcrest import *
 from mock import MagicMock as Mock
+from mother import FileAccessStub, LoggingStub
 
 from src.upgrade import Upgrade, UpgradeError
 from src.upgrade_step import UpgradeStep
-from mother import LoggingStub, FileAccessStub
 
 
 class TestUpgradeBase(unittest.TestCase):
@@ -161,7 +162,8 @@ class TestUpgradeBase(unittest.TestCase):
         assert_that(result, is_(expect_error_code), "Fail exit")
 
     def test_GIVEN_version_number_THEN_upgrade_check_works(self):
-        import upgrade, check_version
+        import check_version
+        import upgrade
 
         result_not_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-2][0])
         result_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-1][0])

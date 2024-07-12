@@ -1,19 +1,15 @@
 from abc import ABCMeta, abstractmethod
-from src.file_access import FileAccess
-from src.local_logger import LocalLogger
 
 
 class UpgradeStep(object):
-    """
-    An upgrade step base object to be inherited from
+    """An upgrade step base object to be inherited from
     """
 
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step this should be implemented
+        """Perform the upgrade step this should be implemented
 
         Args:
             file_access (FileAccess): file access

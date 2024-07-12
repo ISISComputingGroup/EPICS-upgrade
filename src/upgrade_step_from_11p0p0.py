@@ -1,13 +1,13 @@
 import socket
-from src.upgrade_step import UpgradeStep
-from src.common_upgrades.utils.macro import Macro
+
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
+from src.common_upgrades.utils.macro import Macro
+from src.upgrade_step import UpgradeStep
 
 
 class RenameMercurySoftwarePressureControlMacros(UpgradeStep):
-    """
-    SPC_... macro names have been adjusted to FLOW_SPC... names to differentiate them
+    """SPC_... macro names have been adjusted to FLOW_SPC... names to differentiate them
     from the new VTI Software Pressure Control macros that have been added with the new logic.
 
     Rename the old macros to the new ones.

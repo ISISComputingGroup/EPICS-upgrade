@@ -7,6 +7,6 @@ class RepoFactory:
         # Check repo
         try:
             return git.Repo(working_directory, search_parent_directories=True)
-        except Exception as e:
+        except Exception:
             # Not a valid repository
             raise git.NotUnderVersionControl(working_directory)

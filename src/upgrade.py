@@ -1,28 +1,23 @@
 import os
 
 from src.common_upgrades.sql_utilities import SqlConnection
-from src.file_access import FileAccess
-from src.local_logger import LocalLogger
 
 VERSION_FILENAME = os.path.join("configurations", "config_version.txt")
 
 
 class UpgradeError(Exception):
-    """
-    There is an error in the upgrade
+    """There is an error in the upgrade
     """
 
     pass
 
 
 class Upgrade(object):
-    """
-    Use upgrade steps to upgrade a configuration
+    """Use upgrade steps to upgrade a configuration
     """
 
     def __init__(self, file_access, logger, upgrade_steps, git_repo):
-        """
-        Constructor
+        """Constructor
 
         Args:
             file_access (FileAccess): an object to interact with files
@@ -40,8 +35,7 @@ class Upgrade(object):
         self._git_repo = git_repo
 
     def get_version_number(self):
-        """
-        Find the current version number of the repository. If there is no version number the
+        """Find the current version number of the repository. If there is no version number the
         repository is considered unversioned and the lowest version is written to the repository
 
         Returns: the version number
@@ -55,8 +49,7 @@ class Upgrade(object):
             return initial_version_number
 
     def upgrade(self):
-        """
-        Perform an upgrade on the configuration directory
+        """Perform an upgrade on the configuration directory
 
         Returns: status code 0 for success; not 0 for failure
 

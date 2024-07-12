@@ -1,4 +1,5 @@
 from hamcrest import *
+
 from src.common_upgrades.utils.constants import BLOCK_FILE
 
 BLOCK_NAMESPACE = "http://epics.isis.rl.ac.uk/schema/blocks/1.0"

@@ -1,19 +1,16 @@
-from src.file_access import FileAccess
-from src.local_logger import LocalLogger
-from src.upgrade_step import UpgradeStep
-from src.common_upgrades.utils.constants import SCRIPTS_ROOT
 import os
+
+from src.common_upgrades.utils.constants import SCRIPTS_ROOT
+from src.upgrade_step import UpgradeStep
 
 
 class UpgradeStepCheckInitInst(UpgradeStep):
-    """
-    An upgrade step to check if the instrument uses the old style of loading in pre and post cmd.
+    """An upgrade step to check if the instrument uses the old style of loading in pre and post cmd.
     This old style is via API.__localmod in init_<inst>.py in the Instrument/Settings/config/NDX<inst>/Python folder.
     """
 
     def search_files(self, files, root, file_access):
-        """
-        Search files from a root folder for pre and post cmd methods.
+        """Search files from a root folder for pre and post cmd methods.
 
         Args:
             files (List[str]): The names of the files in the root directory.
@@ -36,8 +33,7 @@ class UpgradeStepCheckInitInst(UpgradeStep):
         return 0
 
     def search_folder(self, folder, file_access):
-        """
-        Search folders for the search string.
+        """Search folders for the search string.
 
         Args:
             folder (str): The folder to search through.
@@ -54,8 +50,7 @@ class UpgradeStepCheckInitInst(UpgradeStep):
         return 0 if file_returns == "" else file_returns
 
     def perform(self, file_access, logger):
-        """
-        Check if file exists and if the file includes pre and post cmd methods.
+        """Check if file exists and if the file includes pre and post cmd methods.
 
         Args:
             file_access (FileAccess): file access

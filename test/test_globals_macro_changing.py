@@ -1,10 +1,11 @@
 import unittest
+
 from hamcrest import assert_that
+
 from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
-from test.mother import LoggingStub, FileAccessStub, EXAMPLE_GLOBALS_FILE
-import os
-from src.common_upgrades.utils.macro import Macro
 from src.common_upgrades.utils.constants import GLOBALS_FILENAME
+from src.common_upgrades.utils.macro import Macro
+from test.mother import EXAMPLE_GLOBALS_FILE, FileAccessStub, LoggingStub
 
 
 class TestFindingIOC(unittest.TestCase):

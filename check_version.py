@@ -1,4 +1,6 @@
-import upgrade, sys
+import sys
+
+import upgrade
 
 
 def compare_version_number(version_to_check):

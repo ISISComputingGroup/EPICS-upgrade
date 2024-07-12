@@ -1,7 +1,9 @@
 import unittest
+
 from hamcrest import *
+
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
-from test.mother import LoggingStub, FileAccessStub
+from test.mother import FileAccessStub, LoggingStub
 from test.test_utils import create_xml_with_starting_blocks, test_changing_synoptics_and_blocks
 
 

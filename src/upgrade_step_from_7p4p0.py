@@ -6,8 +6,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class SetISOBUSForILM200(UpgradeStep):
-    """
-    Set the ILM200 ISOBUS value to None for IMAT as they are the first to not use ISOBUS on the ILM200.
+    """Set the ILM200 ISOBUS value to None for IMAT as they are the first to not use ISOBUS on the ILM200.
     """
 
     def perform(self, file_access, logger):
