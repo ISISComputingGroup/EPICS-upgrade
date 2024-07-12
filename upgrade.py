@@ -6,7 +6,11 @@ from src.git_utils import RepoFactory
 from src.local_logger import LocalLogger
 from src.upgrade import Upgrade
 from src.upgrade_step_from_6p0p0 import SetDanfysikDisableAutoonoffMacros
-from src.upgrade_step_from_7p2p0 import IgnoreRcpttSynoptics, UpgradeMotionSetPoints, ChangeReflOPITarget
+from src.upgrade_step_from_7p2p0 import (
+    IgnoreRcpttSynoptics,
+    UpgradeMotionSetPoints,
+    ChangeReflOPITarget,
+)
 from src.upgrade_step_from_7p4p0 import SetISOBUSForILM200
 from src.upgrade_step_from_9p0p0 import ChangeLETCollimatorCmd
 from src.upgrade_step_from_10p0p0 import RemoveReflDeviceScreen
@@ -41,7 +45,10 @@ UPGRADE_STEPS = [
     ("7.0.0", UpgradeStepNoOp()),
     ("7.1.0", UpgradeStepNoOp()),
     ("7.2.0", IgnoreRcpttSynoptics()),
-    ("7.2.1", UpgradeStepNoOp()), # This is in the correct order as 7.2.1 happened before the upgrade of the motion setpoints
+    (
+        "7.2.1",
+        UpgradeStepNoOp(),
+    ),  # This is in the correct order as 7.2.1 happened before the upgrade of the motion setpoints
     ("7.2.0.1", UpgradeMotionSetPoints()),
     ("7.2.0.2", UpgradeStepNoOp()),
     ("7.2.1.1", ChangeReflOPITarget()),
@@ -76,5 +83,7 @@ if __name__ == "__main__":
     file_access = FileAccess(logger, config_root)
     git_repo = RepoFactory.get_repo(config_root)
 
-    upgrade = Upgrade(file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS, git_repo=git_repo)
+    upgrade = Upgrade(
+        file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS, git_repo=git_repo
+    )
     sys.exit(upgrade.upgrade())

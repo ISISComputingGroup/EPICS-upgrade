@@ -19,7 +19,9 @@ class LocalLogger(object):
         if not os.path.exists(log_dir):
             os.mkdir(log_dir)
 
-        log_file = os.path.join(log_dir, "upgrade_{0}.txt".format(datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")))
+        log_file = os.path.join(
+            log_dir, "upgrade_{0}.txt".format(datetime.datetime.now().strftime("%Y_%m_%d__%H_%M"))
+        )
 
         self._log_file = log_file
 
@@ -35,7 +37,7 @@ class LocalLogger(object):
         """
         formatted_message = "ERROR: {0}{1}".format(message, os.linesep)
         with open(self._log_file, mode="a") as f:
-                f.write(formatted_message)
+            f.write(formatted_message)
         sys.stderr.write(formatted_message)
 
     def info(self, message):
@@ -51,5 +53,5 @@ class LocalLogger(object):
 
         formatted_message = " INFO: {0}{1}".format(message, os.linesep)
         with open(self._log_file, mode="a") as f:
-                f.write(formatted_message)
+            f.write(formatted_message)
         sys.stdout.write(formatted_message)

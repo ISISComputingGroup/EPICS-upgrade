@@ -113,10 +113,12 @@ class ChangeMacroInGlobals(object):
             old_value_search = old_macro.value
             new_value_replacement = new_macro.value
 
-        regex_changes = {'old_macro_search': old_macro.name,
-                         'new_macro_replacement': new_macro.name,
-                         'old_value_search': old_value_search,
-                         'new_value_replacement': new_value_replacement}
+        regex_changes = {
+            "old_macro_search": old_macro.name,
+            "new_macro_replacement": new_macro.name,
+            "old_value_search": old_value_search,
+            "new_value_replacement": new_value_replacement,
+        }
 
         return regex_changes
 
@@ -133,12 +135,19 @@ class ChangeMacroInGlobals(object):
 
         regex_args = self._determine_replacement_values(old_macro, new_macro)
 
-        replace_regex = re.compile(r"({}_\d\d__)({})=({})".format(ioc_name, regex_args["old_macro_search"],
-                                                                  regex_args["old_value_search"]))
+        replace_regex = re.compile(
+            r"({}_\d\d__)({})=({})".format(
+                ioc_name, regex_args["old_macro_search"], regex_args["old_value_search"]
+            )
+        )
 
-        self._loaded_file[line_number] = re.sub(replace_regex, r"\1{}={}".format(regex_args["new_macro_replacement"],
-                                                                                 regex_args["new_value_replacement"]),
-                                                self._loaded_file[line_number])
+        self._loaded_file[line_number] = re.sub(
+            replace_regex,
+            r"\1{}={}".format(
+                regex_args["new_macro_replacement"], regex_args["new_value_replacement"]
+            ),
+            self._loaded_file[line_number],
+        )
 
     def _change_ioc_name(self, ioc_name, new_ioc_name, line_number):
         """
@@ -153,7 +162,9 @@ class ChangeMacroInGlobals(object):
         """
 
         if new_ioc_name is not None:
-            self._loaded_file[line_number] = self._loaded_file[line_number].replace(ioc_name, new_ioc_name.upper())
+            self._loaded_file[line_number] = self._loaded_file[line_number].replace(
+                ioc_name, new_ioc_name.upper()
+            )
 
     def write_modified_globals_file(self):
         """

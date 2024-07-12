@@ -29,7 +29,7 @@ class AddToBaseIOCs:
             file_access (FileAccess): file access.
             logger (LocalLogger): logger.
 
-        Returns: 
+        Returns:
             exit code 0 success; anything else fail.
 
         """
@@ -48,7 +48,9 @@ class AddToBaseIOCs:
             return -2
 
         modified_file_contents = self._add_ioc(ioc_file_contents, logger)
-        logger.info("Adding {what} ioc to autostart in {0}.".format(IOC_FILENAME, what=self._ioc_to_add))
+        logger.info(
+            "Adding {what} ioc to autostart in {0}.".format(IOC_FILENAME, what=self._ioc_to_add)
+        )
 
         if not self._check_final_file_contains_one_of_added_ioc(logger, modified_file_contents):
             return -3
@@ -72,11 +74,11 @@ class AddToBaseIOCs:
     def _check_final_file_contains_one_of_added_ioc(self, logger, xml):
         """
         Check the file to make sure it now contains one and only one ioc added entry.
-        
+
         Args:
             logger (Logger): Logger to write to.
             xml: XML to check.
-            
+
         Returns:
             True if ok, else False.
         """
@@ -92,11 +94,11 @@ class AddToBaseIOCs:
     def _check_prerequistes_for_file(self, xml, logger):
         """
         Check the file can be modified.
-        
+
         Args:
             xml: XML to check
             logger (Logger): logger to write errors to.
-            
+
         Returns:
             True if everything is ok, else False.
         """
@@ -108,17 +110,19 @@ class AddToBaseIOCs:
 
         node_count = ioc_names.count(self._add_after_ioc)
         if node_count != 1:
-            logger.error(ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, node_count, self._add_after_ioc))
+            logger.error(
+                ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, node_count, self._add_after_ioc)
+            )
             return False
         return True
 
     def _add_ioc(self, ioc_xml, logger):
         """
         Add IOC entry after add after ioc specified if it exists.
-        
+
         Args:
             ioc_xml: XML to add to.
-            
+
         Returns:
             The XML with the added note.
         """
@@ -130,6 +134,9 @@ class AddToBaseIOCs:
                 ioc_xml.firstChild.insertBefore(ioc_xml.createTextNode("\n    "), new_ioc_node)
                 return ioc_xml
 
-        logger.error("Could not find {0} ioc in file so no {1} ioc added.".format(
-            self._add_after_ioc, self._ioc_to_add))
+        logger.error(
+            "Could not find {0} ioc in file so no {1} ioc added.".format(
+                self._add_after_ioc, self._ioc_to_add
+            )
+        )
         return ioc_xml

@@ -71,8 +71,9 @@ class ChangePVsInXML(object):
             old_pv_name: The old PV to remove references to
             new_pv_name: The new PV to replace it with
         """
-        self._replace_text_in_elements(old_pv_name, new_pv_name, "read_pv",
-                                       self._file_access.get_config_files(BLOCK_FILE))
+        self._replace_text_in_elements(
+            old_pv_name, new_pv_name, "read_pv", self._file_access.get_config_files(BLOCK_FILE)
+        )
 
     def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):
         """
@@ -81,7 +82,9 @@ class ChangePVsInXML(object):
             old_pv_name: The old PV to remove references to
             new_pv_name: The new PV to replace it with
         """
-        self._replace_text_in_elements(old_pv_name, new_pv_name, "address", self._file_access.get_synoptic_files())
+        self._replace_text_in_elements(
+            old_pv_name, new_pv_name, "address", self._file_access.get_synoptic_files()
+        )
 
     def get_number_of_instances_of_pv(self, pv_names):
         """

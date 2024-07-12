@@ -2,8 +2,13 @@ import os
 from xml.dom import minidom
 import shutil
 from xml.parsers.expat import ExpatError
-from src.common_upgrades.utils.constants import CONFIG_FOLDER, COMPONENT_FOLDER, SYNOPTIC_FOLDER, \
-    DEVICE_SCREEN_FILE, DEVICE_SCREENS_FOLDER
+from src.common_upgrades.utils.constants import (
+    CONFIG_FOLDER,
+    COMPONENT_FOLDER,
+    SYNOPTIC_FOLDER,
+    DEVICE_SCREEN_FILE,
+    DEVICE_SCREENS_FOLDER,
+)
 
 
 class FileAccess(object):
@@ -22,16 +27,16 @@ class FileAccess(object):
         """
         self.config_base = config_root
         self._logger = logger
-    
+
     def rename_file(self, filename, new_name):
         """
-        
+
         Rename a file
-        
+
         Args:
             filename: current filename
             new_name: new filename to rename to
-        
+
         """
         os.rename(filename, new_name)
 
@@ -66,7 +71,7 @@ class FileAccess(object):
             self._logger.info("Writing new version number {0}".format(version))
             f.write("{}\n".format(version))
 
-    def write_file(self, filename, file_contents, mode = "w", file_full=False):
+    def write_file(self, filename, file_contents, mode="w", file_full=False):
         """
         Write file contents (will overwrite existing files)
 
@@ -148,15 +153,15 @@ class FileAccess(object):
             self._logger.info("Writing xml file {0}".format(filename))
             f.write('<?xml version="1.0" ?>\n')
             xml.firstChild.writexml(f)
-            f.write('\n')
+            f.write("\n")
 
     def listdir(self, dir):
         """
         Returns a list of files in a directory
-        
+
         Args:
             dir (String): The directory to list
-            
+
         Return:
             List of file paths (strings)
         """
@@ -226,7 +231,9 @@ class FileAccess(object):
         Yields:
             Tuple: The path to the synoptic file and its xml representation.
         """
-        for synoptic_path in [filename for filename in self.listdir(SYNOPTIC_FOLDER) if filename.endswith('.xml')]:
+        for synoptic_path in [
+            filename for filename in self.listdir(SYNOPTIC_FOLDER) if filename.endswith(".xml")
+        ]:
             yield synoptic_path, self._get_xml(synoptic_path)
 
     def get_device_screens(self):
@@ -261,6 +268,7 @@ class CachingFileAccess(object):
     Context that uses the given file access object but does not actually write to file until the context is left
     without an error.
     """
+
     def __init__(self, file_access):
         self.cached_writes = dict()
         self._file_access = file_access

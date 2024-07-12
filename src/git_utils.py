@@ -10,5 +10,3 @@ class RepoFactory:
         except Exception as e:
             # Not a valid repository
             raise git.NotUnderVersionControl(working_directory)
-
-

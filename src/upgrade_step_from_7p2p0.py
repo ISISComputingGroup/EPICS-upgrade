@@ -17,13 +17,7 @@ class IgnoreRcpttSynoptics(UpgradeStep):
     """
 
     file_name = ".gitignore"
-    text_content = ['*.py[co]',
-                    'rcptt_*/',
-                    'rcptt_*',
-                    '*.swp',
-                    '*~',
-                    '.idea/',
-                    '.project/']
+    text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
 
     def perform(self, file_access, logger):
         """
@@ -73,7 +67,6 @@ class UpgradeMotionSetPoints(UpgradeStep):
             logger.info("Changing motion set point PVs")
 
             with CachingFileAccess(file_access):
-
                 changer = ChangePVsInXML(file_access, logger)
 
                 changer.change_pv_name("COORD1", "COORD0")
@@ -92,7 +85,9 @@ class UpgradeMotionSetPoints(UpgradeStep):
                     print("")
                     print(
                         "{} folder exists. Motion set point configuration has changed significantly"
-                        " in this version and must be manually fixed".format(MOTION_SET_POINTS_FOLDER)
+                        " in this version and must be manually fixed".format(
+                            MOTION_SET_POINTS_FOLDER
+                        )
                     )
                     print(
                         "See https://github.com/ISISComputingGroup/ibex_developers_manual/"
@@ -103,8 +98,12 @@ class UpgradeMotionSetPoints(UpgradeStep):
 
                 # CoordX:MTR is gone, hard to automatically replace so just raise as issue
                 if changer.get_number_of_instances_of_pv(["COORD0:MTR", "COORD1:MTR"]) > 0:
-                    print("The PV COORDX:MTR has been found in a config/synoptic but no longer exists")
-                    print("Manually replace with a reference to the underlying axis and rerun the upgrade")
+                    print(
+                        "The PV COORDX:MTR has been found in a config/synoptic but no longer exists"
+                    )
+                    print(
+                        "Manually replace with a reference to the underlying axis and rerun the upgrade"
+                    )
                     raise RuntimeError("Underlying motor references")
 
             return SUCCESS_CODE
@@ -115,7 +114,6 @@ class UpgradeMotionSetPoints(UpgradeStep):
 
 
 class ChangeReflOPITarget(UpgradeStep):
-
     REFL_OPI_TARGET_OLD = "Reflectometry Front Panel"
     REFL_OPI_TARGET_NEW = "Reflectometry OPI"
 

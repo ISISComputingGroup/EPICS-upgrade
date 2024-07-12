@@ -5,6 +5,7 @@ from src.upgrade_step import UpgradeStep
 from src.common_upgrades.sql_utilities import SqlConnection, run_sql_file
 from src.common_upgrades.utils.constants import EPICS_ROOT
 
+
 class UpgradeFrom12p0p2(UpgradeStep):
     """
     add sql tables for JMS2RDB

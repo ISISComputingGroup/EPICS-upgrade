@@ -11,6 +11,7 @@ class UpgradeError(Exception):
     """
     There is an error in the upgrade
     """
+
     pass
 
 
@@ -66,7 +67,6 @@ class Upgrade(object):
         final_upgrade_version = None
         with SqlConnection():
             for version, upgrade_step in self._upgrade_steps:
-
                 if version == current_version:
                     upgrade = True
                     if upgrade_step is None:
@@ -75,7 +75,6 @@ class Upgrade(object):
                 if upgrade:
                     final_upgrade_version = version
                     if upgrade_step is not None:
-
                         self._logger.info("Upgrading from {0}".format(version))
                         self._logger.info("-------------------------")
                         result = upgrade_step.perform(self._file_access, self._logger)
@@ -93,10 +92,10 @@ class Upgrade(object):
             self._logger.error("Unknown version number {0}".format(current_version))
             return -1
 
-    def _commit_tag_and_push(self,  version, final=False):
+    def _commit_tag_and_push(self, version, final=False):
         self._git_repo.git.add(A=True)
         commit_message = f"IBEX Upgrade {'from' if not final else 'to'} {version}"
         self._git_repo.index.commit(commit_message)
         tag_name = f"{self._git_repo.active_branch}_{version}{'_upgrade' if not final else ''}"
         self._git_repo.create_tag(tag_name, message=commit_message, force=True)
-        self._git_repo.remote(name='origin').push()
+        self._git_repo.remote(name="origin").push()

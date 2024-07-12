@@ -88,7 +88,7 @@ def create_xml_with_iocs(iocs):
     doc = minidom.Document()
     top = doc.createElement("iocs")
     for ioc in iocs:
-        child = doc.createElement('ioc')
+        child = doc.createElement("ioc")
         child.setAttribute("name", ioc)
         top.appendChild(child)
     doc.appendChild(top)

@@ -50,6 +50,7 @@ def find_macro_with_name(macros, name_to_find):
             return True
     return False
 
+
 class ChangeMacrosInXML(object):
     """
     Changes macros in XML files.
@@ -66,7 +67,9 @@ class ChangeMacrosInXML(object):
         self._file_access = file_access
         self._logger = logger
 
-    def add_macro(self, ioc_name, macro_to_add, pattern, description="No description", default_value=None):
+    def add_macro(
+        self, ioc_name, macro_to_add, pattern, description="No description", default_value=None
+    ):
         """
         Add a macro with a specified name and value to all IOCs whose name begins with ioc_name, unless a macro
         with that name already exists
@@ -108,7 +111,7 @@ class ChangeMacrosInXML(object):
                 for macro in macros.getElementsByTagName("macro"):
                     name = macro.getAttribute("name")
                     for old_macro, new_macro in macros_to_change:
-                        #Check if current macro name starts with name of macro to be changed
+                        # Check if current macro name starts with name of macro to be changed
                         if re.match(old_macro.name, name) is not None:
                             change_macro_name(macro, old_macro.name, new_macro.name)
                             change_macro_value(macro, old_macro.value, new_macro.value)
@@ -129,7 +132,9 @@ class ChangeMacrosInXML(object):
             for ioc in ioc_xml.getElementsByTagName("ioc"):
                 ioc_name_with_suffix = ioc.getAttribute("name")
                 if old_ioc_name in ioc_name_with_suffix:
-                    ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                    ioc_replacement = ioc_name_with_suffix.replace(
+                        old_ioc_name, new_ioc_name
+                    ).upper()
                     ioc.setAttribute("name", ioc_replacement)
 
             self._file_access.write_xml_file(path, ioc_xml)
@@ -163,7 +168,9 @@ class ChangeMacrosInXML(object):
                         ioc_name_with_suffix = element.firstChild.nodeValue
 
                         if old_ioc_name in ioc_name_with_suffix:
-                            ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                            ioc_replacement = ioc_name_with_suffix.replace(
+                                old_ioc_name, new_ioc_name
+                            ).upper()
                             element.firstChild.replaceWholeText(ioc_replacement)
 
             self._file_access.write_xml_file(xml_path, synoptic_xml)
