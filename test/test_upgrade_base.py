@@ -1,14 +1,14 @@
 import unittest
+
 from hamcrest import *
 from mock import MagicMock as Mock
+from mother import FileAccessStub, LoggingStub
 
 from src.upgrade import Upgrade, UpgradeError
 from src.upgrade_step import UpgradeStep
-from mother import LoggingStub, FileAccessStub
 
 
 class TestUpgradeBase(unittest.TestCase):
-
     @unittest.mock.patch("git.Repo", autospec=True)
     def setUp(self, repo):
         self.file_access = FileAccessStub()
@@ -21,7 +21,6 @@ class TestUpgradeBase(unittest.TestCase):
             upgrade_steps = [(self.first_version, None)]
         return Upgrade(self.file_access, self.logger, upgrade_steps, self.git_repo)
 
-
     def test_GIVEN_config_contains_no_version_number_WHEN_load_THEN_version_number_added(self):
         self.file_access.open_file = Mock(side_effect=IOError("No configs Exist"))
 
@@ -30,8 +29,9 @@ class TestUpgradeBase(unittest.TestCase):
         assert_that(result, is_(self.first_version), "Version number")
         assert_that(self.file_access.wrote_version, is_(self.first_version))
 
-
-    def test_GIVEN_config_contains_known_version_number_WHEN_load_THEN_version_number_returned_and_not_written(self):
+    def test_GIVEN_config_contains_known_version_number_WHEN_load_THEN_version_number_returned_and_not_written(
+        self,
+    ):
         expected_version = self.first_version
         self.file_access.open_file = Mock(return_value=[expected_version])
 
@@ -41,17 +41,21 @@ class TestUpgradeBase(unittest.TestCase):
         assert_that(self.file_access.wrote_version, none())
 
     def test_GIVEN_config_contains_unknown_version_number_WHEN_upgrade_THEN_error(self):
-
         unknown_version = "unknown"
         self.file_access.open_file = Mock(return_value=[unknown_version])
 
         result = self.upgrade().upgrade()
 
         assert_that(result, is_not(0), "Success")
-        assert_that(self.logger.log_err, contains_exactly("Unknown version number {0}".format(unknown_version)))
+        assert_that(
+            self.logger.log_err,
+            contains_exactly("Unknown version number {0}".format(unknown_version)),
+        )
         self.git_repo.index.commit.assert_not_called()
 
-    def test_GIVEN_config_contains_latest_version_number_WHEN_load_THEN_program_exits_successfully(self):
+    def test_GIVEN_config_contains_latest_version_number_WHEN_load_THEN_program_exits_successfully(
+        self,
+    ):
         expected_version = "3.3.0"
         self.file_access.open_file = Mock(return_value=[expected_version])
         upgrade_steps = [(expected_version, None)]
@@ -59,9 +63,13 @@ class TestUpgradeBase(unittest.TestCase):
         result = self.upgrade(upgrade_steps).upgrade()
 
         assert_that(result, is_(0), "Success exit")
-        assert_that(self.logger.log, has_item("Current config is on latest version, no upgrade needed"))
+        assert_that(
+            self.logger.log, has_item("Current config is on latest version, no upgrade needed")
+        )
 
-    def test_GIVEN_config_contains_older_version_number_WHEN_upgrade_THEN_upgrade_done_and_program_exits_successfully(self):
+    def test_GIVEN_config_contains_older_version_number_WHEN_upgrade_THEN_upgrade_done_and_program_exits_successfully(
+        self,
+    ):
         original_version = "3.2.1"
         final_version = "3.2.3"
 
@@ -69,20 +77,27 @@ class TestUpgradeBase(unittest.TestCase):
         upgrade_step = Mock(UpgradeStep)
         upgrade_step.perform = Mock(return_value=0)
 
-        upgrade_steps = [(original_version, upgrade_step),
-                         (final_version, None)]
+        upgrade_steps = [(original_version, upgrade_step), (final_version, None)]
 
         result = self.upgrade(upgrade_steps).upgrade()
 
         assert_that(result, is_(0), "Success exit")
         upgrade_step.perform.assert_called_once()
-        assert_that(self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version)))
-        assert_that(self.file_access.wrote_version, is_(final_version), "Version written to file at the end")
-        expected_commit_calls = [unittest.mock.call(f'IBEX Upgrade from {original_version}'),
-                                 unittest.mock.call(f'IBEX Upgrade to {final_version}')]
+        assert_that(
+            self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version))
+        )
+        assert_that(
+            self.file_access.wrote_version, is_(final_version), "Version written to file at the end"
+        )
+        expected_commit_calls = [
+            unittest.mock.call(f"IBEX Upgrade from {original_version}"),
+            unittest.mock.call(f"IBEX Upgrade to {final_version}"),
+        ]
         self.git_repo.index.commit.assert_has_calls(expected_commit_calls, any_order=False)
 
-    def test_GIVEN_config_contains_older_version_number_but_not_earliest_and_multiple_steps_WHEN_upgrade_THEN_all_upgrade_steps_equal_to_or_later_than_current_steps_are_done(self):
+    def test_GIVEN_config_contains_older_version_number_but_not_earliest_and_multiple_steps_WHEN_upgrade_THEN_all_upgrade_steps_equal_to_or_later_than_current_steps_are_done(
+        self,
+    ):
         original_version = "3.2.1"
         final_version = "3.2.3"
 
@@ -103,7 +118,8 @@ class TestUpgradeBase(unittest.TestCase):
             (original_version, upgrade_step_to_do_1),
             (original_version, upgrade_step_to_do_2),
             (original_version, upgrade_step_to_do_3),
-            (final_version, None)]
+            (final_version, None),
+        ]
 
         result = self.upgrade(upgrade_steps).upgrade()
 
@@ -112,7 +128,9 @@ class TestUpgradeBase(unittest.TestCase):
         upgrade_step_to_do_1.perform.assert_called_once()
         upgrade_step_to_do_2.perform.assert_called_once()
         upgrade_step_to_do_3.perform.assert_called_once()
-        assert_that(self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version)))
+        assert_that(
+            self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version))
+        )
 
     def test_GIVEN_empty_upgrade_steps_WHEN_init_THEN_error(self):
         try:
@@ -137,16 +155,16 @@ class TestUpgradeBase(unittest.TestCase):
         upgrade_step = Mock(UpgradeStep)
         upgrade_step.perform = Mock(return_value=expect_error_code)
 
-        upgrade_steps = [(original_version, upgrade_step),
-                         (final_version, None)]
+        upgrade_steps = [(original_version, upgrade_step), (final_version, None)]
 
         result = self.upgrade(upgrade_steps).upgrade()
 
         assert_that(result, is_(expect_error_code), "Fail exit")
 
     def test_GIVEN_version_number_THEN_upgrade_check_works(self):
-        import upgrade, check_version
-        
+        import check_version
+        import upgrade
+
         result_not_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-2][0])
         result_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-1][0])
 
@@ -154,5 +172,5 @@ class TestUpgradeBase(unittest.TestCase):
         assert_that(result_match, is_(0), "Did not pass with correct version numbers")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

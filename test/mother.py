@@ -1,14 +1,10 @@
-"""
-Mother for test objects
-"""
+"""Mother for test objects"""
 
 from xml.dom import minidom
 
 
 class LoggingStub(object):
-    """
-    Stub for logging
-    """
+    """Stub for logging"""
 
     def __init__(self):
         self.log = []
@@ -23,9 +19,7 @@ class LoggingStub(object):
 
 
 class FileAccessStub(object):
-    """
-    Stub for file access
-    """
+    """Stub for file access"""
 
     SYNOPTIC_FILENAME = "synoptic_file"
 
@@ -78,17 +72,15 @@ class FileAccessStub(object):
 
 
 def create_xml_with_iocs(iocs):
-    """
-    Args:
+    """Args:
         iocs (list): A list of IOC names
     Returns:
         str: xml containing the supplied IOCs
     """
-
     doc = minidom.Document()
     top = doc.createElement("iocs")
     for ioc in iocs:
-        child = doc.createElement('ioc')
+        child = doc.createElement("ioc")
         child.setAttribute("name", ioc)
         top.appendChild(child)
     doc.appendChild(top)

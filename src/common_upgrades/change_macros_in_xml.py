@@ -5,8 +5,7 @@ from src.common_upgrades.utils.constants import FILTER_REGEX, IOC_FILE, SYNOPTIC
 
 
 def change_macro_name(macro, old_macro_name, new_macro_name):
-    """
-    Changes the macro name of a macro xml node.
+    """Changes the macro name of a macro xml node.
 
     Args:
         macro : The macro node to change.
@@ -19,8 +18,7 @@ def change_macro_name(macro, old_macro_name, new_macro_name):
 
 
 def change_macro_value(macro, old_macro_value, new_macro_value):
-    """
-    Changes the macros in the given xml if a new macro value is given.
+    """Changes the macros in the given xml if a new macro value is given.
 
     Args:
         macro : The macro xml node to change.
@@ -36,8 +34,7 @@ def change_macro_value(macro, old_macro_value, new_macro_value):
 
 
 def find_macro_with_name(macros, name_to_find):
-    """
-    Find whether macro with name attribute equal to argument name_to_find exists
+    """Find whether macro with name attribute equal to argument name_to_find exists
 
     Args:
         macros: XML element containing list of macros
@@ -50,14 +47,12 @@ def find_macro_with_name(macros, name_to_find):
             return True
     return False
 
+
 class ChangeMacrosInXML(object):
-    """
-    Changes macros in XML files.
-    """
+    """Changes macros in XML files."""
 
     def __init__(self, file_access, logger):
-        """
-        Initialise.
+        """Initialise.
 
         Args:
             file_access: Object to allow for file access.
@@ -66,9 +61,10 @@ class ChangeMacrosInXML(object):
         self._file_access = file_access
         self._logger = logger
 
-    def add_macro(self, ioc_name, macro_to_add, pattern, description="No description", default_value=None):
-        """
-        Add a macro with a specified name and value to all IOCs whose name begins with ioc_name, unless a macro
+    def add_macro(
+        self, ioc_name, macro_to_add, pattern, description="No description", default_value=None
+    ):
+        """Add a macro with a specified name and value to all IOCs whose name begins with ioc_name, unless a macro
         with that name already exists
 
         Args:
@@ -93,12 +89,12 @@ class ChangeMacrosInXML(object):
             self._file_access.write_xml_file(path, ioc_xml)
 
     def change_macros(self, ioc_name, macros_to_change):
-        """
-        Changes macros in all xml files that contain the correct macros for a specified ioc.
+        """Changes macros in all xml files that contain the correct macros for a specified ioc.
 
         Args:
             ioc_name: Name of the IOC to change macros within.
             macros_to_change: List of 2-tuples of old_macro and new_macro Macro classes.
+
         Returns:
             None.
         """
@@ -108,7 +104,7 @@ class ChangeMacrosInXML(object):
                 for macro in macros.getElementsByTagName("macro"):
                     name = macro.getAttribute("name")
                     for old_macro, new_macro in macros_to_change:
-                        #Check if current macro name starts with name of macro to be changed
+                        # Check if current macro name starts with name of macro to be changed
                         if re.match(old_macro.name, name) is not None:
                             change_macro_name(macro, old_macro.name, new_macro.name)
                             change_macro_value(macro, old_macro.value, new_macro.value)
@@ -116,8 +112,7 @@ class ChangeMacrosInXML(object):
             self._file_access.write_xml_file(path, ioc_xml)
 
     def change_ioc_name(self, old_ioc_name, new_ioc_name):
-        """
-        Replaces all instances of old_ioc_name with new_ioc_name in an XML tree
+        """Replaces all instances of old_ioc_name with new_ioc_name in an XML tree
         Args:
             old_ioc_name: String, the old ioc prefix (without _XX number suffix)
             new_ioc_name: String, The desired new IOC prefix (without _XX number suffix)
@@ -129,14 +124,15 @@ class ChangeMacrosInXML(object):
             for ioc in ioc_xml.getElementsByTagName("ioc"):
                 ioc_name_with_suffix = ioc.getAttribute("name")
                 if old_ioc_name in ioc_name_with_suffix:
-                    ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                    ioc_replacement = ioc_name_with_suffix.replace(
+                        old_ioc_name, new_ioc_name
+                    ).upper()
                     ioc.setAttribute("name", ioc_replacement)
 
             self._file_access.write_xml_file(path, ioc_xml)
 
     def change_ioc_name_in_synoptics(self, old_ioc_name, new_ioc_name):
-        """
-        Replaces instances of old_ioc_name with new_ioc_name
+        """Replaces instances of old_ioc_name with new_ioc_name
 
         Args:
             old_ioc_name: String, the old ioc prefix (without _XX number suffix)
@@ -163,14 +159,15 @@ class ChangeMacrosInXML(object):
                         ioc_name_with_suffix = element.firstChild.nodeValue
 
                         if old_ioc_name in ioc_name_with_suffix:
-                            ioc_replacement = ioc_name_with_suffix.replace(old_ioc_name, new_ioc_name).upper()
+                            ioc_replacement = ioc_name_with_suffix.replace(
+                                old_ioc_name, new_ioc_name
+                            ).upper()
                             element.firstChild.replaceWholeText(ioc_replacement)
 
             self._file_access.write_xml_file(xml_path, synoptic_xml)
 
     def ioc_tag_generator(self, path, ioc_xml, ioc_to_change):
-        """
-        Generator giving all the IOC tags in all configurations.
+        """Generator giving all the IOC tags in all configurations.
 
         Args:
             path: Path to the xml file

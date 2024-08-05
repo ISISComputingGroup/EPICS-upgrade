@@ -1,4 +1,5 @@
 from hamcrest import *
+
 from src.common_upgrades.utils.constants import BLOCK_FILE
 
 BLOCK_NAMESPACE = "http://epics.isis.rl.ac.uk/schema/blocks/1.0"
@@ -57,6 +58,7 @@ def create_xml_with_starting_blocks(file_access, starting_blocks):
             return create_pv_xml(SYNOPTIC_FILE_XML, SYNOPTIC_XML, starting_blocks)
         elif filename == BLOCK_FILE:
             return create_pv_xml(BLOCK_FILE_XML, BLOCK_XML, starting_blocks)
+
     file_access.open_file = open_file
 
 
