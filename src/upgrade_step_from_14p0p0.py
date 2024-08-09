@@ -2,13 +2,16 @@ import socket
 
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 from src.common_upgrades.utils.macro import Macro
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 
 
 class UpgradeFrom14p0p0(UpgradeStep):
-    """Set CARDS0 macro for all instruments  except ARGUS/CHRONUS in which it is  configured differently already"""
+    """Set CARDS0 macro for all instruments,
+     except ARGUS/CHRONUS in which it is configured differently already"""
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         try:
             hostname = socket.gethostname()
             # Make sure we do not perform this on ARGUS/CHRONUS where the macro is already present

@@ -73,7 +73,8 @@ UPGRADE_STEPS = [
     ("13.0.1", UpgradeStepNoOp()),
     ("14.0.0", UpgradeFrom14p0p0()),
     ("15.0.0", None)
-    # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
+    # to add step see
+    # https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
 if __name__ == "__main__":
