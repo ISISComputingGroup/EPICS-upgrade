@@ -9,7 +9,7 @@ from src.upgrade_step import UpgradeStep
 
 class UpgradeFrom14p0p0(UpgradeStep):
     """Set CARDS0 macro for all instruments,
-     except ARGUS/CHRONUS in which it is configured differently already"""
+    except ARGUS/CHRONUS in which it is configured differently already"""
 
     def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         try:
