@@ -20,6 +20,7 @@ from src.upgrade_step_from_12p0p0 import UpgradeJawsForPositionAutosave
 from src.upgrade_step_from_12p0p1 import AddOscCollimMovingIndicator
 from src.upgrade_step_from_12p0p2 import UpgradeFrom12p0p2
 from src.upgrade_step_from_12p0p3 import UpgradeFrom12p0p3
+from src.upgrade_step_from_14p0p0 import UpgradeFrom14p0p0
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -70,8 +71,10 @@ UPGRADE_STEPS = [
     ("12.0.3", UpgradeFrom12p0p3()),
     ("13.0.0", UpgradeStepNoOp()),
     ("13.0.1", UpgradeStepNoOp()),
-    ("14.0.0", None),
-    # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
+    ("14.0.0", UpgradeFrom14p0p0()),
+    ("15.0.0", None),
+    # to add step see
+    # https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
 if __name__ == "__main__":
