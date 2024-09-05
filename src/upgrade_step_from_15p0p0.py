@@ -1,15 +1,22 @@
 import logging
 import os
 
-from src.file_access import FileAccess
-from src.upgrade_step import UpgradeStep
-from src.common_upgrades.utils.constants import CONFIG_ROOT, EPICS_ROOT
-from src.git_utils import RepoFactory
 import git
 
+from src.common_upgrades.utils.constants import CONFIG_ROOT, EPICS_ROOT
+from src.file_access import FileAccess
+from src.git_utils import RepoFactory
+from src.upgrade_step import UpgradeStep
 
 CONTROLLERS = [
-    "galil", "galilmul", "mclennan", "bkhoff_01", "linmot", "smc100_01", "sm300_01", "twincat"
+    "galil",
+    "galilmul",
+    "mclennan",
+    "bkhoff_01",
+    "linmot",
+    "smc100_01",
+    "sm300_01",
+    "twincat",
 ]
 
 # Unix timestamp of 2024/09/01 at midnight.
@@ -17,12 +24,13 @@ CONTROLLERS = [
 # been included in the copy, and therefore will have to be sorted out manually.
 CUTOFF_TIMESTAMP = 1725145200
 
+
 class UpgradeFrom15p0p0(UpgradeStep):
     """
-    Remove motor settings
+    Remove motor settings, since they have now been copied into motorExtensions instead.
     """
 
-    def perform(self, file_access: FileAccess, logger: logging.Logger):
+    def perform(self, file_access: FileAccess, logger: logging.Logger) -> int:
         try:
             controller_dirs: list[str] = [os.path.join(CONFIG_ROOT, c) for c in CONTROLLERS]
             existent_controller_dirs: list[str] = [c for c in controller_dirs if os.path.exists(c)]
@@ -42,7 +50,7 @@ class UpgradeFrom15p0p0(UpgradeStep):
                         "motorExtensions",
                         "master",
                         "settings",
-                        "<instrument>"
+                        "<instrument>",
                     )
                     raise ValueError(
                         "ERROR: Motor settings have changed since they were copied into "

@@ -4,10 +4,9 @@ from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 from src.common_upgrades.utils.macro import Macro
 from src.upgrade_step import UpgradeStep
 
+
 class SetISOBUSForILM200(UpgradeStep):
-    """
-    Set the ILM200 ISOBUS value to None for IMAT as they are the first to not use ISOBUS on the ILM200.
-    """
+    """Set the ILM200 ISOBUS value to None for IMAT as they are the first to not use ISOBUS on the ILM200."""
 
     def perform(self, file_access, logger):
         try:
@@ -16,7 +15,13 @@ class SetISOBUSForILM200(UpgradeStep):
             if hostname == "NDXIMAT":
                 ioc_name = "ILM200"
                 change_macros_in_xml = ChangeMacrosInXML(file_access, logger)
-                change_macros_in_xml.add_macro(ioc_name, Macro("USE_ISOBUS", "No"), "^(Yes|No)$", "Whether to use ISOBUS for communications (default: Yes)", "Yes")
+                change_macros_in_xml.add_macro(
+                    ioc_name,
+                    Macro("USE_ISOBUS", "No"),
+                    "^(Yes|No)$",
+                    "Whether to use ISOBUS for communications (default: Yes)",
+                    "Yes",
+                )
             return 0
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))

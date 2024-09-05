@@ -1,33 +1,23 @@
-import os
+from future.builtins import input
 
-from src.upgrade_step import UpgradeStep
-from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
+from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
 from src.common_upgrades.utils.constants import MOTION_SET_POINTS_FOLDER
 from src.file_access import CachingFileAccess
-from future.builtins import input
+from src.upgrade_step import UpgradeStep
 
 ERROR_CODE = -1
 SUCCESS_CODE = 0
 
 
 class IgnoreRcpttSynoptics(UpgradeStep):
-    """
-    Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed.
-    """
+    """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed."""
 
     file_name = ".gitignore"
-    text_content = ['*.py[co]',
-                    'rcptt_*/',
-                    'rcptt_*',
-                    '*.swp',
-                    '*~',
-                    '.idea/',
-                    '.project/']
+    text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
 
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step
+        """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
             logger (LocalLogger): logger
@@ -56,13 +46,10 @@ class IgnoreRcpttSynoptics(UpgradeStep):
 
 
 class UpgradeMotionSetPoints(UpgradeStep):
-    """
-    Changes blocks to point at renamed PVs. Warns about changed setup.
-    """
+    """Changes blocks to point at renamed PVs. Warns about changed setup."""
 
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step
+        """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
             logger (LocalLogger): logger
@@ -73,7 +60,6 @@ class UpgradeMotionSetPoints(UpgradeStep):
             logger.info("Changing motion set point PVs")
 
             with CachingFileAccess(file_access):
-
                 changer = ChangePVsInXML(file_access, logger)
 
                 changer.change_pv_name("COORD1", "COORD0")
@@ -92,7 +78,9 @@ class UpgradeMotionSetPoints(UpgradeStep):
                     print("")
                     print(
                         "{} folder exists. Motion set point configuration has changed significantly"
-                        " in this version and must be manually fixed".format(MOTION_SET_POINTS_FOLDER)
+                        " in this version and must be manually fixed".format(
+                            MOTION_SET_POINTS_FOLDER
+                        )
                     )
                     print(
                         "See https://github.com/ISISComputingGroup/ibex_developers_manual/"
@@ -103,8 +91,12 @@ class UpgradeMotionSetPoints(UpgradeStep):
 
                 # CoordX:MTR is gone, hard to automatically replace so just raise as issue
                 if changer.get_number_of_instances_of_pv(["COORD0:MTR", "COORD1:MTR"]) > 0:
-                    print("The PV COORDX:MTR has been found in a config/synoptic but no longer exists")
-                    print("Manually replace with a reference to the underlying axis and rerun the upgrade")
+                    print(
+                        "The PV COORDX:MTR has been found in a config/synoptic but no longer exists"
+                    )
+                    print(
+                        "Manually replace with a reference to the underlying axis and rerun the upgrade"
+                    )
                     raise RuntimeError("Underlying motor references")
 
             return SUCCESS_CODE
@@ -115,13 +107,11 @@ class UpgradeMotionSetPoints(UpgradeStep):
 
 
 class ChangeReflOPITarget(UpgradeStep):
-
     REFL_OPI_TARGET_OLD = "Reflectometry Front Panel"
     REFL_OPI_TARGET_NEW = "Reflectometry OPI"
 
     def perform(self, file_access, logger):
-        """
-        Perform the upgrade step
+        """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
             logger (LocalLogger): logger

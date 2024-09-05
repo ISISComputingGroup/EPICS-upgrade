@@ -1,8 +1,6 @@
 from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 
-from src.local_logger import LocalLogger
-
 IOC_FILENAME = "configurations\components\_base\iocs.xml"
 
 FILE_TO_CHECK_STR = "IOC default component file"
@@ -12,9 +10,7 @@ ADD_AFTER_MISSING = "{} contains {} {} iocs it must contain exactly 1."
 
 
 class AddToBaseIOCs:
-    """
-    Add the ioc autostart to _base ioc so that it autostarts
-    """
+    """Add the ioc autostart to _base ioc so that it autostarts"""
 
     def __init__(self, ioc_to_add, add_after_ioc, xml_to_add):
         self._ioc_to_add = ioc_to_add
@@ -22,14 +18,13 @@ class AddToBaseIOCs:
         self._xml_to_add = xml_to_add
 
     def perform(self, file_access, logger):
-        """
-        Add the autostart of the given.
+        """Add the autostart of the given.
 
         Args:
             file_access (FileAccess): file access.
             logger (LocalLogger): logger.
 
-        Returns: 
+        Returns:
             exit code 0 success; anything else fail.
 
         """
@@ -48,7 +43,9 @@ class AddToBaseIOCs:
             return -2
 
         modified_file_contents = self._add_ioc(ioc_file_contents, logger)
-        logger.info("Adding {what} ioc to autostart in {0}.".format(IOC_FILENAME, what=self._ioc_to_add))
+        logger.info(
+            "Adding {what} ioc to autostart in {0}.".format(IOC_FILENAME, what=self._ioc_to_add)
+        )
 
         if not self._check_final_file_contains_one_of_added_ioc(logger, modified_file_contents):
             return -3
@@ -58,8 +55,7 @@ class AddToBaseIOCs:
 
     @staticmethod
     def _get_ioc_names(xml):
-        """
-        Gets the names of all the iocs in the xml.
+        """Gets the names of all the iocs in the xml.
 
         Args:
             xml: XML to check.
@@ -70,13 +66,12 @@ class AddToBaseIOCs:
         return [ioc.getAttribute("name") for ioc in xml.getElementsByTagName("ioc")]
 
     def _check_final_file_contains_one_of_added_ioc(self, logger, xml):
-        """
-        Check the file to make sure it now contains one and only one ioc added entry.
-        
+        """Check the file to make sure it now contains one and only one ioc added entry.
+
         Args:
             logger (Logger): Logger to write to.
             xml: XML to check.
-            
+
         Returns:
             True if ok, else False.
         """
@@ -90,13 +85,12 @@ class AddToBaseIOCs:
         return True
 
     def _check_prerequistes_for_file(self, xml, logger):
-        """
-        Check the file can be modified.
-        
+        """Check the file can be modified.
+
         Args:
             xml: XML to check
             logger (Logger): logger to write errors to.
-            
+
         Returns:
             True if everything is ok, else False.
         """
@@ -108,17 +102,18 @@ class AddToBaseIOCs:
 
         node_count = ioc_names.count(self._add_after_ioc)
         if node_count != 1:
-            logger.error(ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, node_count, self._add_after_ioc))
+            logger.error(
+                ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, node_count, self._add_after_ioc)
+            )
             return False
         return True
 
     def _add_ioc(self, ioc_xml, logger):
-        """
-        Add IOC entry after add after ioc specified if it exists.
-        
+        """Add IOC entry after add after ioc specified if it exists.
+
         Args:
             ioc_xml: XML to add to.
-            
+
         Returns:
             The XML with the added note.
         """
@@ -130,6 +125,9 @@ class AddToBaseIOCs:
                 ioc_xml.firstChild.insertBefore(ioc_xml.createTextNode("\n    "), new_ioc_node)
                 return ioc_xml
 
-        logger.error("Could not find {0} ioc in file so no {1} ioc added.".format(
-            self._add_after_ioc, self._ioc_to_add))
+        logger.error(
+            "Could not find {0} ioc in file so no {1} ioc added.".format(
+                self._add_after_ioc, self._ioc_to_add
+            )
+        )
         return ioc_xml

@@ -1,6 +1,8 @@
 import os
 import unittest
-from mother import LoggingStub, FileAccessStub
+
+from mother import LoggingStub
+
 from src.file_access import FileAccess
 from src.upgrade_step_from_10p0p0 import RemoveReflDeviceScreen
 
@@ -42,7 +44,6 @@ SCREENS_FILE = """<?xml version="1.0" ?>
 
 
 class TestRemoveReflDeviceScreen(unittest.TestCase):
-
     def setUp(self):
         self.upgrade_step = RemoveReflDeviceScreen()
         self.logger = LoggingStub()
@@ -52,12 +53,16 @@ class TestRemoveReflDeviceScreen(unittest.TestCase):
         # Given
         self.file_access.create_directories(SCREEN_FILE_PATH)
         self.file_access.write_file(SCREEN_FILE_PATH, SCREENS_FILE, file_full=True)
-        self.assertTrue(self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>"))
+        self.assertTrue(
+            self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>")
+        )
         self.assertTrue(self.file_access.exists(SCREEN_FILE_PATH))
         # When
         self.upgrade_step.perform(self.file_access, self.logger)
         # Then
-        self.assertFalse(self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>"))
+        self.assertFalse(
+            self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>")
+        )
 
         # Cleanup created files
         self.file_access.remove_file(os.path.join(CONFIG_ROOT, SCREEN_FILE_PATH))
@@ -74,5 +79,5 @@ class TestRemoveReflDeviceScreen(unittest.TestCase):
         self.upgrade_step.perform(self.file_access, self.logger)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
