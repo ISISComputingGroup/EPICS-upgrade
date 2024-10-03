@@ -1,0 +1,2 @@
+gitpython
+mysql-connector-python
