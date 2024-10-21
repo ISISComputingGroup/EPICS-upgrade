@@ -11,7 +11,9 @@ class Macro(object):
         self.__value = value
 
     def __repr__(self):
-        return "<Macro object with name {} and value {}>".format(self.__name, self.__value)
+        return "<Macro object with name {} and value {}>".format(
+            self.__name, self.__value
+        )
 
     @property
     def name(self):

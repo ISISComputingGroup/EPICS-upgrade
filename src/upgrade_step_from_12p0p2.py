@@ -11,7 +11,9 @@ class UpgradeFrom12p0p2(UpgradeStep):
     def perform(self, file_access, logger):
         # add JMS2RDB Tables
         try:
-            file = os.path.join(EPICS_ROOT, "CSS", "master", "AlarmJMS2RDB", "MySQL-Log-DDL.sql")
+            file = os.path.join(
+                EPICS_ROOT, "CSS", "master", "AlarmJMS2RDB", "MySQL-Log-DDL.sql"
+            )
             logger.info("Updating JMS2RDB schema")
             with SqlConnection() as s:
                 return run_sql_file(logger, file)

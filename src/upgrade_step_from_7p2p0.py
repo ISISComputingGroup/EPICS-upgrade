@@ -14,7 +14,15 @@ class IgnoreRcpttSynoptics(UpgradeStep):
     """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed."""
 
     file_name = ".gitignore"
-    text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
+    text_content = [
+        "*.py[co]",
+        "rcptt_*/",
+        "rcptt_*",
+        "*.swp",
+        "*~",
+        ".idea/",
+        ".project/",
+    ]
 
     def perform(self, file_access, logger):
         """Perform the upgrade step
@@ -30,7 +38,11 @@ class IgnoreRcpttSynoptics(UpgradeStep):
 
             if not file_access.exists(self.file_name):
                 # In case there isn't a .gitignore file, write new one
-                print(".gitignore not found at " + self.file_name + ", making a new .gitignore")
+                print(
+                    ".gitignore not found at "
+                    + self.file_name
+                    + ", making a new .gitignore"
+                )
                 file_access.write_file(self.file_name, self.text_content, "w")
             else:
                 # If existing .gitignore file is found, append to it
@@ -90,7 +102,10 @@ class UpgradeMotionSetPoints(UpgradeStep):
                     print("")
 
                 # CoordX:MTR is gone, hard to automatically replace so just raise as issue
-                if changer.get_number_of_instances_of_pv(["COORD0:MTR", "COORD1:MTR"]) > 0:
+                if (
+                    changer.get_number_of_instances_of_pv(["COORD0:MTR", "COORD1:MTR"])
+                    > 0
+                ):
                     print(
                         "The PV COORDX:MTR has been found in a config/synoptic but no longer exists"
                     )
@@ -120,4 +135,6 @@ class ChangeReflOPITarget(UpgradeStep):
 
         """
         changer = SynopticsAndDeviceScreens(file_access, logger)
-        return changer.update_opi_keys({self.REFL_OPI_TARGET_OLD: self.REFL_OPI_TARGET_NEW})
+        return changer.update_opi_keys(
+            {self.REFL_OPI_TARGET_OLD: self.REFL_OPI_TARGET_NEW}
+        )

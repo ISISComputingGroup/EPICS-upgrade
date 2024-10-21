@@ -67,7 +67,10 @@ class ChangePVsInXML(object):
             new_pv_name: The new PV to replace it with
         """
         self._replace_text_in_elements(
-            old_pv_name, new_pv_name, "read_pv", self._file_access.get_config_files(BLOCK_FILE)
+            old_pv_name,
+            new_pv_name,
+            "read_pv",
+            self._file_access.get_config_files(BLOCK_FILE),
         )
 
     def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):
@@ -92,8 +95,12 @@ class ChangePVsInXML(object):
         num_of_instances = 0
         for pv_name in pv_names:
             for path, xml in self._file_access.get_config_files(BLOCK_FILE):
-                num_of_instances += len(list(self.node_text_filter(pv_name, "read_pv", path, xml)))
+                num_of_instances += len(
+                    list(self.node_text_filter(pv_name, "read_pv", path, xml))
+                )
             for path, xml in self._file_access.get_synoptic_files():
-                num_of_instances += len(list(self.node_text_filter(pv_name, "address", path, xml)))
+                num_of_instances += len(
+                    list(self.node_text_filter(pv_name, "address", path, xml))
+                )
 
         return num_of_instances

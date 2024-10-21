@@ -33,7 +33,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
         result = adder.perform(self.file_access, self.logger)
 
         assert_that(result, is_(-1), "result")
-        assert_that(self.logger.log_err, has_item("Can not find file to modify in config."))
+        assert_that(
+            self.logger.log_err, has_item("Can not find file to modify in config.")
+        )
 
     def test_GIVEN_invalid_xml_WHEN_adding_ioc_THEN_error(self):
         error_str = "No configs Exist"
@@ -77,7 +79,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
         assert_that(result, is_(False), "result")
         assert_that(self.logger.log_err, has_item(expected_message))
 
-    def test_GIVEN_xml_already_containing_ioc_to_add_WHEN_checking_prerequisites_THEN_error(self):
+    def test_GIVEN_xml_already_containing_ioc_to_add_WHEN_checking_prerequisites_THEN_error(
+        self,
+    ):
         ioc_to_add = "TO_ADD"
         xml = create_xml_with_iocs(["ANOTHER_IOC", ioc_to_add])
 
@@ -99,7 +103,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
             adder, xml, ALREADY_CONTAINS.format(FILE_TO_CHECK_STR, ioc_to_add)
         )
 
-    def test_GIVEN_xml_containing_no_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(self):
+    def test_GIVEN_xml_containing_no_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(
+        self,
+    ):
         after_ioc = "AFTER_THIS"
         xml = create_xml_with_iocs(["ANOTHER_IOC", "SECOND_IOC"])
 
@@ -108,7 +114,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
             adder, xml, ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, 0, after_ioc)
         )
 
-    def test_GIVEN_xml_containing_two_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(self):
+    def test_GIVEN_xml_containing_two_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(
+        self,
+    ):
         after_ioc = "AFTER_THIS"
         xml = create_xml_with_iocs([after_ioc, "ANOTHER_IOC", after_ioc])
 
@@ -141,7 +149,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
         assert_that(
             self.logger.log_err,
             has_item(
-                "Could not find {0} ioc in file so no {1} ioc added.".format(after_ioc, ioc_to_add)
+                "Could not find {0} ioc in file so no {1} ioc added.".format(
+                    after_ioc, ioc_to_add
+                )
             ),
         )
 
@@ -158,7 +168,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
 
         assert_that(len(iocs), is_(3), "ioc added")
 
-        assert_that(iocs[1].getAttribute("name"), is_(ioc_to_add), "correctly named ioc added")
+        assert_that(
+            iocs[1].getAttribute("name"), is_(ioc_to_add), "correctly named ioc added"
+        )
         [
             assert_that(iocs[1].hasAttribute(attr), "correct xml added")
             for attr in ["restart", "autostart", "simlevel"]

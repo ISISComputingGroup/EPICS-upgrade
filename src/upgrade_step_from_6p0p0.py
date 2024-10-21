@@ -24,7 +24,8 @@ class SetDanfysikDisableAutoonoffMacros(UpgradeStep):
                     "1",
                 )
                 change_macros_in_xml.change_macros(
-                    ioc_name, [(Macro("DISABLE_AUTOONOFF"), Macro("DISABLE_AUTOONOFF", "0"))]
+                    ioc_name,
+                    [(Macro("DISABLE_AUTOONOFF"), Macro("DISABLE_AUTOONOFF", "0"))],
                 )
             return 0
         except Exception as e:

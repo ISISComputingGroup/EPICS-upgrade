@@ -62,7 +62,12 @@ class ChangeMacrosInXML(object):
         self._logger = logger
 
     def add_macro(
-        self, ioc_name, macro_to_add, pattern, description="No description", default_value=None
+        self,
+        ioc_name,
+        macro_to_add,
+        pattern,
+        description="No description",
+        default_value=None,
     ):
         """Add a macro with a specified name and value to all IOCs whose name begins with ioc_name, unless a macro
         with that name already exists
@@ -144,7 +149,9 @@ class ChangeMacrosInXML(object):
         """
         path = SYNOPTIC_FOLDER
 
-        for xml_path in [c for c in self._file_access.listdir(path) if c.endswith(".xml")]:
+        for xml_path in [
+            c for c in self._file_access.listdir(path) if c.endswith(".xml")
+        ]:
             try:
                 synoptic_xml = self._file_access.open_xml_file(xml_path)
             except IOError:

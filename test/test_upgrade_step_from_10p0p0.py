@@ -49,19 +49,25 @@ class TestRemoveReflDeviceScreen(unittest.TestCase):
         self.logger = LoggingStub()
         self.file_access = FileAccess(self.logger, CONFIG_ROOT)
 
-    def test_GIVEN_refl_device_screen_in_config_WHEN_upgrade_performed_THEN_screen_removed(self):
+    def test_GIVEN_refl_device_screen_in_config_WHEN_upgrade_performed_THEN_screen_removed(
+        self,
+    ):
         # Given
         self.file_access.create_directories(SCREEN_FILE_PATH)
         self.file_access.write_file(SCREEN_FILE_PATH, SCREENS_FILE, file_full=True)
         self.assertTrue(
-            self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>")
+            self.file_access.file_contains(
+                SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>"
+            )
         )
         self.assertTrue(self.file_access.exists(SCREEN_FILE_PATH))
         # When
         self.upgrade_step.perform(self.file_access, self.logger)
         # Then
         self.assertFalse(
-            self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>")
+            self.file_access.file_contains(
+                SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>"
+            )
         )
 
         # Cleanup created files

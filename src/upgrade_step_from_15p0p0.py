@@ -32,8 +32,12 @@ class UpgradeFrom15p0p0(UpgradeStep):
 
     def perform(self, file_access: FileAccess, logger: logging.Logger) -> int:
         try:
-            controller_dirs: list[str] = [os.path.join(CONFIG_ROOT, c) for c in CONTROLLERS]
-            existent_controller_dirs: list[str] = [c for c in controller_dirs if os.path.exists(c)]
+            controller_dirs: list[str] = [
+                os.path.join(CONFIG_ROOT, c) for c in CONTROLLERS
+            ]
+            existent_controller_dirs: list[str] = [
+                c for c in controller_dirs if os.path.exists(c)
+            ]
 
             for directory in existent_controller_dirs:
                 logger.info(f"Checking for recent commits in {directory}")
@@ -41,7 +45,9 @@ class UpgradeFrom15p0p0(UpgradeStep):
                 repo: git.Repo = RepoFactory.get_repo(directory)
                 commit_timestamps: str = repo.git.log("--format=%ct", directory)
 
-                integer_commit_timestamps: list[int] = [int(ts) for ts in commit_timestamps.split()]
+                integer_commit_timestamps: list[int] = [
+                    int(ts) for ts in commit_timestamps.split()
+                ]
 
                 if any(ts > CUTOFF_TIMESTAMP for ts in integer_commit_timestamps):
                     motorext_path = os.path.join(

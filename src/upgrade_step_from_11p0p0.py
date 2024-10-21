@@ -133,7 +133,9 @@ class RenameMercurySoftwarePressureControlMacros(UpgradeStep):
                 change_macros_in_xml = ChangeMacrosInXML(file_access, logger)
                 change_macros_in_xml.change_macros(ioc_name, self.rename_macros)
                 for macro in self.new_macros:
-                    change_macros_in_xml.add_macro(ioc_name, macro[0], macro[1], macro[2], macro[3])
+                    change_macros_in_xml.add_macro(
+                        ioc_name, macro[0], macro[1], macro[2], macro[3]
+                    )
                 change_pvs_in_xml = ChangePVsInXML(file_access, logger)
                 change_pvs_in_xml.change_pv_name("FULL_AUTO", "SPC")
             return 0

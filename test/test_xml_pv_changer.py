@@ -4,7 +4,10 @@ from hamcrest import *
 
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from test.mother import FileAccessStub, LoggingStub
-from test.test_utils import create_xml_with_starting_blocks, test_changing_synoptics_and_blocks
+from test.test_utils import (
+    create_xml_with_starting_blocks,
+    test_changing_synoptics_and_blocks,
+)
 
 
 class TestChangePVs(unittest.TestCase):
@@ -31,7 +34,9 @@ class TestChangePVs(unittest.TestCase):
             [("BLOCKNAME", "BLOCK_PV"), ("BLOCKNAME_2", "CHANGED")],
         )
 
-    def test_GIVEN_block_with_part_of_PV_WHEN_pv_is_changed_THEN_only_part_of_PV_changes(self):
+    def test_GIVEN_block_with_part_of_PV_WHEN_pv_is_changed_THEN_only_part_of_PV_changes(
+        self,
+    ):
         self._test_changing_pv(
             [("BLOCKNAME", "CHANGEME:BUT:NOT:ME")],
             "CHANGEME",
@@ -39,15 +44,25 @@ class TestChangePVs(unittest.TestCase):
             [("BLOCKNAME", "CHANGED:BUT:NOT:ME")],
         )
 
-    def test_GIVEN_two_blocks_that_need_changing_WHEN_pv_is_changed_THEN_both_change(self):
+    def test_GIVEN_two_blocks_that_need_changing_WHEN_pv_is_changed_THEN_both_change(
+        self,
+    ):
         self._test_changing_pv(
-            [("BLOCKNAME", "CHANGEME:BUT:NOT:ME"), ("BLOCKNAME_1", "ALSO:CHANGEME:BUT:NOT:ME")],
+            [
+                ("BLOCKNAME", "CHANGEME:BUT:NOT:ME"),
+                ("BLOCKNAME_1", "ALSO:CHANGEME:BUT:NOT:ME"),
+            ],
             "CHANGEME",
             "CHANGED",
-            [("BLOCKNAME", "CHANGED:BUT:NOT:ME"), ("BLOCKNAME_1", "ALSO:CHANGED:BUT:NOT:ME")],
+            [
+                ("BLOCKNAME", "CHANGED:BUT:NOT:ME"),
+                ("BLOCKNAME_1", "ALSO:CHANGED:BUT:NOT:ME"),
+            ],
         )
 
-    def test_GIVEN_block_with_name_that_could_be_changed_WHEN_pv_is_changed_THEN_name_is_not(self):
+    def test_GIVEN_block_with_name_that_could_be_changed_WHEN_pv_is_changed_THEN_name_is_not(
+        self,
+    ):
         self._test_changing_pv(
             [("CHANGEME", "BLAH")], "CHANGEME", "CHANGED", [("CHANGEME", "BLAH")]
         )

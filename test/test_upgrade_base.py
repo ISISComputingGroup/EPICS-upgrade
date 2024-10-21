@@ -21,7 +21,9 @@ class TestUpgradeBase(unittest.TestCase):
             upgrade_steps = [(self.first_version, None)]
         return Upgrade(self.file_access, self.logger, upgrade_steps, self.git_repo)
 
-    def test_GIVEN_config_contains_no_version_number_WHEN_load_THEN_version_number_added(self):
+    def test_GIVEN_config_contains_no_version_number_WHEN_load_THEN_version_number_added(
+        self,
+    ):
         self.file_access.open_file = Mock(side_effect=IOError("No configs Exist"))
 
         result = self.upgrade().get_version_number()
@@ -64,7 +66,8 @@ class TestUpgradeBase(unittest.TestCase):
 
         assert_that(result, is_(0), "Success exit")
         assert_that(
-            self.logger.log, has_item("Current config is on latest version, no upgrade needed")
+            self.logger.log,
+            has_item("Current config is on latest version, no upgrade needed"),
         )
 
     def test_GIVEN_config_contains_older_version_number_WHEN_upgrade_THEN_upgrade_done_and_program_exits_successfully(
@@ -84,16 +87,21 @@ class TestUpgradeBase(unittest.TestCase):
         assert_that(result, is_(0), "Success exit")
         upgrade_step.perform.assert_called_once()
         assert_that(
-            self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version))
+            self.logger.log,
+            has_item("Finished upgrade. Now on version {0}".format(final_version)),
         )
         assert_that(
-            self.file_access.wrote_version, is_(final_version), "Version written to file at the end"
+            self.file_access.wrote_version,
+            is_(final_version),
+            "Version written to file at the end",
         )
         expected_commit_calls = [
             unittest.mock.call(f"IBEX Upgrade from {original_version}"),
             unittest.mock.call(f"IBEX Upgrade to {final_version}"),
         ]
-        self.git_repo.index.commit.assert_has_calls(expected_commit_calls, any_order=False)
+        self.git_repo.index.commit.assert_has_calls(
+            expected_commit_calls, any_order=False
+        )
 
     def test_GIVEN_config_contains_older_version_number_but_not_earliest_and_multiple_steps_WHEN_upgrade_THEN_all_upgrade_steps_equal_to_or_later_than_current_steps_are_done(
         self,
@@ -129,7 +137,8 @@ class TestUpgradeBase(unittest.TestCase):
         upgrade_step_to_do_2.perform.assert_called_once()
         upgrade_step_to_do_3.perform.assert_called_once()
         assert_that(
-            self.logger.log, has_item("Finished upgrade. Now on version {0}".format(final_version))
+            self.logger.log,
+            has_item("Finished upgrade. Now on version {0}".format(final_version)),
         )
 
     def test_GIVEN_empty_upgrade_steps_WHEN_init_THEN_error(self):
@@ -165,10 +174,16 @@ class TestUpgradeBase(unittest.TestCase):
         import check_version
         import upgrade
 
-        result_not_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-2][0])
-        result_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-1][0])
+        result_not_match = check_version.compare_version_number(
+            upgrade.UPGRADE_STEPS[-2][0]
+        )
+        result_match = check_version.compare_version_number(
+            upgrade.UPGRADE_STEPS[-1][0]
+        )
 
-        assert_that(result_not_match, is_(1), "Did not fail with incorrect version numbers")
+        assert_that(
+            result_not_match, is_(1), "Did not fail with incorrect version numbers"
+        )
         assert_that(result_match, is_(0), "Did not pass with correct version numbers")
 
 
