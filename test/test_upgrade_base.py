@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import *
+from hamcrest import assert_that, is_, has_item, none, is_not, contains_exactly
 from mock import MagicMock as Mock
 from mother import FileAccessStub, LoggingStub
 

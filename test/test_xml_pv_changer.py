@@ -1,6 +1,6 @@
 import unittest
 
-from hamcrest import *
+from hamcrest import assert_that, is_
 
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from test.mother import FileAccessStub, LoggingStub

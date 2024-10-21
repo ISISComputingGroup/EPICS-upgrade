@@ -1,4 +1,4 @@
-from hamcrest import *
+from hamcrest import assert_that, is_, not_, is_in
 
 from src.common_upgrades.utils.constants import BLOCK_FILE
 

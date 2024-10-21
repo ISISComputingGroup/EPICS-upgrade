@@ -1,7 +1,7 @@
 import unittest
 from xml.parsers.expat import ExpatError
 
-from hamcrest import *
+from hamcrest import assert_that, is_, has_item
 from mock import MagicMock as Mock
 
 from src.common_upgrades.add_to_base_iocs import (

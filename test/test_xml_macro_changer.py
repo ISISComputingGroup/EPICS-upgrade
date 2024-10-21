@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from functools import partial
 from xml.dom import minidom
 
-from hamcrest import *
+from hamcrest import assert_that, is_, has_length
 from mock import MagicMock as Mock
 
 from src.common_upgrades.change_macros_in_xml import (

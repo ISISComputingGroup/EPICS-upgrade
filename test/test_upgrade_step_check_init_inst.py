@@ -11,7 +11,7 @@ module_ = "builtins"
 module_ = module_ if module_ in sys.modules else "builtins"
 
 try:
-    import unittest.mock as mock
+    import unittest.mock
 except (ImportError,):
     pass
 
