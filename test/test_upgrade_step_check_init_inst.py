@@ -100,9 +100,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
     ):
         # Arrange
         file_search_returns = [0, 0, 0, 0]  # One return for each of file1, 2, 3 and 4
-        with patch(
-            "os.walk", return_value=self.directory_structure
-        ) , patch(
+        with patch("os.walk", return_value=self.directory_structure), patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
@@ -126,9 +124,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             0,
             0,
         ]  # One return for each of file1, 2, 3 and 4
-        with patch(
-            "os.walk", return_value=self.directory_structure
-        ) , patch(
+        with patch("os.walk", return_value=self.directory_structure), patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
@@ -154,9 +150,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             "Error postcmd",
             0,
         ]  # One return for each of file1, 2, 3 and 4
-        with patch(
-            "os.walk", return_value=self.directory_structure
-        ) , patch(
+        with patch("os.walk", return_value=self.directory_structure), patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
@@ -182,9 +176,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             "Error postcmd",
             0,
         ]  # One return for each of file1, 2, 3 and 4
-        with patch(
-            "os.walk", return_value=self.directory_structure
-        ) , patch(
+        with patch("os.walk", return_value=self.directory_structure), patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
