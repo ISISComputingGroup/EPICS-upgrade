@@ -102,7 +102,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         file_search_returns = [0, 0, 0, 0]  # One return for each of file1, 2, 3 and 4
         with patch(
             "os.walk", return_value=self.directory_structure
-        ) as mocked_walk, patch(
+        ) , patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
@@ -128,7 +128,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         ]  # One return for each of file1, 2, 3 and 4
         with patch(
             "os.walk", return_value=self.directory_structure
-        ) as mocked_walk, patch(
+        ) , patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
@@ -156,7 +156,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         ]  # One return for each of file1, 2, 3 and 4
         with patch(
             "os.walk", return_value=self.directory_structure
-        ) as mocked_walk, patch(
+        ) , patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:
@@ -184,7 +184,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
         ]  # One return for each of file1, 2, 3 and 4
         with patch(
             "os.walk", return_value=self.directory_structure
-        ) as mocked_walk, patch(
+        ) , patch(
             "src.upgrade_step_check_init_inst.UpgradeStepCheckInitInst.search_files",
             side_effect=file_search_returns,
         ) as mocked_search_files:

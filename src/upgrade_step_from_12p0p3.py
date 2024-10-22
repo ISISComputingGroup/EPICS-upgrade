@@ -13,7 +13,7 @@ class UpgradeFrom12p0p3(UpgradeStep):
         try:
             file = os.path.join(EPICS_ROOT, "SystemSetup", "moxas_mysql_schema.txt")
             logger.info("Updating moxa schema")
-            with SqlConnection() as s:
+            with SqlConnection():
                 return run_sql_file(logger, file)
         except Exception as e:
             logger.error("Unable to perform upgrade, caught error: {}".format(e))
