@@ -51,6 +51,8 @@ def find_macro_with_name(macros, name_to_find):
 class ChangeMacrosInXML(object):
     """Changes macros in XML files."""
 
+    _ioc_file_generator: object
+
     def __init__(self, file_access, logger):
         """Initialise.
 

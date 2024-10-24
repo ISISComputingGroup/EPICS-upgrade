@@ -1,5 +1,6 @@
 import unittest
-
+from unittest.mock import patch
+from unittest.mock import call
 from hamcrest import assert_that, is_, has_item, none, is_not, contains_exactly
 from mock import MagicMock as Mock
 from mother import FileAccessStub, LoggingStub
@@ -9,7 +10,7 @@ from src.upgrade_step import UpgradeStep
 
 
 class TestUpgradeBase(unittest.TestCase):
-    @unittest.mock.patch("git.Repo", autospec=True)
+    @patch("git.Repo", autospec=True)
     def setUp(self, repo):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
@@ -96,8 +97,8 @@ class TestUpgradeBase(unittest.TestCase):
             "Version written to file at the end",
         )
         expected_commit_calls = [
-            unittest.mock.call(f"IBEX Upgrade from {original_version}"),
-            unittest.mock.call(f"IBEX Upgrade to {final_version}"),
+            call(f"IBEX Upgrade from {original_version}"),
+            call(f"IBEX Upgrade to {final_version}"),
         ]
         self.git_repo.index.commit.assert_has_calls(
             expected_commit_calls, any_order=False

@@ -228,7 +228,7 @@ class FileAccess(object):
         else:
             return None
 
-    def get_file_paths(self, directory: str, extension: str = None):
+    def get_file_paths(self, directory: str, extension: str = ""):
         """Generator giving the paths of all files inside a directory, recursively searching all subdirectories.
 
         Args:

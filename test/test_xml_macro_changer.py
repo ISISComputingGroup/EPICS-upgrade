@@ -346,6 +346,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.macro_changer.change_macros(ioc_name, macro_to_change)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
@@ -374,6 +375,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.macro_changer.change_macros(ioc_name, macro_to_change)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
@@ -471,6 +473,7 @@ class TestChangeIOCName(unittest.TestCase):
         self.macro_changer.change_ioc_name("GALIL", "CHANGED")
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         tree = ET.ElementTree(written_xml)
 
@@ -508,6 +511,7 @@ class TestChangeIOCName(unittest.TestCase):
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         tree = ET.ElementTree(written_xml)
         iocs = tree.findall(".//ioc", {"ns": NAMESPACE})
@@ -552,6 +556,7 @@ class TestChangeIOCName(unittest.TestCase):
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         tree = ET.ElementTree(written_xml)
         iocs = tree.findall(".//ioc", {"ns": NAMESPACE})
@@ -582,7 +587,7 @@ class TestChangeIOCName(unittest.TestCase):
 
         # Then:
         output_file = self.file_access.write_file_contents
-
+        assert output_file is not None
         assert_that((ioc_to_change in output_file), is_(False))
         assert_that((new_ioc_name in output_file), is_(True))
         assert_that((unchanged_ioc in output_file), is_(True))
@@ -617,6 +622,7 @@ class TestAddMacro(unittest.TestCase):
         )
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
@@ -663,6 +669,7 @@ class TestAddMacro(unittest.TestCase):
         )
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}

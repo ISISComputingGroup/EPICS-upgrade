@@ -70,10 +70,11 @@ def run_sql_list(logger, sql_list):
         sql_list: The statement to send
     """
     cursor = SqlConnection.get_session(logger).cursor()
-
+    assert cursor is not None
     for sql in sql_list:
-        for result in cursor.execute(sql, multi=True):
-            pass
+        cursor.execute(sql, multi=True)
+        # for result in cursor.execute(sql, multi=True):
+        # pass
 
     SqlConnection.get_session(logger).commit()
     cursor.close()

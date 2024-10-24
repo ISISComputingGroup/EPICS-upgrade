@@ -44,9 +44,7 @@ class SynopticsAndDeviceScreens(object):
                         device_screens[0], device_screens[1], keys_to_update
                     )
             except Exception as e:
-                self.logger.error(
-                    "Cannot upgrade device screens {}: {}".format(path, e)
-                )
+                self.logger.error("Cannot upgrade device screens: {}".format(e))
                 result = -2
         return result
 

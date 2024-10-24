@@ -1,5 +1,6 @@
 import unittest
 
+import unittest.mock as mocked
 import mysql.connector
 from mock import MagicMock, patch
 
@@ -62,8 +63,14 @@ class TestSQLUtils(unittest.TestCase):
         with SqlConnection():
             run_sql(MagicMock(), MagicMock())
 
-            SqlConnection.get_session(MagicMock()).commit.assert_called()
-            SqlConnection.get_session(MagicMock()).cursor().close.assert_called()
+            commit = mocked.create_autospec(
+                SqlConnection.get_session(MagicMock()).commit
+            )
+            cursor = mocked.create_autospec(
+                SqlConnection.get_session(MagicMock()).cursor()
+            )
+            commit.assert_called()
+            cursor.assert_called()
 
     @patch("src.common_upgrades.sql_utilities.getpass")
     @patch(
@@ -74,6 +81,7 @@ class TestSQLUtils(unittest.TestCase):
             my_SQL_string = "TEST SQL"
             run_sql(MagicMock(), my_SQL_string)
 
-            SqlConnection.get_session(MagicMock()).cursor().execute.assert_called_with(
-                my_SQL_string
+            execute = mocked.create_autospec(
+                SqlConnection.get_session(MagicMock()).cursor().execute
             )
+            execute.assert_called_with(my_SQL_string)

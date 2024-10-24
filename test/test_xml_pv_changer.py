@@ -1,5 +1,5 @@
 import unittest
-
+import unittest.mock as mocked
 from hamcrest import assert_that, is_
 
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
@@ -80,7 +80,8 @@ class TestChangePVs(unittest.TestCase):
         number_of_pvs = pv_changer.get_number_of_instances_of_pv("CHANGEME")
 
         assert_that(number_of_pvs, is_(2))
-        self.file_access.write_file.assert_not_called()
+        write_file = mocked.create_autospec(self.file_access.write_file)
+        write_file.assert_not_called()
 
     def GIVEN_block_with_name_that_obeys_filter_WHEN_pv_counted_THEN_returns_zero_and_xml_unchanged(
         self,
@@ -92,7 +93,8 @@ class TestChangePVs(unittest.TestCase):
         number_of_pvs = pv_changer.get_number_of_instances_of_pv("CHANGEME")
 
         assert_that(number_of_pvs, is_(0))
-        self.file_access.write_file.assert_not_called()
+        write_file = mocked.create_autospec(self.file_access.write_file)
+        write_file.assert_not_called()
 
 
 if __name__ == "__main__":

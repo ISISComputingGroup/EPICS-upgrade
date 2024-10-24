@@ -1,9 +1,11 @@
 """Mother for test objects"""
 
 from xml.dom import minidom
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 
 
-class LoggingStub(object):
+class LoggingStub(LocalLogger):
     """Stub for logging"""
 
     def __init__(self):
@@ -18,7 +20,7 @@ class LoggingStub(object):
         self.log.append(message)
 
 
-class FileAccessStub(object):
+class FileAccessStub(FileAccess):
     """Stub for file access"""
 
     SYNOPTIC_FILENAME = "synoptic_file"
@@ -29,14 +31,14 @@ class FileAccessStub(object):
         self.write_filename = None
         self.write_file_contents = None
         self.write_file_dict = dict()
-        self.existing_files = None
+        self.existing_files = {}
 
     def write_version_number(self, version, filename):
         self.wrote_version = version
 
-    def write_file(self, filename, contents):
+    def write_file(self, filename, file_contents, mode="w", file_full=False):
         self.write_filename = filename
-        self.write_file_contents = "\n".join(contents)
+        self.write_file_contents = "\n".join(file_contents)
         self.write_file_dict[self.write_filename] = self.write_file_contents
 
     def open_file(self, filename):
@@ -48,7 +50,7 @@ class FileAccessStub(object):
         self.write_file_dict[self.write_filename] = self.write_file_contents
 
     def open_xml_file(self, filename):
-        return minidom.parseString(self.open_file(filename))
+        return minidom.parseString("".join(self.open_file(filename)))
 
     def listdir(self, dir):
         return ["file1.xml", "README.txt", "file2.xml"]
@@ -57,18 +59,24 @@ class FileAccessStub(object):
         pass
 
     def is_dir(self, path):
-        pass
+        return True
 
     def exists(self, path):
-        if self.existing_files is None:
+        if self.existing_files == {}:
             return False
         return self.existing_files[path]
 
-    def get_config_files(self, type):
-        yield type, self.open_xml_file(type)
+    def get_config_files(self, file_type):
+        yield file_type, self.open_xml_file(file_type)
 
     def get_synoptic_files(self):
         yield "synoptic_file", self.open_xml_file("synoptic_file")
+
+    def get_file_paths(self, directory: str, extension: str = ""):
+        yield directory + extension
+
+    def file_contains(self, filename, string):
+        return True
 
 
 def create_xml_with_iocs(iocs):
