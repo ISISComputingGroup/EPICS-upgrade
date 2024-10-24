@@ -77,9 +77,7 @@ class ChangeMacroInGlobals(object):
         """
         for index, line in enumerate(self._loaded_file):
             if line.startswith("{}_".format(ioc_to_change)):
-                self._logger.info(
-                    "Found line '{}' in {}".format(line, GLOBALS_FILENAME)
-                )
+                self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
                 yield index
 
     def _determine_replacement_values(self, old_macro, new_macro):

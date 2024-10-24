@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from functools import partial
 from xml.dom import minidom
 
-from hamcrest import assert_that, is_, has_length
+from hamcrest import assert_that, has_length, is_
 from mock import MagicMock as Mock
 
 from src.common_upgrades.change_macros_in_xml import (
@@ -93,9 +93,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(
-                list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change))
-            )
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(list(result)), is_(0), "no results")
@@ -114,9 +112,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(
-                list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change))
-            )
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(list(result)), is_(0), "no results")
@@ -133,9 +129,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(
-                list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change))
-            )
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(result), is_(1))
@@ -156,9 +150,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(
-                list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change))
-            )
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, ioc_to_change)))
 
         # Then:
         assert_that(len(result), is_(1))
@@ -177,9 +169,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(
-                list(self.macro_changer.ioc_tag_generator(config, xml, root_ioc_name))
-            )
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, root_ioc_name)))
 
         # Then:
         assert_that(len(result), is_(1))
@@ -198,9 +188,7 @@ class TestTagGenerator(unittest.TestCase):
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
         result = []
         for config, xml in self.macro_changer._ioc_file_generator():
-            result.extend(
-                list(self.macro_changer.ioc_tag_generator(config, xml, root_ioc_name))
-            )
+            result.extend(list(self.macro_changer.ioc_tag_generator(config, xml, root_ioc_name)))
 
         # Then:
         assert_that(len(result), is_(0))
@@ -286,9 +274,7 @@ class TestChangMacroValue(unittest.TestCase):
     ):
         # Given:
         original_macro_value = "None"
-        test_macro_xml_string = MACRO_XML.format(
-            name="PORT1", value=original_macro_value
-        )
+        test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
         old_macro = Macro("PORT1", "old")
@@ -306,9 +292,7 @@ class TestChangMacroValue(unittest.TestCase):
     ):
         # Given:
         original_macro_value = "None"
-        test_macro_xml_string = MACRO_XML.format(
-            name="PORT1", value=original_macro_value
-        )
+        test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
         test_macro_xml = minidom.parseString(test_macro_xml_string)
         macro_node = test_macro_xml.getElementsByTagName("macro")[0]
         old_macro = Macro("PORT1", "new")
@@ -348,9 +332,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         # Then:
         assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
-        result = written_xml.findall(
-            ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
-        )
+        result = written_xml.findall(".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE})
 
         assert_that(result, has_length(1), "changed macro count")
         assert_that(result[0].get("name"), is_("GALILADDR"))
@@ -359,9 +341,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self,
     ):
         # Given:
-        xml = IOC_FILE_XML.format(
-            iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"})
-        )
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"}))
         ioc_name = "GALIL"
         macro_to_change = [(Macro("GALILADDR"), Macro("GALILADDR", "1"))]
 
@@ -380,9 +360,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
         )
-        result_mtrctrl = written_xml.findall(
-            ".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE}
-        )
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
 
         assert_that(result_galiladdr, has_length(1), "changed macro count")
         assert_that(result_galiladdr[0].get("name"), is_("GALILADDR"))
@@ -396,9 +374,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self,
     ):
         # Given:
-        xml = IOC_FILE_XML.format(
-            iocs=create_galil_ioc(1, {"GALILADDRXX": "", "MTRCTRLXX": ""})
-        )
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDRXX": "", "MTRCTRLXX": ""}))
         ioc_name = "GALIL"
         macros_to_change = [
             (Macro("GALILADDRXX", ""), Macro("GALILADDR", "1")),
@@ -406,9 +382,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         ]
         self.file_access.write_file_contents = xml
 
-        self.file_access.open_file = Mock(
-            return_value=self.file_access.write_file_contents
-        )
+        self.file_access.open_file = Mock(return_value=self.file_access.write_file_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
             return_value=[("file1.xml", self.file_access.open_xml_file(None))]
@@ -422,9 +396,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
         )
-        result_mtrctrl = written_xml.findall(
-            ".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE}
-        )
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
 
         assert_that(result_mtrctrl, has_length(1), "changed macro count")
         assert_that(result_mtrctrl[0].get("name"), is_("MTRCTRL"))
@@ -459,9 +431,7 @@ class TestChangeIOCName(unittest.TestCase):
     def test_GIVEN_an_ioc_name_WHEN_IOC_change_asked_THEN_ioc_name_is_changed(self):
         # Given:
         ioc_suffix_digit = 1
-        xml = IOC_FILE_XML.format(
-            iocs=create_galil_ioc(ioc_suffix_digit, {"GALILADDRXX": ""})
-        )
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(ioc_suffix_digit, {"GALILADDRXX": ""}))
 
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
@@ -491,12 +461,10 @@ class TestChangeIOCName(unittest.TestCase):
         new_ioc_name = "CHANGED"
 
         ioc_names = [
-            "{}_{:02d}".format(ioc_to_change, i)
-            for i in range(1, number_of_repeated_iocs + 1)
+            "{}_{:02d}".format(ioc_to_change, i) for i in range(1, number_of_repeated_iocs + 1)
         ]
         new_ioc_names = [
-            "{}_{:02d}".format(new_ioc_name, i)
-            for i in range(1, number_of_repeated_iocs + 1)
+            "{}_{:02d}".format(new_ioc_name, i) for i in range(1, number_of_repeated_iocs + 1)
         ]
 
         xml_contents = create_xml_with_iocs(ioc_names).toxml()
@@ -538,9 +506,7 @@ class TestChangeIOCName(unittest.TestCase):
                 ioc_names.append("{}_{:02d}".format(ioc, repeat_suffix))
 
                 if ioc == ioc_to_change:
-                    new_ioc_names.append(
-                        "{}_{:02d}".format(new_ioc_name, repeat_suffix)
-                    )
+                    new_ioc_names.append("{}_{:02d}".format(new_ioc_name, repeat_suffix))
                 else:
                     new_ioc_names.append("{}_{:02d}".format(ioc, repeat_suffix))
 
@@ -601,9 +567,7 @@ class TestAddMacro(unittest.TestCase):
 
     def test_GIVEN_one_ioc_THEN_add_macro(self):
         # Given:
-        xml = IOC_FILE_XML.format(
-            iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"})
-        )
+        xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"}))
         ioc_name = "GALIL"
         macro_to_add = Macro("TEST", "1")
         pattern = "^(0|1)$"
@@ -617,9 +581,7 @@ class TestAddMacro(unittest.TestCase):
         )
 
         # When:
-        self.macro_changer.add_macro(
-            ioc_name, macro_to_add, pattern, description, default
-        )
+        self.macro_changer.add_macro(ioc_name, macro_to_add, pattern, description, default)
 
         # Then:
         assert self.file_access.write_file_contents is not None
@@ -627,12 +589,8 @@ class TestAddMacro(unittest.TestCase):
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
         )
-        result_mtrctrl = written_xml.findall(
-            ".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE}
-        )
-        result_test = written_xml.findall(
-            ".//ns:macros/*[@name='TEST']", {"ns": NAMESPACE}
-        )
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
+        result_test = written_xml.findall(".//ns:macros/*[@name='TEST']", {"ns": NAMESPACE})
 
         assert_that(result_galiladdr, has_length(1), "changed macro count")
         assert_that(result_galiladdr[0].get("name"), is_("GALILADDR"))
@@ -664,9 +622,7 @@ class TestAddMacro(unittest.TestCase):
         )
 
         # When:
-        self.macro_changer.add_macro(
-            ioc_name, macro_to_add, pattern, description, default
-        )
+        self.macro_changer.add_macro(ioc_name, macro_to_add, pattern, description, default)
 
         # Then:
         assert self.file_access.write_file_contents is not None
@@ -674,12 +630,8 @@ class TestAddMacro(unittest.TestCase):
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
         )
-        result_mtrctrl = written_xml.findall(
-            ".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE}
-        )
-        result_test = written_xml.findall(
-            ".//ns:macros/*[@name='TEST']", {"ns": NAMESPACE}
-        )
+        result_mtrctrl = written_xml.findall(".//ns:macros/*[@name='MTRCTRL']", {"ns": NAMESPACE})
+        result_test = written_xml.findall(".//ns:macros/*[@name='TEST']", {"ns": NAMESPACE})
 
         assert_that(result_galiladdr, has_length(1), "changed macro count")
         assert_that(result_galiladdr[0].get("name"), is_("GALILADDR"))

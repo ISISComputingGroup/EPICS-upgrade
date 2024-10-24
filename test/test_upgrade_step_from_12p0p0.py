@@ -20,9 +20,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         matches: list[bool],
         batch_files_contents: list[list[str]],
     ):
-        self.file_access.get_file_paths = mock.Mock(
-            side_effect=[substitution_files, batch_files]
-        )
+        self.file_access.get_file_paths = mock.Mock(side_effect=[substitution_files, batch_files])
 
         self.file_access.file_contains = mock.Mock(side_effect=matches)
         self.file_access.open_file = mock.Mock(side_effect=batch_files_contents)
@@ -49,9 +47,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         ]  # White space.
 
         self.assertEqual(
-            self._perform(
-                substitution_files, batch_files, matches, batch_files_contents
-            ),
+            self._perform(substitution_files, batch_files, matches, batch_files_contents),
             0,
         )
 
@@ -84,9 +80,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         ]
 
         self.assertEqual(
-            self._perform(
-                substitution_files, batch_files, matches, batch_files_contents
-            ),
+            self._perform(substitution_files, batch_files, matches, batch_files_contents),
             0,
         )
 
@@ -102,9 +96,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         ]
 
         self.assertEqual(
-            self._perform(
-                substitution_files, batch_files, matches, batch_files_contents
-            ),
+            self._perform(substitution_files, batch_files, matches, batch_files_contents),
             0,
         )
         self.file_access.write_file = Mock()
@@ -123,9 +115,7 @@ class TestUpgradeJawsForPositionAutosave(unittest.TestCase):
         ]
 
         self.assertNotEqual(
-            self._perform(
-                substitution_files, batch_files, matches, batch_files_contents
-            ),
+            self._perform(substitution_files, batch_files, matches, batch_files_contents),
             0,
         )
         self.file_access.write_file = Mock()

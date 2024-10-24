@@ -151,9 +151,7 @@ class ChangeMacrosInXML(object):
         """
         path = SYNOPTIC_FOLDER
 
-        for xml_path in [
-            c for c in self._file_access.listdir(path) if c.endswith(".xml")
-        ]:
+        for xml_path in [c for c in self._file_access.listdir(path) if c.endswith(".xml")]:
             try:
                 synoptic_xml = self._file_access.open_xml_file(xml_path)
             except IOError:

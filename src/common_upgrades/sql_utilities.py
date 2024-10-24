@@ -30,9 +30,7 @@ class SqlConnection:
                 root_pass = os.getenv("MYSQL_PASSWORD") or getpass(
                     "Please enter db root password: "
                 )
-                SqlConnection._connection = mysql.connector.connect(
-                    user="root", password=root_pass
-                )
+                SqlConnection._connection = mysql.connector.connect(user="root", password=root_pass)
             except Exception as e:
                 logger.error("Failed to connect to database: {}".format(e))
         return SqlConnection._connection
@@ -118,9 +116,7 @@ def add_new_user(logger, user, password):
     try:
         run_sql(
             logger,
-            "CREATE USER {} IDENTIFIED WITH mysql_native_password BY '{}';".format(
-                user, password
-            ),
+            "CREATE USER {} IDENTIFIED WITH mysql_native_password BY '{}';".format(user, password),
         )
         run_sql(
             logger,

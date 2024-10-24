@@ -1,7 +1,7 @@
 import unittest
 from xml.parsers.expat import ExpatError
 
-from hamcrest import assert_that, is_, has_item
+from hamcrest import assert_that, has_item, is_
 from mock import MagicMock as Mock
 
 from src.common_upgrades.add_to_base_iocs import (
@@ -33,9 +33,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         result = adder.perform(self.file_access, self.logger)
 
         assert_that(result, is_(-1), "result")
-        assert_that(
-            self.logger.log_err, has_item("Can not find file to modify in config.")
-        )
+        assert_that(self.logger.log_err, has_item("Can not find file to modify in config."))
 
     def test_GIVEN_invalid_xml_WHEN_adding_ioc_THEN_error(self):
         error_str = "No configs Exist"
@@ -149,9 +147,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
         assert_that(
             self.logger.log_err,
             has_item(
-                "Could not find {0} ioc in file so no {1} ioc added.".format(
-                    after_ioc, ioc_to_add
-                )
+                "Could not find {0} ioc in file so no {1} ioc added.".format(after_ioc, ioc_to_add)
             ),
         )
 
@@ -168,9 +164,7 @@ class TestAddToBaseIOCs(unittest.TestCase):
 
         assert_that(len(iocs), is_(3), "ioc added")
 
-        assert_that(
-            iocs[1].getAttribute("name"), is_(ioc_to_add), "correctly named ioc added"
-        )
+        assert_that(iocs[1].getAttribute("name"), is_(ioc_to_add), "correctly named ioc added")
         [
             assert_that(iocs[1].hasAttribute(attr), "correct xml added")
             for attr in ["restart", "autostart", "simlevel"]

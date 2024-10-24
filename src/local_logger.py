@@ -17,9 +17,7 @@ class LocalLogger(object):
 
         log_file = os.path.join(
             log_dir,
-            "upgrade_{0}.txt".format(
-                datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")
-            ),
+            "upgrade_{0}.txt".format(datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")),
         )
 
         self._log_file = log_file

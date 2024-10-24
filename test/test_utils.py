@@ -1,4 +1,4 @@
-from hamcrest import assert_that, is_, not_, is_in
+from hamcrest import assert_that, is_, is_in, not_
 
 from src.common_upgrades.utils.constants import BLOCK_FILE
 
@@ -67,15 +67,11 @@ def _set_starting_blocks_and_perform_action(file_access, action, starting_blocks
     action()
 
 
-def test_changing_synoptics_and_blocks(
-    file_access, action, starting_blocks, expected_blocks
-):
+def test_changing_synoptics_and_blocks(file_access, action, starting_blocks, expected_blocks):
     _set_starting_blocks_and_perform_action(file_access, action, starting_blocks)
 
     expected_xml = create_pv_xml(SYNOPTIC_FILE_XML, SYNOPTIC_XML, expected_blocks)
-    assert_that(
-        file_access.write_file_dict[file_access.SYNOPTIC_FILENAME], is_(expected_xml)
-    )
+    assert_that(file_access.write_file_dict[file_access.SYNOPTIC_FILENAME], is_(expected_xml))
 
     expected_xml = create_pv_xml(BLOCK_FILE_XML, BLOCK_XML, expected_blocks)
     assert_that(file_access.write_file_dict[BLOCK_FILE], is_(expected_xml))
@@ -84,7 +80,5 @@ def test_changing_synoptics_and_blocks(
 def test_action_does_not_write(file_access, action, starting_blocks):
     _set_starting_blocks_and_perform_action(file_access, action, starting_blocks)
 
-    assert_that(
-        file_access.SYNOPTIC_FILENAME, not_(is_in(file_access.write_file_dict.keys()))
-    )
+    assert_that(file_access.SYNOPTIC_FILENAME, not_(is_in(file_access.write_file_dict.keys())))
     assert_that(BLOCK_FILE, not_(is_in(file_access.write_file_dict.keys())))

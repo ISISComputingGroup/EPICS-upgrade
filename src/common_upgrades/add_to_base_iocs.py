@@ -44,14 +44,10 @@ class AddToBaseIOCs:
 
         modified_file_contents = self._add_ioc(ioc_file_contents, logger)
         logger.info(
-            "Adding {what} ioc to autostart in {0}.".format(
-                IOC_FILENAME, what=self._ioc_to_add
-            )
+            "Adding {what} ioc to autostart in {0}.".format(IOC_FILENAME, what=self._ioc_to_add)
         )
 
-        if not self._check_final_file_contains_one_of_added_ioc(
-            logger, modified_file_contents
-        ):
+        if not self._check_final_file_contains_one_of_added_ioc(logger, modified_file_contents):
             return -3
 
         file_access.write_xml_file(IOC_FILENAME, modified_file_contents)
@@ -84,9 +80,7 @@ class AddToBaseIOCs:
         node_count = ioc_names.count(self._ioc_to_add)
         if node_count != 1:
             # I can not see how to generate this error but it is here because it is important
-            logger.error(
-                INCORRECT_ADDING.format(FILE_TO_CHECK_STR, node_count, self._ioc_to_add)
-            )
+            logger.error(INCORRECT_ADDING.format(FILE_TO_CHECK_STR, node_count, self._ioc_to_add))
             return False
         return True
 
@@ -109,9 +103,7 @@ class AddToBaseIOCs:
         node_count = ioc_names.count(self._add_after_ioc)
         if node_count != 1:
             logger.error(
-                ADD_AFTER_MISSING.format(
-                    FILE_TO_CHECK_STR, node_count, self._add_after_ioc
-                )
+                ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, node_count, self._add_after_ioc)
             )
             return False
         return True
@@ -130,9 +122,7 @@ class AddToBaseIOCs:
                 new_ioc_node = minidom.parseString(self._xml_to_add).firstChild
                 ioc_xml.firstChild.insertBefore(new_ioc_node, ioc.nextSibling)
                 # add some formatting to make it look nice
-                ioc_xml.firstChild.insertBefore(
-                    ioc_xml.createTextNode("\n    "), new_ioc_node
-                )
+                ioc_xml.firstChild.insertBefore(ioc_xml.createTextNode("\n    "), new_ioc_node)
                 return ioc_xml
 
         logger.error(

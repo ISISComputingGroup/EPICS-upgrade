@@ -131,9 +131,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             # Act
             search_return = self.upgrade_step.search_folder("any", self.file_access)
             # Assert
-            assert_that(
-                mocked_search_files.call_count, equal_to(4), "Should search all files"
-            )
+            assert_that(mocked_search_files.call_count, equal_to(4), "Should search all files")
             assert_that(
                 search_return,
                 equal_to(file_search_returns[0] + "\n"),
@@ -157,9 +155,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             # Act
             search_return = self.upgrade_step.search_folder("any", self.file_access)
             # Assert
-            assert_that(
-                mocked_search_files.call_count, equal_to(4), "Should search all files"
-            )
+            assert_that(mocked_search_files.call_count, equal_to(4), "Should search all files")
             assert_that(
                 search_return,
                 equal_to(file_search_returns[2] + "\n"),
@@ -183,9 +179,7 @@ class TestUpgradeStepCheckInitInst(unittest.TestCase):
             # Act
             search_return = self.upgrade_step.search_folder("any", self.file_access)
             # Assert
-            assert_that(
-                mocked_search_files.call_count, equal_to(4), "Should search all files"
-            )
+            assert_that(mocked_search_files.call_count, equal_to(4), "Should search all files")
             assert_that(
                 search_return,
                 equal_to(file_search_returns[0] + "\n" + file_search_returns[2] + "\n"),

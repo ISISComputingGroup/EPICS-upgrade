@@ -43,9 +43,7 @@ class Upgrade(object):
                 return line.strip()
         except IOError:
             initial_version_number = self._upgrade_steps[0][0]
-            self._file_access.write_version_number(
-                initial_version_number, VERSION_FILENAME
-            )
+            self._file_access.write_version_number(initial_version_number, VERSION_FILENAME)
             return initial_version_number
 
     def upgrade(self):
@@ -63,9 +61,7 @@ class Upgrade(object):
                 if version == current_version:
                     upgrade = True
                     if upgrade_step is None:
-                        self._logger.info(
-                            "Current config is on latest version, no upgrade needed"
-                        )
+                        self._logger.info("Current config is on latest version, no upgrade needed")
 
                 if upgrade:
                     final_upgrade_version = version
@@ -75,18 +71,12 @@ class Upgrade(object):
                         result = upgrade_step.perform(self._file_access, self._logger)
                         if result != 0:
                             return result
-                        self._file_access.write_version_number(
-                            version, VERSION_FILENAME
-                        )
+                        self._file_access.write_version_number(version, VERSION_FILENAME)
                         self._commit_tag_and_push(version)
 
         if upgrade:
-            self._file_access.write_version_number(
-                final_upgrade_version, VERSION_FILENAME
-            )
-            self._logger.info(
-                "Finished upgrade. Now on version {0}".format(final_upgrade_version)
-            )
+            self._file_access.write_version_number(final_upgrade_version, VERSION_FILENAME)
+            self._logger.info("Finished upgrade. Now on version {0}".format(final_upgrade_version))
             self._commit_tag_and_push(final_upgrade_version, final=True)
             return 0
         else:
@@ -97,8 +87,6 @@ class Upgrade(object):
         self._git_repo.git.add(A=True)
         commit_message = f"IBEX Upgrade {'from' if not final else 'to'} {version}"
         self._git_repo.index.commit(commit_message)
-        tag_name = (
-            f"{self._git_repo.active_branch}_{version}{'_upgrade' if not final else ''}"
-        )
+        tag_name = f"{self._git_repo.active_branch}_{version}{'_upgrade' if not final else ''}"
         self._git_repo.create_tag(tag_name, message=commit_message, force=True)
         self._git_repo.remote(name="origin").push()

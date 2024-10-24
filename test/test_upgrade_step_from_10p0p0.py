@@ -56,18 +56,14 @@ class TestRemoveReflDeviceScreen(unittest.TestCase):
         self.file_access.create_directories(SCREEN_FILE_PATH)
         self.file_access.write_file(SCREEN_FILE_PATH, SCREENS_FILE, file_full=True)
         self.assertTrue(
-            self.file_access.file_contains(
-                SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>"
-            )
+            self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>")
         )
         self.assertTrue(self.file_access.exists(SCREEN_FILE_PATH))
         # When
         self.upgrade_step.perform(self.file_access, self.logger)
         # Then
         self.assertFalse(
-            self.file_access.file_contains(
-                SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>"
-            )
+            self.file_access.file_contains(SCREEN_FILE_PATH, "<key>Reflectometry OPI</key>")
         )
 
         # Cleanup created files

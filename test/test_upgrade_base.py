@@ -1,7 +1,7 @@
 import unittest
-from unittest.mock import patch
-from unittest.mock import call
-from hamcrest import assert_that, is_, has_item, none, is_not, contains_exactly
+from unittest.mock import call, patch
+
+from hamcrest import assert_that, contains_exactly, has_item, is_, is_not, none
 from mock import MagicMock as Mock
 from mother import FileAccessStub, LoggingStub
 
@@ -100,9 +100,7 @@ class TestUpgradeBase(unittest.TestCase):
             call(f"IBEX Upgrade from {original_version}"),
             call(f"IBEX Upgrade to {final_version}"),
         ]
-        self.git_repo.index.commit.assert_has_calls(
-            expected_commit_calls, any_order=False
-        )
+        self.git_repo.index.commit.assert_has_calls(expected_commit_calls, any_order=False)
 
     def test_GIVEN_config_contains_older_version_number_but_not_earliest_and_multiple_steps_WHEN_upgrade_THEN_all_upgrade_steps_equal_to_or_later_than_current_steps_are_done(
         self,
@@ -175,16 +173,10 @@ class TestUpgradeBase(unittest.TestCase):
         import check_version
         import upgrade
 
-        result_not_match = check_version.compare_version_number(
-            upgrade.UPGRADE_STEPS[-2][0]
-        )
-        result_match = check_version.compare_version_number(
-            upgrade.UPGRADE_STEPS[-1][0]
-        )
+        result_not_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-2][0])
+        result_match = check_version.compare_version_number(upgrade.UPGRADE_STEPS[-1][0])
 
-        assert_that(
-            result_not_match, is_(1), "Did not fail with incorrect version numbers"
-        )
+        assert_that(result_not_match, is_(1), "Did not fail with incorrect version numbers")
         assert_that(result_match, is_(0), "Did not pass with correct version numbers")
 
 

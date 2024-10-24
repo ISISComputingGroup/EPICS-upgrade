@@ -23,10 +23,7 @@ class UpgradeStepCheckInitInst(UpgradeStep):
             if file_name.startswith("init_"):
                 search_file = open(os.path.join(root, file_name))
                 search_file_contents = search_file.read()
-                if (
-                    "precmd" in search_file_contents
-                    or "postcmd" in search_file_contents
-                ):
+                if "precmd" in search_file_contents or "postcmd" in search_file_contents:
                     return (
                         "Pre or post cmd methods found in {} these will now no longer be hooked into the command. Please ensure they are hooked using the new style of inserting these methods, "
                         "see https://github.com/ISISComputingGroup/ibex_user_manual/wiki/Pre-and-Post-Command-Hooks".format(
