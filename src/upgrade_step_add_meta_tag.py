@@ -35,7 +35,7 @@ class UpgradeStepAddMetaXmlElement(UpgradeStep):
 
     def _add_tag_to_meta_in_folders(self, folder, logger):
         try:
-            meta_file_path = os.path.join(folder[0] + "\meta.xml")
+            meta_file_path = os.path.join(folder[0] + r"\meta.xml")
             meta_xml = ET.parse(meta_file_path)
             if len(meta_xml.getroot().findall(self.tag)) == 0:
                 xml_tag = ET.SubElement(meta_xml.getroot(), self.tag)
