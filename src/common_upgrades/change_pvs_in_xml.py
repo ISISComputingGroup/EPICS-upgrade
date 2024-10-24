@@ -67,7 +67,10 @@ class ChangePVsInXML(object):
             new_pv_name: The new PV to replace it with
         """
         self._replace_text_in_elements(
-            old_pv_name, new_pv_name, "read_pv", self._file_access.get_config_files(BLOCK_FILE)
+            old_pv_name,
+            new_pv_name,
+            "read_pv",
+            self._file_access.get_config_files(BLOCK_FILE),
         )
 
     def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):

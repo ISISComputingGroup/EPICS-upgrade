@@ -1,7 +1,7 @@
 from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 
-IOC_FILENAME = "configurations\components\_base\iocs.xml"
+IOC_FILENAME = r"configurations\components\_base\iocs.xml"
 
 FILE_TO_CHECK_STR = "IOC default component file"
 ALREADY_CONTAINS = "{} already contains {} ioc."

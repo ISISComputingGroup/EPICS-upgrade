@@ -19,4 +19,4 @@ GLOBALS_FILENAME = os.path.abspath(os.path.join(CONFIG_ROOT, "globals.txt"))
 MOTION_SET_POINTS_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "motionSetPoints"))
 
 # Matches an ioc name and its numbered IOCs e.g. GALIL matches GALIL_01, GALIL_02
-FILTER_REGEX = "^{}(_[\d]{{2}})?$"
+FILTER_REGEX = r"^{}(_[\d]{{2}})?$"

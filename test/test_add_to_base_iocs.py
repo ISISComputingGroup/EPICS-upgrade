@@ -1,7 +1,7 @@
 import unittest
 from xml.parsers.expat import ExpatError
 
-from hamcrest import *
+from hamcrest import assert_that, has_item, is_
 from mock import MagicMock as Mock
 
 from src.common_upgrades.add_to_base_iocs import (
@@ -77,7 +77,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
         assert_that(result, is_(False), "result")
         assert_that(self.logger.log_err, has_item(expected_message))
 
-    def test_GIVEN_xml_already_containing_ioc_to_add_WHEN_checking_prerequisites_THEN_error(self):
+    def test_GIVEN_xml_already_containing_ioc_to_add_WHEN_checking_prerequisites_THEN_error(
+        self,
+    ):
         ioc_to_add = "TO_ADD"
         xml = create_xml_with_iocs(["ANOTHER_IOC", ioc_to_add])
 
@@ -99,7 +101,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
             adder, xml, ALREADY_CONTAINS.format(FILE_TO_CHECK_STR, ioc_to_add)
         )
 
-    def test_GIVEN_xml_containing_no_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(self):
+    def test_GIVEN_xml_containing_no_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(
+        self,
+    ):
         after_ioc = "AFTER_THIS"
         xml = create_xml_with_iocs(["ANOTHER_IOC", "SECOND_IOC"])
 
@@ -108,7 +112,9 @@ class TestAddToBaseIOCs(unittest.TestCase):
             adder, xml, ADD_AFTER_MISSING.format(FILE_TO_CHECK_STR, 0, after_ioc)
         )
 
-    def test_GIVEN_xml_containing_two_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(self):
+    def test_GIVEN_xml_containing_two_ioc_to_add_after_WHEN_checking_prerequisites_THEN_error(
+        self,
+    ):
         after_ioc = "AFTER_THIS"
         xml = create_xml_with_iocs([after_ioc, "ANOTHER_IOC", after_ioc])
 

@@ -86,6 +86,9 @@ if __name__ == "__main__":
     git_repo = RepoFactory.get_repo(config_root)
 
     upgrade = Upgrade(
-        file_access=file_access, logger=logger, upgrade_steps=UPGRADE_STEPS, git_repo=git_repo
+        file_access=file_access,
+        logger=logger,
+        upgrade_steps=UPGRADE_STEPS,
+        git_repo=git_repo,
     )
     sys.exit(upgrade.upgrade())

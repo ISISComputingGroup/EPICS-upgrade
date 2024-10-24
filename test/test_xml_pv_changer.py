@@ -1,10 +1,14 @@
 import unittest
+import unittest.mock as mocked
 
-from hamcrest import *
+from hamcrest import assert_that, is_
 
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from test.mother import FileAccessStub, LoggingStub
-from test.test_utils import create_xml_with_starting_blocks, test_changing_synoptics_and_blocks
+from test.test_utils import (
+    create_xml_with_starting_blocks,
+    test_changing_synoptics_and_blocks,
+)
 
 
 class TestChangePVs(unittest.TestCase):
@@ -31,7 +35,9 @@ class TestChangePVs(unittest.TestCase):
             [("BLOCKNAME", "BLOCK_PV"), ("BLOCKNAME_2", "CHANGED")],
         )
 
-    def test_GIVEN_block_with_part_of_PV_WHEN_pv_is_changed_THEN_only_part_of_PV_changes(self):
+    def test_GIVEN_block_with_part_of_PV_WHEN_pv_is_changed_THEN_only_part_of_PV_changes(
+        self,
+    ):
         self._test_changing_pv(
             [("BLOCKNAME", "CHANGEME:BUT:NOT:ME")],
             "CHANGEME",
@@ -39,15 +45,25 @@ class TestChangePVs(unittest.TestCase):
             [("BLOCKNAME", "CHANGED:BUT:NOT:ME")],
         )
 
-    def test_GIVEN_two_blocks_that_need_changing_WHEN_pv_is_changed_THEN_both_change(self):
+    def test_GIVEN_two_blocks_that_need_changing_WHEN_pv_is_changed_THEN_both_change(
+        self,
+    ):
         self._test_changing_pv(
-            [("BLOCKNAME", "CHANGEME:BUT:NOT:ME"), ("BLOCKNAME_1", "ALSO:CHANGEME:BUT:NOT:ME")],
+            [
+                ("BLOCKNAME", "CHANGEME:BUT:NOT:ME"),
+                ("BLOCKNAME_1", "ALSO:CHANGEME:BUT:NOT:ME"),
+            ],
             "CHANGEME",
             "CHANGED",
-            [("BLOCKNAME", "CHANGED:BUT:NOT:ME"), ("BLOCKNAME_1", "ALSO:CHANGED:BUT:NOT:ME")],
+            [
+                ("BLOCKNAME", "CHANGED:BUT:NOT:ME"),
+                ("BLOCKNAME_1", "ALSO:CHANGED:BUT:NOT:ME"),
+            ],
         )
 
-    def test_GIVEN_block_with_name_that_could_be_changed_WHEN_pv_is_changed_THEN_name_is_not(self):
+    def test_GIVEN_block_with_name_that_could_be_changed_WHEN_pv_is_changed_THEN_name_is_not(
+        self,
+    ):
         self._test_changing_pv(
             [("CHANGEME", "BLAH")], "CHANGEME", "CHANGED", [("CHANGEME", "BLAH")]
         )
@@ -65,7 +81,8 @@ class TestChangePVs(unittest.TestCase):
         number_of_pvs = pv_changer.get_number_of_instances_of_pv("CHANGEME")
 
         assert_that(number_of_pvs, is_(2))
-        self.file_access.write_file.assert_not_called()
+        write_file = mocked.create_autospec(self.file_access.write_file)
+        write_file.assert_not_called()
 
     def GIVEN_block_with_name_that_obeys_filter_WHEN_pv_counted_THEN_returns_zero_and_xml_unchanged(
         self,
@@ -77,7 +94,8 @@ class TestChangePVs(unittest.TestCase):
         number_of_pvs = pv_changer.get_number_of_instances_of_pv("CHANGEME")
 
         assert_that(number_of_pvs, is_(0))
-        self.file_access.write_file.assert_not_called()
+        write_file = mocked.create_autospec(self.file_access.write_file)
+        write_file.assert_not_called()
 
 
 if __name__ == "__main__":

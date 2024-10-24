@@ -14,7 +14,15 @@ class IgnoreRcpttSynoptics(UpgradeStep):
     """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed."""
 
     file_name = ".gitignore"
-    text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
+    text_content = [
+        "*.py[co]",
+        "rcptt_*/",
+        "rcptt_*",
+        "*.swp",
+        "*~",
+        ".idea/",
+        ".project/",
+    ]
 
     def perform(self, file_access, logger):
         """Perform the upgrade step

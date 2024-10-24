@@ -4,7 +4,10 @@ from mock import MagicMock as Mock
 from mother import FileAccessStub, LoggingStub
 
 from src.upgrade_step_from_7p2p0 import IgnoreRcpttSynoptics, UpgradeMotionSetPoints
-from test.test_utils import test_action_does_not_write, test_changing_synoptics_and_blocks
+from test.test_utils import (
+    test_action_does_not_write,
+    test_changing_synoptics_and_blocks,
+)
 
 
 class TestIgnoreRcpttSynoptics(unittest.TestCase):
@@ -48,8 +51,14 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
         self.logger = LoggingStub()
 
     def test_GIVEN_coord_1_WHEN_step_performed_THEN_convert_to_coord_0(self):
-        starting_blocks = [("BLOCK_NAME", "COORD1:SOMETHING"), ("BLOCK_NAME_2", "COORD1")]
-        expected_blocks = [("BLOCK_NAME", "COORD0:SOMETHING"), ("BLOCK_NAME_2", "COORD0")]
+        starting_blocks = [
+            ("BLOCK_NAME", "COORD1:SOMETHING"),
+            ("BLOCK_NAME_2", "COORD1"),
+        ]
+        expected_blocks = [
+            ("BLOCK_NAME", "COORD0:SOMETHING"),
+            ("BLOCK_NAME_2", "COORD0"),
+        ]
 
         def action():
             self.upgrade_step.perform(self.file_access, self.logger)
@@ -59,8 +68,14 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
         )
 
     def test_GIVEN_coord_2_WHEN_step_performed_THEN_convert_to_coord_1(self):
-        starting_blocks = [("BLOCK_NAME", "COORD2:SOMETHING"), ("BLOCK_NAME_2", "COORD2")]
-        expected_blocks = [("BLOCK_NAME", "COORD1:SOMETHING"), ("BLOCK_NAME_2", "COORD1")]
+        starting_blocks = [
+            ("BLOCK_NAME", "COORD2:SOMETHING"),
+            ("BLOCK_NAME_2", "COORD2"),
+        ]
+        expected_blocks = [
+            ("BLOCK_NAME", "COORD1:SOMETHING"),
+            ("BLOCK_NAME_2", "COORD1"),
+        ]
 
         def action():
             self.upgrade_step.perform(self.file_access, self.logger)
@@ -69,7 +84,9 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
             self.file_access, action, starting_blocks, expected_blocks
         )
 
-    def test_GIVEN_coord_2_renamed_PVs_WHEN_step_performed_THEN_convert_to_coord_1(self):
+    def test_GIVEN_coord_2_renamed_PVs_WHEN_step_performed_THEN_convert_to_coord_1(
+        self,
+    ):
         starting_blocks = [
             ("BLOCK_NAME", "COORD2:NO_OFFSET"),
             ("BLOCK_NAME_2", "COORD2:RBV:OFFSET"),
@@ -88,7 +105,9 @@ class TestUpgradeMotionSetPoints(unittest.TestCase):
             self.file_access, action, starting_blocks, expected_blocks
         )
 
-    def test_GIVEN_coord_1_renamed_PVs_WHEN_step_performed_THEN_convert_to_coord_0(self):
+    def test_GIVEN_coord_1_renamed_PVs_WHEN_step_performed_THEN_convert_to_coord_0(
+        self,
+    ):
         starting_blocks = [
             ("BLOCK_NAME", "COORD1:NO_OFFSET"),
             ("BLOCK_NAME_2", "COORD1:RBV:OFFSET"),

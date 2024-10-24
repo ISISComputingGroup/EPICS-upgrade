@@ -51,6 +51,8 @@ def find_macro_with_name(macros, name_to_find):
 class ChangeMacrosInXML(object):
     """Changes macros in XML files."""
 
+    _ioc_file_generator: object
+
     def __init__(self, file_access, logger):
         """Initialise.
 
@@ -62,7 +64,12 @@ class ChangeMacrosInXML(object):
         self._logger = logger
 
     def add_macro(
-        self, ioc_name, macro_to_add, pattern, description="No description", default_value=None
+        self,
+        ioc_name,
+        macro_to_add,
+        pattern,
+        description="No description",
+        default_value=None,
     ):
         """Add a macro with a specified name and value to all IOCs whose name begins with ioc_name, unless a macro
         with that name already exists
