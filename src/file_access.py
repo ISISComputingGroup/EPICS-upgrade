@@ -1,3 +1,4 @@
+# ruff: noqa: ANN204, ANN205, E501, ANN001, ANN201, ANN202
 import os
 import shutil
 from xml.dom import minidom

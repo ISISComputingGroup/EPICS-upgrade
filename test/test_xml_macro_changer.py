@@ -323,7 +323,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -348,7 +348,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -385,7 +385,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=self.file_access.write_file_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -436,7 +436,7 @@ class TestChangeIOCName(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -472,7 +472,7 @@ class TestChangeIOCName(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -515,7 +515,7 @@ class TestChangeIOCName(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -577,7 +577,7 @@ class TestAddMacro(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -618,7 +618,7 @@ class TestAddMacro(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:

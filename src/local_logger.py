@@ -6,7 +6,7 @@ import sys
 class LocalLogger(object):
     """A local logging object which will write to the screen and a file"""
 
-    def __init__(self, log_dir):
+    def __init__(self, log_dir: str) -> None:
         """The logging directory in to which to write the log file
 
         Args:
@@ -22,7 +22,7 @@ class LocalLogger(object):
 
         self._log_file = log_file
 
-    def error(self, message):
+    def error(self, message: str) -> None:
         """Write the message as an error (to standard err with ERROR in front of it)
 
         Args:
@@ -36,7 +36,7 @@ class LocalLogger(object):
             f.write(formatted_message)
         sys.stderr.write(formatted_message)
 
-    def info(self, message):
+    def info(self, message: str) -> None:
         """Write the message as info (to standard out with INFO in front of it)
 
         Args:

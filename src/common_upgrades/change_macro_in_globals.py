@@ -1,12 +1,16 @@
 import re
+from typing import Generator
 
 from src.common_upgrades.utils.constants import GLOBALS_FILENAME
+from src.common_upgrades.utils.macro import Macro
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 
 
 class ChangeMacroInGlobals(object):
     """An interface to replace arbitrary macros in a globals.txt file"""
 
-    def __init__(self, file_access, logger):
+    def __init__(self, file_access: FileAccess, logger: LocalLogger) -> None:
         """Initialise.
 
         Args:
@@ -17,7 +21,7 @@ class ChangeMacroInGlobals(object):
         self._logger = logger
         self._loaded_file = self.load_globals_file()
 
-    def load_globals_file(self):
+    def load_globals_file(self) -> list:
         """Loads in a globals file as a list of strings.
 
         Returns:
@@ -29,7 +33,7 @@ class ChangeMacroInGlobals(object):
         else:
             return []
 
-    def change_macros(self, ioc_name, macros_to_change):
+    def change_macros(self, ioc_name: str, macros_to_change: list[tuple[Macro, Macro]]) -> None:
         """Changes a list of macros in the globals.txt file for a specific IOC.
 
         Args:
@@ -46,7 +50,7 @@ class ChangeMacroInGlobals(object):
 
         self.write_modified_globals_file()
 
-    def change_ioc_name(self, old_ioc_name, new_ioc_name):
+    def change_ioc_name(self, old_ioc_name: str, new_ioc_name: str) -> None:
         """Changes the name of an IOC in a globals.txt file.
 
         Args:
@@ -62,7 +66,7 @@ class ChangeMacroInGlobals(object):
 
         self.write_modified_globals_file()
 
-    def _globals_filter_generator(self, ioc_to_change):
+    def _globals_filter_generator(self, ioc_to_change: str) -> Generator[int, None, None]:
         """Returns lines containing specified IOCs from globals.txt
 
         Generator that gives all the lines for a given IOC in globals.txt.
@@ -80,7 +84,7 @@ class ChangeMacroInGlobals(object):
                 self._logger.info("Found line '{}' in {}".format(line, GLOBALS_FILENAME))
                 yield index
 
-    def _determine_replacement_values(self, old_macro, new_macro):
+    def _determine_replacement_values(self, old_macro: Macro, new_macro: Macro) -> dict[str, str]:
         """Determines the strings to search for and replace.
 
         Args:
@@ -110,7 +114,9 @@ class ChangeMacroInGlobals(object):
 
         return regex_changes
 
-    def _apply_regex_macro_change(self, ioc_name, old_macro, new_macro, line_number):
+    def _apply_regex_macro_change(
+        self, ioc_name: str, old_macro: Macro, new_macro: Macro, line_number: int
+    ) -> None:
         """Applies a regular expression to modify a macro.
 
         Args:
@@ -135,7 +141,7 @@ class ChangeMacroInGlobals(object):
             self._loaded_file[line_number],
         )
 
-    def _change_ioc_name(self, ioc_name, new_ioc_name, line_number):
+    def _change_ioc_name(self, ioc_name: str, new_ioc_name: str, line_number: int) -> None:
         """If a new name is supplied, changes the name of the IOC
 
         Args:
@@ -150,7 +156,7 @@ class ChangeMacroInGlobals(object):
                 ioc_name, new_ioc_name.upper()
             )
 
-    def write_modified_globals_file(self):
+    def write_modified_globals_file(self) -> None:
         """Writes the modified globals file if it has been loaded.
 
         Returns:

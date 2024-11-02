@@ -1,8 +1,11 @@
+# ruff: noqa: E501
 import socket
 
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from src.common_upgrades.utils.macro import Macro
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 
 
@@ -125,7 +128,7 @@ class RenameMercurySoftwarePressureControlMacros(UpgradeStep):
         ),
     ]
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         try:
             hostname = socket.gethostname()
             ioc_name = "MERCURY_01"

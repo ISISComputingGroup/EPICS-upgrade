@@ -60,10 +60,10 @@ class TestSQLUtils(unittest.TestCase):
     @patch("src.common_upgrades.sql_utilities.mysql.connector", autospec=mysql.connector)
     def test_WHEN_run_sql_called_THEN_sql_executed(self, mysql, getpass):
         with SqlConnection():
-            my_SQL_string = "TEST SQL"
-            run_sql(MagicMock(), my_SQL_string)
+            sql_string = "TEST SQL"
+            run_sql(MagicMock(), sql_string)
 
             execute = mocked.create_autospec(
                 SqlConnection.get_session(MagicMock()).cursor().execute
             )
-            execute.assert_called_with(my_SQL_string)
+            execute.assert_called_with(sql_string)

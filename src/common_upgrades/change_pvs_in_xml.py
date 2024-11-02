@@ -1,10 +1,15 @@
+from typing import Generator
+from xml.dom.minidom import Document, Element, Text
+
 from src.common_upgrades.utils.constants import BLOCK_FILE
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 
 
 class ChangePVsInXML(object):
     """Changes pvs in XML files."""
 
-    def __init__(self, file_access, logger):
+    def __init__(self, file_access: FileAccess, logger: LocalLogger) -> None:
         """Initialise.
 
         Args:
@@ -14,8 +19,11 @@ class ChangePVsInXML(object):
         self._file_access = file_access
         self._logger = logger
 
-    def node_text_filter(self, filter_text, element_name, path, xml):
-        """A generator that gives all the instances of filter_text within the element_name elements of the input_files.
+    def node_text_filter(
+        self, filter_text: str, element_name: str, path: str, xml: Document
+    ) -> Generator[Element, None, None]:
+        """A generator that gives all the instances of filter_text within the
+        element_name elements of the input_files.
 
         Args:
             filter_text: String, ext to find
@@ -27,15 +35,25 @@ class ChangePVsInXML(object):
             Generator giving node instances
         """
         for node in xml.getElementsByTagName(element_name):
-            if node.firstChild is None or node.firstChild.nodeType != node.TEXT_NODE:
+            if node.firstChild is None or (
+                isinstance(node.firstChild, Element) and node.firstChild.nodeType != node.TEXT_NODE
+            ):
                 continue
+            assert isinstance(node.firstChild, Text)
             current_pv_value = node.firstChild.nodeValue
             if filter_text in current_pv_value:
                 self._logger.info("{} found in {}".format(filter_text, path))
                 yield node
 
-    def _replace_text_in_elements(self, old_text, new_text, element_name, input_files):
-        """Replaces all instances of old_text with new_text in all element_name elements of one or more XML files
+    def _replace_text_in_elements(
+        self,
+        old_text: str,
+        new_text: str,
+        element_name: str,
+        input_files: Generator[tuple[str, Document], None, None],
+    ) -> None:
+        """Replaces all instances of old_text with new_text in all element_name elements
+         of one or more XML files
         Args:
             old_text: String, old text to find
             new_text: String, new text to substitute
@@ -44,13 +62,15 @@ class ChangePVsInXML(object):
         """
         for path, xml in input_files:
             for node in self.node_text_filter(old_text, element_name, path, xml):
-                replacement = node.firstChild.nodeValue.replace(old_text, new_text)
-                node.firstChild.replaceWholeText(replacement)
+                if isinstance(node.firstChild, Text):
+                    replacement = node.firstChild.nodeValue.replace(old_text, new_text)
+                    node.firstChild.replaceWholeText(replacement)
 
             self._file_access.write_xml_file(path, xml)
 
-    def change_pv_name(self, old_pv_name, new_pv_name):
-        """Replaces all instances of old_pv_name with new_pv_name in the blocks config and all synoptics
+    def change_pv_name(self, old_pv_name: str, new_pv_name: str) -> None:
+        """Replaces all instances of old_pv_name with new_pv_name in the blocks config
+        and all synoptics
         Args:
             old_pv_name: String, the old pv name
             new_pv_name: String, The desired new pv name
@@ -59,7 +79,7 @@ class ChangePVsInXML(object):
         self.change_pv_name_in_blocks(old_pv_name, new_pv_name)
         self.change_pv_names_in_synoptics(old_pv_name, new_pv_name)
 
-    def change_pv_name_in_blocks(self, old_pv_name, new_pv_name):
+    def change_pv_name_in_blocks(self, old_pv_name: str, new_pv_name: str) -> None:
         """Move any blocks pointing at old_pv_name to point at new_pv_name.
 
         Args:
@@ -73,7 +93,7 @@ class ChangePVsInXML(object):
             self._file_access.get_config_files(BLOCK_FILE),
         )
 
-    def change_pv_names_in_synoptics(self, old_pv_name, new_pv_name):
+    def change_pv_names_in_synoptics(self, old_pv_name: str, new_pv_name: str) -> None:
         """Move any synoptic PV targets from pointing at old_pv_name to point to new_pv_name.
 
         Args:
@@ -84,7 +104,7 @@ class ChangePVsInXML(object):
             old_pv_name, new_pv_name, "address", self._file_access.get_synoptic_files()
         )
 
-    def get_number_of_instances_of_pv(self, pv_names):
+    def get_number_of_instances_of_pv(self, pv_names: str | list[str]) -> int:
         """Get the number of instances of a PV in the config and synoptic.
 
         Args:

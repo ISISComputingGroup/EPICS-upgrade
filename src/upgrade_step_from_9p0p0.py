@@ -1,12 +1,15 @@
+# ruff: noqa: E501
 import socket
 
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 
 
 class ChangeLETCollimatorCmd(UpgradeStep):
     """Change the LET/MERLIN collimator code to load in the new LET/MERLIN-specific db file."""
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         try:
             hostname = socket.gethostname()
             if hostname == "NDXLET" or hostname == "NDXMERLIN":
@@ -27,7 +30,7 @@ class ChangeLETCollimatorCmd(UpgradeStep):
 class RenameGalilMulCmd(UpgradeStep):
     """Rename all galilmul1.cmd -> galilmul01.cmd"""
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int | None:
         try:
             file_access.rename_file(
                 "configurations\\galilmul\\galilmul1.cmd",
