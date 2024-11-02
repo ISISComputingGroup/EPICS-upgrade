@@ -115,7 +115,7 @@ def add_new_user(logger, user, password):
     try:
         run_sql(
             logger,
-            "CREATE USER {} IDENTIFIED WITH mysql_native_password BY '{}';".format(user, password),
+            "CREATE USER {} IDENTIFIED WITH caching_sha2_password BY '{}';".format(user, password),
         )
         run_sql(logger, "GRANT INSERT, SELECT, UPDATE, DELETE ON exp_data.* TO {};".format(user))
         return 0
