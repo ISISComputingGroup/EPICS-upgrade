@@ -1,5 +1,6 @@
 """Helpful sql utilities"""
 
+# ruff: noqa: ANN204, ANN205, E501, ANN001, ANN201
 import os
 import re
 from getpass import getpass
@@ -68,10 +69,11 @@ def run_sql_list(logger, sql_list):
         sql_list: The statement to send
     """
     cursor = SqlConnection.get_session(logger).cursor()
-
+    assert cursor is not None
     for sql in sql_list:
-        for result in cursor.execute(sql, multi=True):
-            pass
+        cursor.execute(sql, multi=True)
+        # for result in cursor.execute(sql, multi=True):
+        # pass
 
     SqlConnection.get_session(logger).commit()
     cursor.close()
@@ -117,7 +119,10 @@ def add_new_user(logger, user, password):
             logger,
             "CREATE USER {} IDENTIFIED WITH caching_sha2_password BY '{}';".format(user, password),
         )
-        run_sql(logger, "GRANT INSERT, SELECT, UPDATE, DELETE ON exp_data.* TO {};".format(user))
+        run_sql(
+            logger,
+            "GRANT INSERT, SELECT, UPDATE, DELETE ON exp_data.* TO {};".format(user),
+        )
         return 0
     except Exception as e:
         logger.error("Failed to add user: {}".format(e))

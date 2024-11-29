@@ -8,9 +8,10 @@ from src.upgrade_step import UpgradeStep
 
 
 class UpgradeJawsForPositionAutosave(UpgradeStep):
-    """Update all batch files that load a database file using 'slits.template' to support autosave."""
+    """Update all batch files that load a database file using
+    'slits.template' to support autosave."""
 
-    def perform(self, file_access: FileAccess, logger: LocalLogger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         result = 0
 
         # Get database files using 'slits.template'.
@@ -51,7 +52,8 @@ class UpgradeJawsForPositionAutosave(UpgradeStep):
 
                     if new_line == line:
                         logger.error(
-                            f"Failed to modify {line}, check to see if it needs to be manually changed."
+                            f"Failed to modify {line}, "
+                            f"check to see if it needs to be manually changed."
                         )
                         result = -1
 

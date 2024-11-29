@@ -1,3 +1,4 @@
+# ruff: noqa
 from src.upgrade_step import UpgradeStep
 
 

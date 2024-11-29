@@ -1,3 +1,4 @@
+# ruff: noqa: ANN204, ANN205, E501, ANN001, ANN201, ANN202
 import os
 import shutil
 from xml.dom import minidom
@@ -221,7 +222,7 @@ class FileAccess(object):
         else:
             return None
 
-    def get_file_paths(self, directory: str, extension: str = None):
+    def get_file_paths(self, directory: str, extension: str = ""):
         """Generator giving the paths of all files inside a directory, recursively searching all subdirectories.
 
         Args:

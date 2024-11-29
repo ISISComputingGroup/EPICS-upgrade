@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from functools import partial
 from xml.dom import minidom
 
-from hamcrest import *
+from hamcrest import assert_that, has_length, is_
 from mock import MagicMock as Mock
 
 from src.common_upgrades.change_macros_in_xml import (
@@ -82,7 +82,9 @@ class TestTagGenerator(unittest.TestCase):
         self.logger = LoggingStub()
         self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
-    def test_that_GIVEN_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
+    def test_that_GIVEN_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(
+        self,
+    ):
         # Given:
         ioc_to_change = "CHANGE_ME"
         configs = {"CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"]}
@@ -96,10 +98,15 @@ class TestTagGenerator(unittest.TestCase):
         # Then:
         assert_that(len(list(result)), is_(0), "no results")
 
-    def test_that_GIVEN_two_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(self):
+    def test_that_GIVEN_two_xml_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_returned(
+        self,
+    ):
         # Given:
         ioc_to_change = "CHANGE_ME"
-        configs = {"CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"], "CONFIG_2": ["OTHER_IOC"]}
+        configs = {
+            "CONFIG_1": ["DONT_CHANGE", "ANOTHER_ONE"],
+            "CONFIG_2": ["OTHER_IOC"],
+        }
 
         # When:
         self.macro_changer._ioc_file_generator = partial(generate_many_iocs, configs)
@@ -110,7 +117,9 @@ class TestTagGenerator(unittest.TestCase):
         # Then:
         assert_that(len(list(result)), is_(0), "no results")
 
-    def test_that_GIVEN_xml_with_requested_iocs_WHEN_filtering_THEN_expected_ioc_returned(self):
+    def test_that_GIVEN_xml_with_requested_iocs_WHEN_filtering_THEN_expected_ioc_returned(
+        self,
+    ):
         # Given:
         ioc_to_change = "CHANGE_ME"
         config_name = "CONFIG_1"
@@ -147,7 +156,9 @@ class TestTagGenerator(unittest.TestCase):
         assert_that(len(result), is_(1))
         assert_that(result[0].getAttribute("name"), is_(ioc_to_change))
 
-    def test_that_GIVEN_xml_with_numbered_ioc_WHEN_filtering_THEN_expected_ioc_returned(self):
+    def test_that_GIVEN_xml_with_numbered_ioc_WHEN_filtering_THEN_expected_ioc_returned(
+        self,
+    ):
         # Given
         root_ioc_name = "CHANGE_ME"
         ioc_name = root_ioc_name + "_03"
@@ -241,7 +252,9 @@ class TestChangMacroValue(unittest.TestCase):
         self.logger = LoggingStub()
         self.macro_changer = ChangeMacrosInXML(self.file_access, self.logger)
 
-    def test_that_GIVEN_xml_with_old_ioc_macro_value_THEN_macro_values_are_updated(self):
+    def test_that_GIVEN_xml_with_old_ioc_macro_value_THEN_macro_values_are_updated(
+        self,
+    ):
         # Given:
         test_macro_xml_string = MACRO_XML.format(name="BAUD1", value="None")
         test_macro_xml = minidom.parseString(test_macro_xml_string)
@@ -256,7 +269,9 @@ class TestChangMacroValue(unittest.TestCase):
         # Then:
         assert_that(result, is_(new_macro.value))
 
-    def test_that_GIVEN_xml_without_specified_macro_value_THEN_macros_are_not_updated(self):
+    def test_that_GIVEN_xml_without_specified_macro_value_THEN_macros_are_not_updated(
+        self,
+    ):
         # Given:
         original_macro_value = "None"
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
@@ -272,7 +287,9 @@ class TestChangMacroValue(unittest.TestCase):
         # Then:
         assert_that(result, is_(original_macro_value))
 
-    def test_that_GIVEN_new_macro_without_a_value_THEN_macro_values_are_not_updated(self):
+    def test_that_GIVEN_new_macro_without_a_value_THEN_macro_values_are_not_updated(
+        self,
+    ):
         # Given:
         original_macro_value = "None"
         test_macro_xml_string = MACRO_XML.format(name="PORT1", value=original_macro_value)
@@ -306,20 +323,23 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.change_macros(ioc_name, macro_to_change)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result = written_xml.findall(".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE})
 
         assert_that(result, has_length(1), "changed macro count")
         assert_that(result[0].get("name"), is_("GALILADDR"))
 
-    def test_that_GIVEN_xml_with_multiple_macros_THEN_only_value_of_named_macro_is_changed(self):
+    def test_that_GIVEN_xml_with_multiple_macros_THEN_only_value_of_named_macro_is_changed(
+        self,
+    ):
         # Given:
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDR": "0", "MTRCTRL": "0"}))
         ioc_name = "GALIL"
@@ -328,13 +348,14 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.change_macros(ioc_name, macro_to_change)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
@@ -349,7 +370,9 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         assert_that(result_mtrctrl[0].get("name"), is_("MTRCTRL"))
         assert_that(result_mtrctrl[0].get("value"), is_("0"))
 
-    def test_that_GIVEN_xml_with_multiple_old_ioc_macros_THEN_all_macros_are_updated(self):
+    def test_that_GIVEN_xml_with_multiple_old_ioc_macros_THEN_all_macros_are_updated(
+        self,
+    ):
         # Given:
         xml = IOC_FILE_XML.format(iocs=create_galil_ioc(1, {"GALILADDRXX": "", "MTRCTRLXX": ""}))
         ioc_name = "GALIL"
@@ -362,7 +385,7 @@ class TestMacroChangesWithMultipleInputs(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=self.file_access.write_file_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
@@ -413,13 +436,14 @@ class TestChangeIOCName(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.change_ioc_name("GALIL", "CHANGED")
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         tree = ET.ElementTree(written_xml)
 
@@ -448,13 +472,14 @@ class TestChangeIOCName(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         tree = ET.ElementTree(written_xml)
         iocs = tree.findall(".//ioc", {"ns": NAMESPACE})
@@ -490,13 +515,14 @@ class TestChangeIOCName(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml_contents)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         tree = ET.ElementTree(written_xml)
         iocs = tree.findall(".//ioc", {"ns": NAMESPACE})
@@ -527,7 +553,7 @@ class TestChangeIOCName(unittest.TestCase):
 
         # Then:
         output_file = self.file_access.write_file_contents
-
+        assert output_file is not None
         assert_that((ioc_to_change in output_file), is_(False))
         assert_that((new_ioc_name in output_file), is_(True))
         assert_that((unchanged_ioc in output_file), is_(True))
@@ -551,13 +577,14 @@ class TestAddMacro(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.add_macro(ioc_name, macro_to_add, pattern, description, default)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}
@@ -591,13 +618,14 @@ class TestAddMacro(unittest.TestCase):
         self.file_access.open_file = Mock(return_value=xml)
         self.file_access.write_file = Mock()
         self.file_access.get_config_files = Mock(
-            return_value=[("file1.xml", self.file_access.open_xml_file(None))]
+            return_value=[("file1.xml", self.file_access.open_xml_file(""))]
         )
 
         # When:
         self.macro_changer.add_macro(ioc_name, macro_to_add, pattern, description, default)
 
         # Then:
+        assert self.file_access.write_file_contents is not None
         written_xml = ET.fromstring(self.file_access.write_file_contents)
         result_galiladdr = written_xml.findall(
             ".//ns:macros/*[@name='GALILADDR']", {"ns": NAMESPACE}

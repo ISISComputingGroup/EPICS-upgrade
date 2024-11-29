@@ -1,6 +1,9 @@
+# ruff: noqa: E501
 import os
 import socket
 
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 
 
@@ -13,7 +16,7 @@ class AddOscCollimMovingIndicator(UpgradeStep):
         r'dbLoadRecords("$(UTILITIES)/db/check_stability.db", "P=$(MYPVPREFIX)MOT:,INP_VAL=$(MYPVPREFIX)MOT:DMC01:Galil0Bi5_STATUS,SP=$(MYPVPREFIX)MOT:DMC01:Galil0Bi5_STATUS,NSAMP=100,TOLERANCE=$(TOLERANCE=0)")\n',
     ]
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         try:
             hostname = socket.gethostname()
             if hostname == "NDXLET" or hostname == "NDXMERLIN":

@@ -1,10 +1,15 @@
+# ruff: noqa: E501
 from functools import partial
+from xml.dom.minidom import Document, Element
+
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 
 
 class SynopticsAndDeviceScreens(object):
     """Manipulate an instrument's synoptics and device_screens"""
 
-    def __init__(self, file_access, logger):
+    def __init__(self, file_access: FileAccess, logger: LocalLogger) -> None:
         self.file_access = file_access
         self.logger = logger
         self._update_keys_in_device_screens = partial(
@@ -14,7 +19,7 @@ class SynopticsAndDeviceScreens(object):
             self._update_opi_keys_in_xml, root_tag="target", key_tag="name"
         )
 
-    def update_opi_keys(self, keys_to_update):
+    def update_opi_keys(self, keys_to_update: dict) -> int:
         """Update the OPI keys in all synoptics and device screens
 
         Args:
@@ -44,11 +49,13 @@ class SynopticsAndDeviceScreens(object):
                         device_screens[0], device_screens[1], keys_to_update
                     )
             except Exception as e:
-                self.logger.error("Cannot upgrade device screens {}: {}".format(path, e))
+                self.logger.error("Cannot upgrade device screens: {}".format(e))
                 result = -2
         return result
 
-    def _update_opi_keys_in_xml(self, path, xml, keys_to_update, root_tag, key_tag):
+    def _update_opi_keys_in_xml(
+        self, path: str, xml: Document, keys_to_update: dict, root_tag: str, key_tag: str
+    ) -> None:
         """Replaces an opi key with a different key
 
         Args:
@@ -61,15 +68,16 @@ class SynopticsAndDeviceScreens(object):
         file_changed = False
         for target_element in xml.getElementsByTagName(root_tag):
             key_element = target_element.getElementsByTagName(key_tag)[0]
-            old_key = key_element.firstChild.nodeValue
-            new_key = keys_to_update.get(old_key, old_key)
-            key_element.firstChild.nodeValue = new_key
-            if new_key != old_key:
-                file_changed = True
-                self.logger.info(
-                    "OPI key '{}' replaced with corresponding key '{}' in {}".format(
-                        old_key, new_key, path
+            if isinstance(key_element.firstChild, Element):
+                old_key = key_element.firstChild.nodeValue
+                new_key = keys_to_update.get(old_key, old_key)
+                key_element.firstChild.nodeValue = new_key
+                if new_key != old_key:
+                    file_changed = True
+                    self.logger.info(
+                        "OPI key '{}' replaced with corresponding key '{}' in {}".format(
+                            old_key, new_key, path
+                        )
                     )
-                )
         if file_changed:
             self.file_access.write_xml_file(path, xml)

@@ -1,6 +1,10 @@
 import os
+from typing import Sequence
 
 from src.common_upgrades.sql_utilities import SqlConnection
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
+from src.upgrade_step import UpgradeStep
 
 VERSION_FILENAME = os.path.join("configurations", "config_version.txt")
 
@@ -14,7 +18,13 @@ class UpgradeError(Exception):
 class Upgrade(object):
     """Use upgrade steps to upgrade a configuration"""
 
-    def __init__(self, file_access, logger, upgrade_steps, git_repo):
+    def __init__(
+        self,
+        file_access: FileAccess | None,
+        logger: LocalLogger | None,
+        upgrade_steps: Sequence[tuple[str, UpgradeStep | None]],
+        git_repo,  # noqa
+    ) -> None:
         """Constructor
 
         Args:
@@ -32,30 +42,34 @@ class Upgrade(object):
         self._upgrade_steps = upgrade_steps
         self._git_repo = git_repo
 
-    def get_version_number(self):
+    def get_version_number(self) -> str | None:
         """Find the current version number of the repository. If there is no version number the
         repository is considered unversioned and the lowest version is written to the repository
 
         Returns: the version number
         """
         try:
+            assert self._file_access is not None
             for line in self._file_access.open_file(VERSION_FILENAME):
                 return line.strip()
         except IOError:
+            assert self._file_access is not None
             initial_version_number = self._upgrade_steps[0][0]
             self._file_access.write_version_number(initial_version_number, VERSION_FILENAME)
             return initial_version_number
 
-    def upgrade(self):
+    def upgrade(self) -> int:
         """Perform an upgrade on the configuration directory
 
         Returns: status code 0 for success; not 0 for failure
 
         """
         current_version = self.get_version_number()
+        assert self._file_access is not None
+        assert self._logger is not None
         self._logger.info("Config at initial version {0}".format(current_version))
         upgrade = False
-        final_upgrade_version = None
+        final_upgrade_version = ""
         with SqlConnection():
             for version, upgrade_step in self._upgrade_steps:
                 if version == current_version:
@@ -83,7 +97,7 @@ class Upgrade(object):
             self._logger.error("Unknown version number {0}".format(current_version))
             return -1
 
-    def _commit_tag_and_push(self, version, final=False):
+    def _commit_tag_and_push(self, version: str, final: bool = False) -> None:
         self._git_repo.git.add(A=True)
         commit_message = f"IBEX Upgrade {'from' if not final else 'to'} {version}"
         self._git_repo.index.commit(commit_message)

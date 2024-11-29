@@ -1,7 +1,5 @@
 import unittest
 
-from hamcrest import assert_that
-
 from src.common_upgrades.change_macro_in_globals import ChangeMacroInGlobals
 from src.common_upgrades.utils.constants import GLOBALS_FILENAME
 from src.common_upgrades.utils.macro import Macro
@@ -15,12 +13,13 @@ class TestFindingIOC(unittest.TestCase):
         self.logger = LoggingStub()
         self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
 
-    def test_that_WHEN_asked_to_load_globals_file_THEN_the_default_globals_file_is_loaded(self):
+    def test_that_WHEN_asked_to_load_globals_file_THEN_the_default_globals_file_is_loaded(
+        self,
+    ):
         result = self.macro_changer.load_globals_file()
 
         reference = EXAMPLE_GLOBALS_FILE.split("\n")
-
-        assert_that(result, reference)
+        assert result == reference
 
     def test_that_GIVEN_globals_file_with_no_requested_iocs_WHEN_filtering_THEN_no_iocs_are_returned(
         self,
@@ -55,7 +54,9 @@ class TestChangingMacro(unittest.TestCase):
         self.logger = LoggingStub()
         self.macro_changer = ChangeMacroInGlobals(self.file_access, self.logger)
 
-    def test_that_GIVEN_globals_file_with_old_macro_THEN_all_old_macros_are_changed(self):
+    def test_that_GIVEN_globals_file_with_old_macro_THEN_all_old_macros_are_changed(
+        self,
+    ):
         ioc_to_change = "GALIL"
         macros_to_change = [(Macro("CHANGEME"), Macro("CHANGED"))]
 
@@ -78,6 +79,7 @@ class TestChangingMacro(unittest.TestCase):
 
         self.macro_changer.change_macros(ioc_to_change, macros_to_change)
 
+        assert self.file_access.write_file_contents is not None
         self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
         self.assertTrue("CHANGED1" in self.file_access.write_file_contents)
         self.assertFalse("CHANGED0" in self.file_access.write_file_contents)
@@ -96,7 +98,9 @@ class TestChangingMacro(unittest.TestCase):
         self.assertEqual(self.file_access.write_file_contents, testfile)
         self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
 
-    def test_that_GIVEN_macro_value_to_change_THEN_the_only_macro_value_is_changed(self):
+    def test_that_GIVEN_macro_value_to_change_THEN_the_only_macro_value_is_changed(
+        self,
+    ):
         ioc_to_change = "GALIL"
         macros_to_change = [(Macro("CHANGEME", "01"), Macro("CHANGEME", "001"))]
 
@@ -162,6 +166,7 @@ class TestChangingIOCName(unittest.TestCase):
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
 
         self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
+        assert self.file_access.write_file_contents is not None
         self.assertTrue("CHANGED" in self.file_access.write_file_contents)
         self.assertFalse("GALIL" in self.file_access.write_file_contents)
 
@@ -186,7 +191,7 @@ class TestChangingIOCName(unittest.TestCase):
         new_ioc_name = "CHANGED"
 
         self.macro_changer.change_ioc_name(ioc_to_change, new_ioc_name)
-
+        assert self.file_access.write_file_contents is not None
         self.assertEqual(self.file_access.write_filename, GLOBALS_FILENAME)
         self.assertTrue("CHANGED" in self.file_access.write_file_contents)
         self.assertTrue("BINS" in self.file_access.write_file_contents)

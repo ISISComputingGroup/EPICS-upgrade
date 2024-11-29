@@ -3,7 +3,8 @@ from future.builtins import input
 from src.common_upgrades.change_pvs_in_xml import ChangePVsInXML
 from src.common_upgrades.synoptics_and_device_screens import SynopticsAndDeviceScreens
 from src.common_upgrades.utils.constants import MOTION_SET_POINTS_FOLDER
-from src.file_access import CachingFileAccess
+from src.file_access import CachingFileAccess, FileAccess
+from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 
 ERROR_CODE = -1
@@ -14,9 +15,17 @@ class IgnoreRcpttSynoptics(UpgradeStep):
     """Adds "rcptt_*" files to .gitignore, so that test synoptics are no longer committed."""
 
     file_name = ".gitignore"
-    text_content = ["*.py[co]", "rcptt_*/", "rcptt_*", "*.swp", "*~", ".idea/", ".project/"]
+    text_content = [
+        "*.py[co]",
+        "rcptt_*/",
+        "rcptt_*",
+        "*.swp",
+        "*~",
+        ".idea/",
+        ".project/",
+    ]
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
@@ -48,7 +57,7 @@ class IgnoreRcpttSynoptics(UpgradeStep):
 class UpgradeMotionSetPoints(UpgradeStep):
     """Changes blocks to point at renamed PVs. Warns about changed setup."""
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         """Perform the upgrade step
         Args:
             file_access (FileAccess): file access
@@ -95,7 +104,8 @@ class UpgradeMotionSetPoints(UpgradeStep):
                         "The PV COORDX:MTR has been found in a config/synoptic but no longer exists"
                     )
                     print(
-                        "Manually replace with a reference to the underlying axis and rerun the upgrade"
+                        "Manually replace with a reference to the underlying axis "
+                        "and rerun the upgrade"
                     )
                     raise RuntimeError("Underlying motor references")
 
@@ -110,7 +120,7 @@ class ChangeReflOPITarget(UpgradeStep):
     REFL_OPI_TARGET_OLD = "Reflectometry Front Panel"
     REFL_OPI_TARGET_NEW = "Reflectometry OPI"
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         """Perform the upgrade step
         Args:
             file_access (FileAccess): file access

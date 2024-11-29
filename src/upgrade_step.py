@@ -7,7 +7,7 @@ class UpgradeStep(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def perform(self, file_access, logger):
+    def perform(self, file_access, logger):  # noqa
         """Perform the upgrade step this should be implemented
 
         Args:

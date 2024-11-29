@@ -2,15 +2,17 @@ import socket
 
 from src.common_upgrades.change_macros_in_xml import ChangeMacrosInXML
 from src.common_upgrades.utils.macro import Macro
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
 
 
 class SetDanfysikDisableAutoonoffMacros(UpgradeStep):
-    """Set the DISABLE_AUTONOFF macro to true for EMU or add it if not present. When this macro is true,
-    settings will be displayed on the Danfysik OPI allowing automatic power turn on/off.
+    """Set the DISABLE_AUTONOFF macro to true for EMU or add it if not present. When this macro
+    is true, settings will be displayed on the Danfysik OPI allowing automatic power turn on/off.
     """
 
-    def perform(self, file_access, logger):
+    def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
         try:
             hostname = socket.gethostname()
             ioc_name = "DFKPS"
@@ -24,7 +26,8 @@ class SetDanfysikDisableAutoonoffMacros(UpgradeStep):
                     "1",
                 )
                 change_macros_in_xml.change_macros(
-                    ioc_name, [(Macro("DISABLE_AUTOONOFF"), Macro("DISABLE_AUTOONOFF", "0"))]
+                    ioc_name,
+                    [(Macro("DISABLE_AUTOONOFF"), Macro("DISABLE_AUTOONOFF", "0"))],
                 )
             return 0
         except Exception as e:
