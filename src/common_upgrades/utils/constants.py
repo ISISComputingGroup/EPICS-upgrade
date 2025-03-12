@@ -9,6 +9,9 @@ COMPONENT_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "components"))
 SYNOPTIC_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "synoptics"))
 DEVICE_SCREENS_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "devices"))
 
+ICP_CONFIG_BASE = os.environ["ICPCONFIGBASE"]
+CALIB_FOLDER = os.path.abspath(os.path.join(ICP_CONFIG_BASE, "common"))
+
 SCRIPTS_ROOT = os.environ["ICPINSTSCRIPTROOT"]
 
 IOC_FILE = "iocs.xml"
