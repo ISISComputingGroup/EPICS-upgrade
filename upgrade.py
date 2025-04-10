@@ -21,6 +21,7 @@ from src.upgrade_step_from_12p0p1 import AddOscCollimMovingIndicator
 from src.upgrade_step_from_12p0p2 import UpgradeFrom12p0p2
 from src.upgrade_step_from_12p0p3 import UpgradeFrom12p0p3
 from src.upgrade_step_from_15p0p0 import UpgradeFrom15p0p0
+from src.upgrade_step_from_25p2p1 import UpgradeFrom25p2p1
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -75,7 +76,8 @@ UPGRADE_STEPS = [
     ("15.0.0", UpgradeFrom15p0p0()),
     ("15.0.1", UpgradeStepNoOp()),
     ("25.2.0", UpgradeStepNoOp()),
-    ("25.2.1", None),
+    ("25.2.1", UpgradeFrom25p2p1()),
+    ("25.8.0", None),
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
