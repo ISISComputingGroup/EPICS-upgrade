@@ -77,7 +77,7 @@ UPGRADE_STEPS = [
     ("15.0.1", UpgradeStepNoOp()),
     ("25.2.0", UpgradeStepNoOp()),
     ("25.2.1", UpgradeFrom25p2p1()),
-    ("25.8.0", None),
+    ("25.2.1.1", None),
     # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
 ]
 
