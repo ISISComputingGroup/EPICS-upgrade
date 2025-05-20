@@ -53,7 +53,7 @@ class Record:
         else:
             if comment:
                 comment = " #" + comment
-            self.fields[name] = (val, f'    field({name}, "{val}"){comment}', [])
+            self.fields[name] = (val, f'    field({name}, "{val}"){comment}\n', [])
 
     def add_info(self, name: str, val: str, comment: str = "") -> None:
         """Creates a new info with the name, value, and optionally comment.
@@ -70,7 +70,7 @@ class Record:
         else:
             if comment:
                 comment = " #" + comment
-            self.info[name] = (val, f'    info({name}, "{val}"){comment}', [])
+            self.info[name] = (val, f'    info({name}, "{val}"){comment}\n', [])
 
     def delete_field(self, name: str) -> None:
         """Deletes a field, May cause loss of following multiline comments
@@ -104,7 +104,7 @@ class Record:
             old_multi_line_comment = self.fields[name][2]
             if comment:
                 comment = " #" + comment
-            new_line = line.replace(old_val, val) + comment
+            new_line = f"{line.replace(old_val, val).rstrip()}{comment}\n"
             self.fields[name] = (val, new_line, old_multi_line_comment)
 
     def change_info(self, name: str, val: str, comment: str = "") -> None:
@@ -122,7 +122,7 @@ class Record:
             old_multi_line_comment = self.info[name][2]
             if comment:
                 comment = " #" + comment
-            new_line = line.replace(old_val, val) + comment
+            new_line = f"{line.replace(old_val, val).rstrip()}{comment}\n"
             self.info[name] = (val, new_line, old_multi_line_comment)
 
     def change_name(self, name: str) -> None:
@@ -156,10 +156,10 @@ class Record:
         after_record = db_file[1 + self.end :]
 
         new_db_lines = [self.startline]
-        new_db_lines = new_db_lines + self.start_comment
+        new_db_lines = new_db_lines + self.start_comment 
         new_db_lines = new_db_lines + self.get_fields()
         new_db_lines = new_db_lines + self.get_info()
-        new_db_lines = new_db_lines + ["}"]
+        new_db_lines = new_db_lines + ["}\n"]
         new_db_lines = before_record + new_db_lines + after_record
         return new_db_lines
 
@@ -263,11 +263,11 @@ def _get_fields(
                 if index + 1 < len(lines):
                     _inner_tuple = (
                         str(match.group(2)),
-                        str(match.group(0)),
+                        f"{match.group(0)}\n",
                         _get_comment(lines[index + 1 :]),
                     )
                 else:
-                    _inner_tuple = (str(match.group(2)), str(match.group(0)), [])
+                    _inner_tuple = (str(match.group(2)), f"{match.group(0)}\n", [])
                 field_dict[str(match.group(1))] = _inner_tuple
     return field_dict
 
@@ -285,7 +285,7 @@ def _get_name(line: str) -> tuple[str, str, str]:
     match = re.match(r".*record\((.*), \"(.*)\"\).*", line)
     if match is None:
         return ("", "", "")
-    return match.group(1), match.group(2), match.group(0)
+    return match.group(1), match.group(2), f"{match.group(0)}\n"
 
 
 def _get_comment(lines: list[str]) -> list[str]:
@@ -304,7 +304,7 @@ def _get_comment(lines: list[str]) -> list[str]:
     i = 0
     match = re.match(r"(\s*#.*)", lines[i])
     while match is not None:
-        multi_line_comment.append(match.group(0))
+        multi_line_comment.append(f"{match.group(0)}\n")
         i = i + 1
         if i < len(lines):
             match = re.match(r"(\s*#.*)", lines[i])
