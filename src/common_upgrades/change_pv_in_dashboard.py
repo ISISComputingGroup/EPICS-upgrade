@@ -34,7 +34,7 @@ class Record:
             list[str]: the lines of the db associated with all info
         """
         info_lines = []
-        for  tuple in self.info.values():
+        for tuple in self.info.values():
             info_lines = info_lines + [tuple[1]] + tuple[2]
         return info_lines
 
@@ -53,7 +53,7 @@ class Record:
         else:
             if comment:
                 comment = " #" + comment
-            self.fields[name] = (val, f'    field({name}, "{val}"){comment}',[])
+            self.fields[name] = (val, f'    field({name}, "{val}"){comment}', [])
 
     def add_info(self, name: str, val: str, comment: str = "") -> None:
         """Creates a new info with the name, value, and optionally comment.
@@ -70,7 +70,7 @@ class Record:
         else:
             if comment:
                 comment = " #" + comment
-            self.info[name] = (val, f'    info({name}, "{val}"){comment}',[])
+            self.info[name] = (val, f'    info({name}, "{val}"){comment}', [])
 
     def delete_field(self, name: str) -> None:
         """Deletes a field, May cause loss of following multiline comments
@@ -100,7 +100,7 @@ class Record:
         """
         if name in self.fields.keys():
             line = self.fields[name][1]
-            old_val = line = self.fields[name][0]
+            old_val = self.fields[name][0]
             old_multi_line_comment = self.fields[name][2]
             if comment:
                 comment = " #" + comment
@@ -131,7 +131,7 @@ class Record:
         Args:
             name (str): The new name e.g. $(P)CS:DASHBOARD:BANNER:LEFT:VALUE
         """
-        self.startline.replace(self.name, name)
+        self.startline = self.startline.replace(self.name, name)
         self.name = name
 
     def change_type(self, type: str) -> None:
@@ -140,7 +140,7 @@ class Record:
         Args:
             type (str): the new type i.e. mbbi
         """
-        self.startline.replace(self.type, type)
+        self.startline = self.startline.replace(self.type, type)
         self.type = type
 
     def update_record(self, db_file: list[str]) -> list[str]:
@@ -154,12 +154,13 @@ class Record:
         """
         before_record = db_file[: self.start]
         after_record = db_file[1 + self.end :]
-        new_db_lines = before_record + [self.startline]
+
+        new_db_lines = [self.startline]
         new_db_lines = new_db_lines + self.start_comment
         new_db_lines = new_db_lines + self.get_fields()
         new_db_lines = new_db_lines + self.get_info()
         new_db_lines = new_db_lines + ["}"]
-        new_db_lines = new_db_lines + after_record
+        new_db_lines = before_record + new_db_lines + after_record
         return new_db_lines
 
     def delete_record(self, db_file: list[str]) -> list[str]:
@@ -201,7 +202,6 @@ def get_record(record_name: str, db_file: list[str]) -> Optional[Record]:
     name = re.escape(record_name)
     for i in range(0, len(db_file)):
         if re.match(rf"record\(.+, [\"\']{name}[\"\']\) {{", db_file[i]):
-            print(db_file[i])
             end = get_end_of_record(db_file=db_file, line_number=i)
             if i == -1:
                 return None
@@ -251,8 +251,15 @@ def _get_fields(
         if f"{search}(" in line:
             match = re.match(rf".*{search}\((.*), \"(.*)\"\).*", line)
             if match is not None:
-                _inner_tuple = (str(match.group(2)), str(match.group(0)), _get_comment(lines[index + 1 :]))
-                field_dict[str(match.group(1))] =_inner_tuple 
+                if index + 1 < len(lines):
+                    _inner_tuple = (
+                        str(match.group(2)),
+                        str(match.group(0)),
+                        _get_comment(lines[index + 1 :]),
+                    )
+                else:
+                    _inner_tuple = (str(match.group(2)), str(match.group(0)), [])
+                field_dict[str(match.group(1))] = _inner_tuple
     return field_dict
 
 
@@ -268,7 +275,7 @@ def _get_name(line: str) -> tuple[str, str, str]:
     """
     match = re.match(r".*record\((.*), \"(.*)\"\).*", line)
     if match is None:
-        return ("","","")
+        return ("", "", "")
     return match.group(1), match.group(2), match.group(0)
 
 
@@ -292,4 +299,6 @@ def _get_comment(lines: list[str]) -> list[str]:
         i = i + 1
         if i < len(lines):
             match = re.match(r"(\s*#.*)", lines[i])
+        else:
+            match = None
     return multi_line_comment
