@@ -185,6 +185,15 @@ def read_file() -> list[str]:
     """
     with open(DASHBOARD_DB_FILENAME) as db_file:
         return db_file.readlines()
+    
+def write_file(db_lines: list[str]) -> None:
+    """writes db lines back into the file
+
+    Returns:
+        list[str]: list containing each line in dashboard.db
+    """
+    with open(DASHBOARD_DB_FILENAME, "w") as db_file:
+        return db_file.writelines(db_lines)
 
 
 def get_record(record_name: str, db_file: list[str]) -> Optional[Record]:
