@@ -243,7 +243,7 @@ class FileAccess(object):
             self._logger.info(f"Reading {DASHBOARD_DB_FILENAME} file")
             return db_file.readlines()
 
-    def write_dashboard_file(self, db_lines: str):
+    def write_dashboard_file(self, db_lines: list[str]):
         with open(DASHBOARD_DB_FILENAME, "w") as db_file:
             self._logger.info(f"Writing {DASHBOARD_DB_FILENAME} file")
             db_file.writelines(db_lines)

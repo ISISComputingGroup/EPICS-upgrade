@@ -2,7 +2,7 @@ import re
 from typing import Optional
 
 from src.file_access import FileAccess
-from src.local_logger import Logger
+from src.local_logger import LocalLogger
 
 
 class Record:
@@ -10,7 +10,7 @@ class Record:
     Class to contain the information in a single db record.
     """
 
-    def __init__(self, lines: list[str], start: int, end: int, _logger: Logger) -> None:
+    def __init__(self, lines: list[str], start: int, end: int, _logger: LocalLogger) -> None:
         self.type, self.name, self.startline = _get_name(lines[0])
         self.fields: dict[str, tuple[str, str, list[str]]] = _get_fields(lines)
         self.info: dict[str, tuple[str, str, list[str]]] = _get_fields(lines, True)
@@ -197,7 +197,7 @@ class Record:
 
 
 class ChangePvInDashboard:
-    def __init__(self, file_access: FileAccess, logger: Logger) -> None:
+    def __init__(self, file_access: FileAccess, logger: LocalLogger) -> None:
         """Initialise.
 
         Args:

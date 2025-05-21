@@ -64,6 +64,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_record_exists_THEN_get_correct_record(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
 
         self.assertEqual(record.start, 17)
         self.assertEqual(record.end, 22)
@@ -80,6 +81,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_record_exists_THEN_getters_return_line_in_db(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
+        assert record is not None
         fields = record.get_fields()
         info = record.get_info()
         self.assertListEqual(fields, test_db[2:4])
@@ -89,11 +91,13 @@ class TestChangePVInDashboard(unittest.TestCase):
         self,
     ):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
+        assert record is not None
         fields = record.get_fields()
         self.assertListEqual(fields, test_db[8:14])
 
     def test_GIVEN_record_exists_THEN_change_name_changes_name_AND_startline(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
+        assert record is not None
         record.change_name("DIFFERENT:NAME")
         self.assertEqual(record.name, "DIFFERENT:NAME")
         self.assertEqual(record.startline, 'record(stringin, "DIFFERENT:NAME") {\n')
@@ -102,6 +106,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_record_exists_THEN_change_type_changes_type_AND_startline(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
+        assert record is not None
         record.change_type("stringout")
         self.assertEqual(record.type, "stringout")
         self.assertEqual(
@@ -113,6 +118,7 @@ class TestChangePVInDashboard(unittest.TestCase):
         self,
     ):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
+        assert record is not None
         record.change_type("stringout")
         record.change_name("DIFFERENT:NAME")
         self.assertEqual(record.name, "DIFFERENT:NAME")
@@ -121,6 +127,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_change_fields_THEN_field_is_changed(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
+        assert record is not None
         record.change_field("BB", "Altered")
 
         self.assertEqual(record.fields["BB"][0], "Altered")
@@ -128,6 +135,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_change_fields_and_add_comment_THEN_field_is_changed(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
+        assert record is not None
         record.change_field("BB", "Altered", "blah blah blah")
 
         self.assertEqual(record.fields["BB"][0], "Altered")
@@ -135,6 +143,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_change_info_THEN_info_is_changed(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.change_info("archive", "Altered", "new comment")
 
         self.assertEqual(record.info["archive"][0], "Altered")
@@ -142,6 +151,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_add_field_THEN_field_is_added(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.add_field("INDD", "$(P)DAE:DAETIMINGSOURCE CP MS", "new line")
 
         self.assertEqual(record.fields["INDD"][0], "$(P)DAE:DAETIMINGSOURCE CP MS")
@@ -152,6 +162,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_add_info_THEN_info_is_added(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
+        assert record is not None
         record.add_info("archive", "VAL")
 
         self.assertEqual(record.info["archive"][0], "VAL")
@@ -159,6 +170,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_add_field_WHEN_field_already_exists_THEN_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
+        assert record is not None
         record.add_field("BB", "Altered", "blah blah blah")
 
         self.assertNotEqual(record.fields["BB"][0], "Altered")
@@ -166,6 +178,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_add_info_WHEN_info_already_exists_THEN_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.add_info("archive", "Altered", "new comment")
 
         self.assertNotEqual(record.info["archive"][0], "Altered")
@@ -175,28 +188,33 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_field_exists_THEN_delete_removes_it(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.delete_field("PINI")
         self.assertNotIn("PINI", record.fields.keys())
 
     def test_GIVEN_info_exists_THEN_delete_removes_it(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.delete_info("archive")
         self.assertNotIn("archive", record.info.keys())
 
     def test_GIVEN_field_not_exists_THEN_delete_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         original_length = len(record.fields)
         record.delete_field("blah")
         self.assertEqual(original_length, len(record.fields))
 
     def test_GIVEN_info_not_exists_THEN_delete_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         original_length = len(record.info)
         record.delete_info("no info")
         self.assertEqual(original_length, len(record.info))
 
     def test_GIVEN_only_change_functions_THEN_total_lines_unchanged(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.change_type("stringout")
         record.change_name("DIFFERENT:NAME")
         record.change_field("VAL", "Altered")
@@ -220,6 +238,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_only_add_functions_THEN_total_lines_greater(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.add_field("EGU", "cm")
         record.add_info("alarm", "dashboard")
 
@@ -243,6 +262,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_only_delete_functions_THEN_total_lines_lesser(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
+        assert record is not None
         record.delete_field("VAL")
         record.delete_info("archive")
 
