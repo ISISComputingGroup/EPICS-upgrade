@@ -7,10 +7,10 @@ from xml.parsers.expat import ExpatError
 from src.common_upgrades.utils.constants import (
     COMPONENT_FOLDER,
     CONFIG_FOLDER,
+    DASHBOARD_DB_FILENAME,
     DEVICE_SCREEN_FILE,
     DEVICE_SCREENS_FOLDER,
     SYNOPTIC_FOLDER,
-    DASHBOARD_DB_FILENAME,
 )
 
 
@@ -95,9 +95,7 @@ class FileAccess(object):
         Returns:
 
         """
-        os.makedirs(
-            os.path.dirname(os.path.join(self.config_base, path)), exist_ok=True
-        )
+        os.makedirs(os.path.dirname(os.path.join(self.config_base, path)), exist_ok=True)
 
     def line_exists(self, filename, string):
         """Check if string exists as a line in file"""
@@ -151,10 +149,7 @@ class FileAccess(object):
         Return:
             List of file paths (strings)
         """
-        return [
-            os.path.join(dir, f)
-            for f in os.listdir(os.path.join(self.config_base, dir))
-        ]
+        return [os.path.join(dir, f) for f in os.listdir(os.path.join(self.config_base, dir))]
 
     def remove_file(self, filename):
         """Removes a file from the file system.
@@ -216,9 +211,7 @@ class FileAccess(object):
             Tuple: The path to the synoptic file and its xml representation.
         """
         for synoptic_path in [
-            filename
-            for filename in self.listdir(SYNOPTIC_FOLDER)
-            if filename.endswith(".xml")
+            filename for filename in self.listdir(SYNOPTIC_FOLDER) if filename.endswith(".xml")
         ]:
             yield synoptic_path, self._get_xml(synoptic_path)
 

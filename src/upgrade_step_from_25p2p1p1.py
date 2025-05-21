@@ -1,7 +1,5 @@
 import logging
 
-import git
-
 from src.common_upgrades import change_pv_in_dashboard as dashboard
 from src.file_access import FileAccess
 from src.upgrade_step import UpgradeStep

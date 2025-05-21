@@ -3,7 +3,6 @@ import unittest
 from src.common_upgrades import change_pv_in_dashboard
 from test.mother import FileAccessStub, LoggingStub
 
-
 test_db = [
     'record(stringin, "$(P)CS:DASHBOARD:BANNER:LEFT:LABEL") {\n',
     " # starting comment\n",
@@ -36,9 +35,7 @@ class TestChangePVInDashboard(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.reader = change_pv_in_dashboard.ChangePvInDashboard(
-            self.file_access, self.logger
-        )
+        self.reader = change_pv_in_dashboard.ChangePvInDashboard(self.file_access, self.logger)
 
     def test_GIVEN_record_starts_THEN_finds_end(self):
         dummy_file = ["", "", "", 'record(blah, "blah") {\n', "", "", "", "}"]
@@ -70,9 +67,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
         self.assertEqual(record.start, 17)
         self.assertEqual(record.end, 22)
-        self.assertEqual(
-            record.startline, 'record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {\n'
-        )
+        self.assertEqual(record.startline, 'record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {\n')
         self.assertEqual(record.name, "$(P)CS:DASHBOARD:TAB:1:1:LABEL")
         self.assertEqual(record.type, "stringin")
         self.assertEqual(record.fields["VAL"][0], "Good / Raw Frames:")
@@ -103,9 +98,7 @@ class TestChangePVInDashboard(unittest.TestCase):
         self.assertEqual(record.name, "DIFFERENT:NAME")
         self.assertEqual(record.startline, 'record(stringin, "DIFFERENT:NAME") {\n')
         new_db = record.update_record(test_db)
-        self.assertEqual(
-            new_db, ['record(stringin, "DIFFERENT:NAME") {\n'] + test_db[1:]
-        )
+        self.assertEqual(new_db, ['record(stringin, "DIFFERENT:NAME") {\n'] + test_db[1:])
 
     def test_GIVEN_record_exists_THEN_change_type_changes_type_AND_startline(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
@@ -138,18 +131,14 @@ class TestChangePVInDashboard(unittest.TestCase):
         record.change_field("BB", "Altered", "blah blah blah")
 
         self.assertEqual(record.fields["BB"][0], "Altered")
-        self.assertEqual(
-            record.fields["BB"][1], '    field(BB, "Altered") #blah blah blah\n'
-        )
+        self.assertEqual(record.fields["BB"][1], '    field(BB, "Altered") #blah blah blah\n')
 
     def test_GIVEN_change_info_THEN_info_is_changed(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
         record.change_info("archive", "Altered", "new comment")
 
         self.assertEqual(record.info["archive"][0], "Altered")
-        self.assertEqual(
-            record.info["archive"][1], '    info(archive, "Altered") #new comment\n'
-        )
+        self.assertEqual(record.info["archive"][1], '    info(archive, "Altered") #new comment\n')
 
     def test_GIVEN_add_field_THEN_field_is_added(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
@@ -173,9 +162,7 @@ class TestChangePVInDashboard(unittest.TestCase):
         record.add_field("BB", "Altered", "blah blah blah")
 
         self.assertNotEqual(record.fields["BB"][0], "Altered")
-        self.assertNotEqual(
-            record.fields["BB"][1], '    field(BB, "Altered") #blah blah blah\n'
-        )
+        self.assertNotEqual(record.fields["BB"][1], '    field(BB, "Altered") #blah blah blah\n')
 
     def test_GIVEN_add_info_WHEN_info_already_exists_THEN_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)

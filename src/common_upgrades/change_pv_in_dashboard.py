@@ -2,7 +2,7 @@ import re
 from typing import Optional
 
 from src.file_access import FileAccess
-from src.local_logger import LocalLogger
+from src.local_logger import Logger
 
 
 class Record:
@@ -10,9 +10,7 @@ class Record:
     Class to contain the information in a single db record.
     """
 
-    def __init__(
-        self, lines: list[str], start: int, end: int, _logger: LocalLogger
-    ) -> None:
+    def __init__(self, lines: list[str], start: int, end: int, _logger: Logger) -> None:
         self.type, self.name, self.startline = _get_name(lines[0])
         self.fields: dict[str, tuple[str, str, list[str]]] = _get_fields(lines)
         self.info: dict[str, tuple[str, str, list[str]]] = _get_fields(lines, True)
@@ -53,9 +51,7 @@ class Record:
             val (str): The value of the new field
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
-        self._logger.info(
-            f"adding {name} field to {self.name} record with value of {val}."
-        )
+        self._logger.info(f"adding {name} field to {self.name} record with value of {val}.")
         if name in self.fields.keys():
             self._logger.info(f"{name} already present.")
             return
@@ -74,9 +70,7 @@ class Record:
             val (str): The value of the new info
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
-        self._logger.info(
-            f"adding {name} info to {self.name} record with value of {val}."
-        )
+        self._logger.info(f"adding {name} info to {self.name} record with value of {val}.")
         if name in self.info.keys():
             self._logger.info(f"{name} already present.")
             return
@@ -203,7 +197,7 @@ class Record:
 
 
 class ChangePvInDashboard:
-    def __init__(self, file_access: FileAccess, logger: LocalLogger) -> None:
+    def __init__(self, file_access: FileAccess, logger: Logger) -> None:
         """Initialise.
 
         Args:
@@ -233,7 +227,8 @@ class ChangePvInDashboard:
         """Given a record name generate a record object.
 
         Args:
-            record_name (str): The name of the record to find (e.g. $(P)CS:DASHBOARD:BANNER:LEFT:VALUE)
+            record_name (str): The name of the record to find
+                (e.g. $(P)CS:DASHBOARD:BANNER:LEFT:VALUE)
             db_file (list[str]): The loaded in lines to check through
 
         Returns:
@@ -271,9 +266,7 @@ def _get_end_of_record(db_file: list[str], line_number: int) -> int:
     return -1
 
 
-def _get_fields(
-    lines: list[str], info: bool = False
-) -> dict[str, tuple[str, str, list[str]]]:
+def _get_fields(lines: list[str], info: bool = False) -> dict[str, tuple[str, str, list[str]]]:
     """Takes a list of strings and extracts fields or info
 
     Args:
@@ -281,9 +274,11 @@ def _get_fields(
         info (bool, optional): Whether to search for fields or info
 
     Returns:
-        dict[str, tuple[str, str, list[str]]]: returns a dictionary where the keys are the name/type
-        of the fields, and the value is a tuple containing the value, the full line string, and a list
-        of any following multi-line comments.
+        dict[str, tuple[str, str, list[str]]]: returns a dictionary
+            where the keys are the name/type of the fields,
+            and the value is a tuple containing the value,
+            the full line string, and a list
+            of any following multi-line comments.
     """
 
     field_dict = {}
