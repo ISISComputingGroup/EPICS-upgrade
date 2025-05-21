@@ -1,6 +1,8 @@
-from src.common_upgrades.utils.constants import DASHBOARD_DB_FILENAME
 import re
 from typing import Optional
+
+from src.file_access import FileAccess
+from src.local_logger import LocalLogger
 
 
 class Record:
@@ -8,13 +10,16 @@ class Record:
     Class to contain the information in a single db record.
     """
 
-    def __init__(self, lines: list[str], start: int, end: int) -> None:
+    def __init__(
+        self, lines: list[str], start: int, end: int, _logger: LocalLogger
+    ) -> None:
         self.type, self.name, self.startline = _get_name(lines[0])
         self.fields: dict[str, tuple[str, str, list[str]]] = _get_fields(lines)
         self.info: dict[str, tuple[str, str, list[str]]] = _get_fields(lines, True)
         self.start = start
         self.end = end
         self.start_comment = _get_comment(lines[1:])
+        self._logger = _logger
 
     def get_fields(self) -> list[str]:
         """Returns the lines of the db associated with all fields
@@ -48,7 +53,11 @@ class Record:
             val (str): The value of the new field
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
+        self._logger.info(
+            f"adding {name} field to {self.name} record with value of {val}."
+        )
         if name in self.fields.keys():
+            self._logger.info(f"{name} already present.")
             return
         else:
             if comment:
@@ -65,7 +74,11 @@ class Record:
             val (str): The value of the new info
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
+        self._logger.info(
+            f"adding {name} info to {self.name} record with value of {val}."
+        )
         if name in self.info.keys():
+            self._logger.info(f"{name} already present.")
             return
         else:
             if comment:
@@ -78,6 +91,7 @@ class Record:
         Args:
             name (str): The field to remove
         """
+        self._logger.info(f"changing {name} field of {self.name} record.")
         if name in self.fields.keys():
             self.fields.pop(name)
 
@@ -87,6 +101,7 @@ class Record:
         Args:
             name (str): The info to remove
         """
+        self._logger.info(f"changing {name} info of {self.name} record.")
         if name in self.info.keys():
             self.info.pop(name)
 
@@ -98,6 +113,7 @@ class Record:
             val (str): the new value of the field.
             comment (str, optional): A comment to follow the field. Defaults to "".
         """
+        self._logger.info(f"changing {name} field of {self.name} record to {val}.")
         if name in self.fields.keys():
             line = self.fields[name][1]
             old_val = self.fields[name][0]
@@ -106,6 +122,8 @@ class Record:
                 comment = " #" + comment
             new_line = f"{line.replace(old_val, val).rstrip()}{comment}\n"
             self.fields[name] = (val, new_line, old_multi_line_comment)
+        else:
+            self._logger.error(f"{name} not present.")
 
     def change_info(self, name: str, val: str, comment: str = "") -> None:
         """Update the value and comment of an info field.
@@ -116,6 +134,7 @@ class Record:
             comment (str, optional): A comment to follow the info. Defaults to "".
                 Trailing multi-line comments are preserved.
         """
+        self._logger.info(f"changing {name} info of {self.name} record to {val}.")
         if name in self.info.keys():
             line = self.info[name][1]
             old_val = self.info[name][0]
@@ -124,6 +143,8 @@ class Record:
                 comment = " #" + comment
             new_line = f"{line.replace(old_val, val).rstrip()}{comment}\n"
             self.info[name] = (val, new_line, old_multi_line_comment)
+        else:
+            self._logger.error(f"{name} not present.")
 
     def change_name(self, name: str) -> None:
         """Change the name of the record
@@ -131,6 +152,7 @@ class Record:
         Args:
             name (str): The new name e.g. $(P)CS:DASHBOARD:BANNER:LEFT:VALUE
         """
+        self._logger.info(f"changing name of {self.name} record.")
         self.startline = self.startline.replace(self.name, name)
         self.name = name
 
@@ -140,6 +162,7 @@ class Record:
         Args:
             type (str): the new type i.e. mbbi
         """
+        self._logger.info(f"changing type of {self.name} record.")
         self.startline = self.startline.replace(self.type, type)
         self.type = type
 
@@ -152,11 +175,12 @@ class Record:
         Returns:
             list[str]: the lines of the db file with the record replaced with the updated version.
         """
+        self._logger.info(f"Updating {self.name} record.")
         before_record = db_file[: self.start]
         after_record = db_file[1 + self.end :]
 
         new_db_lines = [self.startline]
-        new_db_lines = new_db_lines + self.start_comment 
+        new_db_lines = new_db_lines + self.start_comment
         new_db_lines = new_db_lines + self.get_fields()
         new_db_lines = new_db_lines + self.get_info()
         new_db_lines = new_db_lines + ["}\n"]
@@ -172,54 +196,66 @@ class Record:
         Returns:
             list[str]: The lines of the db file without the record.
         """
+        self._logger.info(f"Removing {self.name} record.")
         before_record = db_file[: self.start]
         after_record = db_file[1 + self.end :]
         return before_record + after_record
 
 
-def read_file() -> list[str]:
-    """Reads the dashboard.db into memory
+class ChangePvInDashboard:
+    def __init__(self, file_access: FileAccess, logger: LocalLogger) -> None:
+        """Initialise.
 
-    Returns:
-        list[str]: list containing each line in dashboard.db
-    """
-    with open(DASHBOARD_DB_FILENAME) as db_file:
-        return db_file.readlines()
-    
-def write_file(db_lines: list[str]) -> None:
-    """writes db lines back into the file
+        Args:
+            file_access: Object to allow for file access.
+            logger: Logger to use.
+        """
+        self._file_access = file_access
+        self._logger = logger
 
-    Returns:
-        list[str]: list containing each line in dashboard.db
-    """
-    with open(DASHBOARD_DB_FILENAME, "w") as db_file:
-        return db_file.writelines(db_lines)
+    def read_file(self) -> list[str]:
+        """Reads the dashboard.db into memory
+
+        Returns:
+            list[str]: list containing each line in dashboard.db
+        """
+        return self._file_access.read_dashboard_file()
+
+    def write_file(self, db_lines: list[str]) -> None:
+        """writes db lines back into the file
+
+        Args:
+            db_lines: list[str] - the lines to write to the fule
+        """
+        return self._file_access.write_dashboard_file(db_lines)
+
+    def get_record(self, record_name: str, db_file: list[str]) -> Optional[Record]:
+        """Given a record name generate a record object.
+
+        Args:
+            record_name (str): The name of the record to find (e.g. $(P)CS:DASHBOARD:BANNER:LEFT:VALUE)
+            db_file (list[str]): The loaded in lines to check through
+
+        Returns:
+            Optional[Record]: A record object containing the information of the record,
+            any comments inside it. or None if the record is not present or doesn't properly close.
+
+        """
+        self._logger.info(f"Getting {record_name} record.")
+        name = re.escape(record_name)
+        for i in range(0, len(db_file)):
+            if re.match(rf"record\(.+, [\"\']{name}[\"\']\) {{", db_file[i]):
+                end = _get_end_of_record(db_file=db_file, line_number=i)
+                if i == -1:
+                    self._logger.error("Record not properly terminated.")
+                    return None
+                else:
+                    return Record(db_file[i:end], i, end, self._logger)
+        self._logger.error("Record does not exist.")
+        return None
 
 
-def get_record(record_name: str, db_file: list[str]) -> Optional[Record]:
-    """Given a record name generate a record object.
-
-    Args:
-        record_name (str): The name of the record to find (e.g. $(P)CS:DASHBOARD:BANNER:LEFT:VALUE)
-        db_file (list[str]): The loaded in lines to check through
-
-    Returns:
-        Optional[Record]: A record object containing the information of the record,
-        any comments inside it. or None if the record is not present or doesn't properly close.
-
-    """
-    name = re.escape(record_name)
-    for i in range(0, len(db_file)):
-        if re.match(rf"record\(.+, [\"\']{name}[\"\']\) {{", db_file[i]):
-            end = get_end_of_record(db_file=db_file, line_number=i)
-            if i == -1:
-                return None
-            else:
-                return Record(db_file[i:end], i, end)
-    return None
-
-
-def get_end_of_record(db_file: list[str], line_number: int) -> int:
+def _get_end_of_record(db_file: list[str], line_number: int) -> int:
     """Given the first line of a record, return its end
 
     Args:
