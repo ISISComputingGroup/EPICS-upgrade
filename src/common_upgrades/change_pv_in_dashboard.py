@@ -1,8 +1,16 @@
 import re
 from typing import Optional
+from dataclasses import dataclass
 
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
+
+
+@dataclass
+class Field:
+    value: str  # Value of the field
+    full_line: str  # The full line defining the field in the db file
+    comment: list[str]  # any following comments
 
 
 class Record:
@@ -10,10 +18,12 @@ class Record:
     Class to contain the information in a single db record.
     """
 
-    def __init__(self, lines: list[str], start: int, end: int, _logger: LocalLogger) -> None:
+    def __init__(
+        self, lines: list[str], start: int, end: int, _logger: LocalLogger
+    ) -> None:
         self.type, self.name, self.startline = _get_name(lines[0])
-        self.fields: dict[str, tuple[str, str, list[str]]] = _get_fields(lines)
-        self.info: dict[str, tuple[str, str, list[str]]] = _get_fields(lines, True)
+        self.fields: dict[str, Field] = _get_fields(lines)
+        self.info: dict[str, Field] = _get_fields(lines, True)
         self.start = start
         self.end = end
         self.start_comment = _get_comment(lines[1:])
@@ -26,8 +36,8 @@ class Record:
             list[str]: the lines of the db associated with all fields
         """
         field_lines = []
-        for tuple in self.fields.values():
-            field_lines = field_lines + [tuple[1]] + tuple[2]
+        for field in self.fields.values():
+            field_lines = field_lines + [field.full_line] + field.comment
         return field_lines
 
     def get_info(self) -> list[str]:
@@ -37,8 +47,8 @@ class Record:
             list[str]: the lines of the db associated with all info
         """
         info_lines = []
-        for tuple in self.info.values():
-            info_lines = info_lines + [tuple[1]] + tuple[2]
+        for field in self.info.values():
+            info_lines = info_lines + [field.full_line] + field.comment
         return info_lines
 
     def add_field(self, name: str, val: str, comment: str = "") -> None:
@@ -51,14 +61,15 @@ class Record:
             val (str): The value of the new field
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
-        self._logger.info(f"adding {name} field to {self.name} record with value of {val}.")
+        self._logger.info(
+            f"adding {name} field to {self.name} record with value of {val}."
+        )
         if name in self.fields.keys():
             self._logger.info(f"{name} already present.")
-            return
         else:
             if comment:
                 comment = " #" + comment
-            self.fields[name] = (val, f'    field({name}, "{val}"){comment}\n', [])
+            self.fields[name] = Field(val, f'    field({name}, "{val}"){comment}\n', [])
 
     def add_info(self, name: str, val: str, comment: str = "") -> None:
         """Creates a new info with the name, value, and optionally comment.
@@ -70,14 +81,16 @@ class Record:
             val (str): The value of the new info
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
-        self._logger.info(f"adding {name} info to {self.name} record with value of {val}.")
+        self._logger.info(
+            f"adding {name} info to {self.name} record with value of {val}."
+        )
         if name in self.info.keys():
             self._logger.info(f"{name} already present.")
             return
         else:
             if comment:
                 comment = " #" + comment
-            self.info[name] = (val, f'    info({name}, "{val}"){comment}\n', [])
+            self.info[name] = Field(val, f'    info({name}, "{val}"){comment}\n', [])
 
     def delete_field(self, name: str) -> None:
         """Deletes a field, May cause loss of following multiline comments
@@ -109,13 +122,13 @@ class Record:
         """
         self._logger.info(f"changing {name} field of {self.name} record to {val}.")
         if name in self.fields.keys():
-            line = self.fields[name][1]
-            old_val = self.fields[name][0]
-            old_multi_line_comment = self.fields[name][2]
+            line = self.fields[name].full_line
+            old_val = self.fields[name].value
+            old_multi_line_comment = self.fields[name].comment
             if comment:
                 comment = " #" + comment
             new_line = f"{line.replace(old_val, val).rstrip()}{comment}\n"
-            self.fields[name] = (val, new_line, old_multi_line_comment)
+            self.fields[name] = Field(val, new_line, old_multi_line_comment)
         else:
             self._logger.error(f"{name} not present.")
 
@@ -130,13 +143,13 @@ class Record:
         """
         self._logger.info(f"changing {name} info of {self.name} record to {val}.")
         if name in self.info.keys():
-            line = self.info[name][1]
-            old_val = self.info[name][0]
-            old_multi_line_comment = self.info[name][2]
+            line = self.info[name].full_line
+            old_val = self.info[name].value
+            old_multi_line_comment = self.info[name].comment
             if comment:
                 comment = " #" + comment
             new_line = f"{line.replace(old_val, val).rstrip()}{comment}\n"
-            self.info[name] = (val, new_line, old_multi_line_comment)
+            self.info[name] = Field(val, new_line, old_multi_line_comment)
         else:
             self._logger.error(f"{name} not present.")
 
@@ -241,7 +254,7 @@ class ChangePvInDashboard:
         for i in range(0, len(db_file)):
             if re.match(rf"record\(.+, [\"\']{name}[\"\']\) {{", db_file[i]):
                 end = _get_end_of_record(db_file=db_file, line_number=i)
-                if i == -1:
+                if end is None:
                     self._logger.error("Record not properly terminated.")
                     return None
                 else:
@@ -250,7 +263,7 @@ class ChangePvInDashboard:
         return None
 
 
-def _get_end_of_record(db_file: list[str], line_number: int) -> int:
+def _get_end_of_record(db_file: list[str], line_number: int) -> int | None:
     """Given the first line of a record, return its end
 
     Args:
@@ -258,15 +271,14 @@ def _get_end_of_record(db_file: list[str], line_number: int) -> int:
         line_number (int): The start of the record
 
     Returns:
-        int: the line number of the closing } of the record.
+        int | None: the line number of the closing } of the record or none if the record does not terminate properly..
     """
     for i in range(line_number, len(db_file)):
         if re.match(r"^([^#]|(\$\(.*=.*#.*\)))*}.*$", db_file[i]):
             return i
-    return -1
 
 
-def _get_fields(lines: list[str], info: bool = False) -> dict[str, tuple[str, str, list[str]]]:
+def _get_fields(lines: list[str], info: bool = False) -> dict[str, Field]:
     """Takes a list of strings and extracts fields or info
 
     Args:
@@ -274,9 +286,9 @@ def _get_fields(lines: list[str], info: bool = False) -> dict[str, tuple[str, st
         info (bool, optional): Whether to search for fields or info
 
     Returns:
-        dict[str, tuple[str, str, list[str]]]: returns a dictionary
+        dict[str, Field]: returns a dictionary
             where the keys are the name/type of the fields,
-            and the value is a tuple containing the value,
+            and the value is a Field dataclass containing the value,
             the full line string, and a list
             of any following multi-line comments.
     """
@@ -289,17 +301,25 @@ def _get_fields(lines: list[str], info: bool = False) -> dict[str, tuple[str, st
 
     for index, line in enumerate(lines):
         if f"{search}(" in line:
+            # find strings of the form field(type, "val") or info(type, "val")
             match = re.match(rf".*{search}\((.*), \"(.*)\"\).*", line)
+            # If a match is found
             if match is not None:
+                # split out the value, as well as keeping a record of the whole string.
+                value = str(match.group(2))
+                full_line = f"{match.group(0)}\n"
+                # if this is not the last line of the record then also get any trailing comments
                 if index + 1 < len(lines):
-                    _inner_tuple = (
-                        str(match.group(2)),
-                        f"{match.group(0)}\n",
+                    field = Field(
+                        value,
+                        full_line,
                         _get_comment(lines[index + 1 :]),
                     )
+                # otherwise store as is.
                 else:
-                    _inner_tuple = (str(match.group(2)), f"{match.group(0)}\n", [])
-                field_dict[str(match.group(1))] = _inner_tuple
+                    field = (value, full_line, [])
+                # Store in a dict access using the field type (which should be a unique key)
+                field_dict[str(match.group(1))] = field
     return field_dict
 
 
@@ -310,7 +330,7 @@ def _get_name(line: str) -> tuple[str, str, str]:
         line (str): the line to check
 
     Returns:
-        Optional[tuple[str, str, str]]: a tuple containing the name, type,
+        tuple[str, str, str]: a tuple containing the name, type,
         and full string of a record definition, or None if fails regex
     """
     match = re.match(r".*record\((.*), \"(.*)\"\).*", line)
