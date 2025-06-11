@@ -318,7 +318,7 @@ def _get_fields(lines: list[str], info: bool = False) -> dict[str, Field]:
                     )
                 # otherwise store as is.
                 else:
-                    field = (value, full_line, [])
+                    field = Field(value, full_line, [])
                 # Store in a dict access using the field type (which should be a unique key)
                 field_dict[str(match.group(1))] = field
     return field_dict

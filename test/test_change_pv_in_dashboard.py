@@ -35,7 +35,9 @@ class TestChangePVInDashboard(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.reader = change_pv_in_dashboard.ChangePvInDashboard(self.file_access, self.logger)
+        self.reader = change_pv_in_dashboard.ChangePvInDashboard(
+            self.file_access, self.logger
+        )
 
     def test_GIVEN_record_starts_THEN_finds_end(self):
         dummy_file = ["", "", "", 'record(blah, "blah") {\n', "", "", "", "}"]
@@ -43,11 +45,11 @@ class TestChangePVInDashboard(unittest.TestCase):
 
     def test_GIVEN_record_starts_and_no_end_THEN_returns_invalid(self):
         dummy_file = ["", "", "", 'record(blah, "blah") {\n', "", "", "", ""]
-        self.assertEqual(change_pv_in_dashboard._get_end_of_record(dummy_file, 3), -1)
+        self.assertEqual(change_pv_in_dashboard._get_end_of_record(dummy_file, 3), None)
 
     def test_GIVEN_record_starts_end_commented_THEN_returns_invalid(self):
         dummy_file = ["", "", "", 'record(blah, "blah") {\n', "", "#}", "", ""]
-        self.assertEqual(change_pv_in_dashboard._get_end_of_record(dummy_file, 3), -1)
+        self.assertEqual(change_pv_in_dashboard._get_end_of_record(dummy_file, 3), None)
 
     def test_GIVEN_record_starts_end_commented_using_macro_THEN_finds_end(self):
         dummy_file = [
@@ -68,12 +70,14 @@ class TestChangePVInDashboard(unittest.TestCase):
 
         self.assertEqual(record.start, 17)
         self.assertEqual(record.end, 22)
-        self.assertEqual(record.startline, 'record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {\n')
+        self.assertEqual(
+            record.startline, 'record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {\n'
+        )
         self.assertEqual(record.name, "$(P)CS:DASHBOARD:TAB:1:1:LABEL")
         self.assertEqual(record.type, "stringin")
-        self.assertEqual(record.fields["VAL"][0], "Good / Raw Frames:")
-        self.assertEqual(record.fields["PINI"][0], "YES")
-        self.assertEqual(record.info["archive"][0], "VAL")
+        self.assertEqual(record.fields["VAL"].value, "Good / Raw Frames:")
+        self.assertEqual(record.fields["PINI"].value, "YES")
+        self.assertEqual(record.info["archive"].value, "VAL")
         self.assertEqual(record.start_comment, ["# blah\n"])
 
     def test_GIVEN_record_does_not_exist_THEN_get_none(self):
@@ -102,7 +106,9 @@ class TestChangePVInDashboard(unittest.TestCase):
         self.assertEqual(record.name, "DIFFERENT:NAME")
         self.assertEqual(record.startline, 'record(stringin, "DIFFERENT:NAME") {\n')
         new_db = record.update_record(test_db)
-        self.assertEqual(new_db, ['record(stringin, "DIFFERENT:NAME") {\n'] + test_db[1:])
+        self.assertEqual(
+            new_db, ['record(stringin, "DIFFERENT:NAME") {\n'] + test_db[1:]
+        )
 
     def test_GIVEN_record_exists_THEN_change_type_changes_type_AND_startline(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
@@ -130,33 +136,38 @@ class TestChangePVInDashboard(unittest.TestCase):
         assert record is not None
         record.change_field("BB", "Altered")
 
-        self.assertEqual(record.fields["BB"][0], "Altered")
-        self.assertEqual(record.fields["BB"][1], '    field(BB, "Altered")\n')
+        self.assertEqual(record.fields["BB"].value, "Altered")
+        self.assertEqual(record.fields["BB"].full_line, '    field(BB, "Altered")\n')
 
     def test_GIVEN_change_fields_and_add_comment_THEN_field_is_changed(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
         assert record is not None
         record.change_field("BB", "Altered", "blah blah blah")
 
-        self.assertEqual(record.fields["BB"][0], "Altered")
-        self.assertEqual(record.fields["BB"][1], '    field(BB, "Altered") #blah blah blah\n')
+        self.assertEqual(record.fields["BB"].value, "Altered")
+        self.assertEqual(
+            record.fields["BB"].full_line, '    field(BB, "Altered") #blah blah blah\n'
+        )
 
     def test_GIVEN_change_info_THEN_info_is_changed(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
         assert record is not None
         record.change_info("archive", "Altered", "new comment")
 
-        self.assertEqual(record.info["archive"][0], "Altered")
-        self.assertEqual(record.info["archive"][1], '    info(archive, "Altered") #new comment\n')
+        self.assertEqual(record.info["archive"].value, "Altered")
+        self.assertEqual(
+            record.info["archive"].full_line,
+            '    info(archive, "Altered") #new comment\n',
+        )
 
     def test_GIVEN_add_field_THEN_field_is_added(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
         assert record is not None
         record.add_field("INDD", "$(P)DAE:DAETIMINGSOURCE CP MS", "new line")
 
-        self.assertEqual(record.fields["INDD"][0], "$(P)DAE:DAETIMINGSOURCE CP MS")
+        self.assertEqual(record.fields["INDD"].value, "$(P)DAE:DAETIMINGSOURCE CP MS")
         self.assertEqual(
-            record.fields["INDD"][1],
+            record.fields["INDD"].full_line,
             '    field(INDD, "$(P)DAE:DAETIMINGSOURCE CP MS") #new line\n',
         )
 
@@ -165,25 +176,28 @@ class TestChangePVInDashboard(unittest.TestCase):
         assert record is not None
         record.add_info("archive", "VAL")
 
-        self.assertEqual(record.info["archive"][0], "VAL")
-        self.assertEqual(record.info["archive"][1], '    info(archive, "VAL")\n')
+        self.assertEqual(record.info["archive"].value, "VAL")
+        self.assertEqual(record.info["archive"].full_line, '    info(archive, "VAL")\n')
 
     def test_GIVEN_add_field_WHEN_field_already_exists_THEN_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:MIDDLE:_VCAL", test_db)
         assert record is not None
         record.add_field("BB", "Altered", "blah blah blah")
 
-        self.assertNotEqual(record.fields["BB"][0], "Altered")
-        self.assertNotEqual(record.fields["BB"][1], '    field(BB, "Altered") #blah blah blah\n')
+        self.assertNotEqual(record.fields["BB"].value, "Altered")
+        self.assertNotEqual(
+            record.fields["BB"].full_line, '    field(BB, "Altered") #blah blah blah\n'
+        )
 
     def test_GIVEN_add_info_WHEN_info_already_exists_THEN_no_change(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:TAB:1:1:LABEL", test_db)
         assert record is not None
         record.add_info("archive", "Altered", "new comment")
 
-        self.assertNotEqual(record.info["archive"][0], "Altered")
+        self.assertNotEqual(record.info["archive"].value, "Altered")
         self.assertNotEqual(
-            record.info["archive"][1], '    info(archive, "Altered") #new comment\n'
+            record.info["archive"].full_line,
+            '    info(archive, "Altered") #new comment\n',
         )
 
     def test_GIVEN_field_exists_THEN_delete_removes_it(self):
