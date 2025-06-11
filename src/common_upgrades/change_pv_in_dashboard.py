@@ -18,9 +18,7 @@ class Record:
     Class to contain the information in a single db record.
     """
 
-    def __init__(
-        self, lines: list[str], start: int, end: int, _logger: LocalLogger
-    ) -> None:
+    def __init__(self, lines: list[str], start: int, end: int, _logger: LocalLogger) -> None:
         self.type, self.name, self.startline = _get_name(lines[0])
         self.fields: dict[str, Field] = _get_fields(lines)
         self.info: dict[str, Field] = _get_fields(lines, True)
@@ -61,9 +59,7 @@ class Record:
             val (str): The value of the new field
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
-        self._logger.info(
-            f"adding {name} field to {self.name} record with value of {val}."
-        )
+        self._logger.info(f"adding {name} field to {self.name} record with value of {val}.")
         if name in self.fields.keys():
             self._logger.info(f"{name} already present.")
         else:
@@ -81,9 +77,7 @@ class Record:
             val (str): The value of the new info
             comment (str, optional): A comment to follow the info. Defaults to "".
         """
-        self._logger.info(
-            f"adding {name} info to {self.name} record with value of {val}."
-        )
+        self._logger.info(f"adding {name} info to {self.name} record with value of {val}.")
         if name in self.info.keys():
             self._logger.info(f"{name} already present.")
             return

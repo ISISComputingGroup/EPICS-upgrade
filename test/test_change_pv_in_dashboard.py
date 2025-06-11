@@ -35,9 +35,7 @@ class TestChangePVInDashboard(unittest.TestCase):
     def setUp(self):
         self.file_access = FileAccessStub()
         self.logger = LoggingStub()
-        self.reader = change_pv_in_dashboard.ChangePvInDashboard(
-            self.file_access, self.logger
-        )
+        self.reader = change_pv_in_dashboard.ChangePvInDashboard(self.file_access, self.logger)
 
     def test_GIVEN_record_starts_THEN_finds_end(self):
         dummy_file = ["", "", "", 'record(blah, "blah") {\n', "", "", "", "}"]
@@ -70,9 +68,7 @@ class TestChangePVInDashboard(unittest.TestCase):
 
         self.assertEqual(record.start, 17)
         self.assertEqual(record.end, 22)
-        self.assertEqual(
-            record.startline, 'record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {\n'
-        )
+        self.assertEqual(record.startline, 'record(stringin, "$(P)CS:DASHBOARD:TAB:1:1:LABEL") {\n')
         self.assertEqual(record.name, "$(P)CS:DASHBOARD:TAB:1:1:LABEL")
         self.assertEqual(record.type, "stringin")
         self.assertEqual(record.fields["VAL"].value, "Good / Raw Frames:")
@@ -106,9 +102,7 @@ class TestChangePVInDashboard(unittest.TestCase):
         self.assertEqual(record.name, "DIFFERENT:NAME")
         self.assertEqual(record.startline, 'record(stringin, "DIFFERENT:NAME") {\n')
         new_db = record.update_record(test_db)
-        self.assertEqual(
-            new_db, ['record(stringin, "DIFFERENT:NAME") {\n'] + test_db[1:]
-        )
+        self.assertEqual(new_db, ['record(stringin, "DIFFERENT:NAME") {\n'] + test_db[1:])
 
     def test_GIVEN_record_exists_THEN_change_type_changes_type_AND_startline(self):
         record = self.reader.get_record("$(P)CS:DASHBOARD:BANNER:LEFT:LABEL", test_db)
