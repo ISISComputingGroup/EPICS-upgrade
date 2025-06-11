@@ -1,6 +1,6 @@
 import re
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
 
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
@@ -271,7 +271,8 @@ def _get_end_of_record(db_file: list[str], line_number: int) -> int | None:
         line_number (int): The start of the record
 
     Returns:
-        int | None: the line number of the closing } of the record or none if the record does not terminate properly..
+        int | None: the line number of the closing } of the record or none
+        if the record does not terminate properly.
     """
     for i in range(line_number, len(db_file)):
         if re.match(r"^([^#]|(\$\(.*=.*#.*\)))*}.*$", db_file[i]):
