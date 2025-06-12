@@ -7,6 +7,7 @@ from xml.parsers.expat import ExpatError
 from src.common_upgrades.utils.constants import (
     COMPONENT_FOLDER,
     CONFIG_FOLDER,
+    DASHBOARD_DB_FILENAME,
     DEVICE_SCREEN_FILE,
     DEVICE_SCREENS_FOLDER,
     SYNOPTIC_FOLDER,
@@ -236,6 +237,16 @@ class FileAccess(object):
             for file in files:
                 if extension is None or file.endswith(extension):
                     yield os.path.join(root, file)
+
+    def read_dashboard_file(self):
+        with open(DASHBOARD_DB_FILENAME) as db_file:
+            self._logger.info(f"Reading {DASHBOARD_DB_FILENAME} file")
+            return db_file.readlines()
+
+    def write_dashboard_file(self, db_lines: list[str]):
+        with open(DASHBOARD_DB_FILENAME, "w") as db_file:
+            self._logger.info(f"Writing {DASHBOARD_DB_FILENAME} file")
+            db_file.writelines(db_lines)
 
 
 class CachingFileAccess(object):

@@ -18,6 +18,7 @@ IOC_FILE = "iocs.xml"
 BLOCK_FILE = "blocks.xml"
 DEVICE_SCREEN_FILE = "screens.xml"
 GLOBALS_FILENAME = os.path.abspath(os.path.join(CONFIG_ROOT, "globals.txt"))
+DASHBOARD_DB_FILENAME = os.path.abspath(os.path.join(CONFIG_ROOT, "dashboard.db"))
 
 MOTION_SET_POINTS_FOLDER = os.path.abspath(os.path.join(CONFIG_ROOT, "motionSetPoints"))
 
