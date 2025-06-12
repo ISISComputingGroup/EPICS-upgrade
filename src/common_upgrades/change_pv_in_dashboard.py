@@ -271,6 +271,7 @@ def _get_end_of_record(db_file: list[str], line_number: int) -> int | None:
     for i in range(line_number, len(db_file)):
         if re.match(r"^([^#]|(\$\(.*=.*#.*\)))*}.*$", db_file[i]):
             return i
+    return None
 
 
 def _get_fields(lines: list[str], info: bool = False) -> dict[str, Field]:
