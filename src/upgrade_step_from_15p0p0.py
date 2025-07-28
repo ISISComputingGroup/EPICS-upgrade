@@ -12,10 +12,8 @@ CONTROLLERS = [
     "galil",
     "galilmul",
     "mclennan",
-    "bkhoff_01",
     "linmot",
     "smc100_01",
-    "sm300_01",
     "twincat",
 ]
 
