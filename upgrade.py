@@ -80,7 +80,7 @@ UPGRADE_STEPS = [
     ("25.2.1", UpgradeFrom25p2p1()),
     ("25.2.1.1", UpgradeFrom25p2p1p1()),
     ("25.2.2", None),
-    # to add step see https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Config-Upgrader#adding-an-upgrade-step
+    # to add step see README.md
 ]
 
 if __name__ == "__main__":
