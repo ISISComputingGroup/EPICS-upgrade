@@ -23,7 +23,7 @@ class AddToBaseIOCs:
         self._xml_to_add = xml_to_add
 
     def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
-        """Add the autostart of the given.
+        """Add the autostart of the given IOC.
 
         Args:
             file_access (FileAccess): file access.
