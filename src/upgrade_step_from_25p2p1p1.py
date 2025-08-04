@@ -1,9 +1,8 @@
 from src.common_upgrades import change_pv_in_dashboard as dashboard
+from src.common_upgrades.add_to_base_iocs import AddToBaseIOCs
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
-from src.common_upgrades.add_to_base_iocs import AddToBaseIOCs
-
 
 XML_TO_ADD = """\
     <ioc autostart="true" name="FWDR" restart="true" simlevel="none">
@@ -13,9 +12,10 @@ XML_TO_ADD = """\
     </ioc>
 """
 
+
 class UpgradeFrom25p2p1p1(UpgradeStep):
     """
-    Add calculation to dashboard to display when in test clock, also add FWDR to base IOCs. 
+    Add calculation to dashboard to display when in test clock, also add FWDR to base IOCs.
     """
 
     def perform(self, file_access: FileAccess, logger: LocalLogger) -> int:
@@ -45,8 +45,8 @@ class UpgradeFrom25p2p1p1(UpgradeStep):
 
         reader.write_file(file)
 
-
-        base_ioc_add_success = AddToBaseIOCs("FWDR", "BSKAFKA", XML_TO_ADD).perform(file_access, logger)
-        
+        base_ioc_add_success = AddToBaseIOCs("FWDR", "BSKAFKA", XML_TO_ADD).perform(
+            file_access, logger
+        )
 
         return pass_fail | base_ioc_add_success
