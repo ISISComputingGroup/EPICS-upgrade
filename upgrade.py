@@ -79,7 +79,7 @@ UPGRADE_STEPS = [
     ("25.2.0", UpgradeStepNoOp()),
     ("25.2.1", UpgradeFrom25p2p1()),
     ("25.2.1.1", UpgradeFrom25p2p1p1()),
-    ("25.2.2", None),
+    ("25.8.0", None),
     # to add step see README.md
 ]
 
