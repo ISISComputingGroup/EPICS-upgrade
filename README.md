@@ -64,7 +64,7 @@ You are now ready to code the perform function to do the upgrade, please use tes
 
 **Note:** When the upgrade script is run the configurations will end up on the final version in the list, i.e. the one with a `None`. So the last entry in the list will be the configuration you are wishing to finally arrive at (and not e.g. a future version placeholder)
 
-Do not drop the previous last entry even if adding a new step that does nothing. Though this version may not have been deployed to any instruments, the config version will exist on a system test build server and probably some developer's machines too
+**Do not drop the previous last entry even if adding a new step that does nothing. Though this version may not have been deployed to any instruments, the config version will exist on a system test build server and probably some developer's machines too**
 
 A collection of common upgrade steps can be found [here](https://github.com/ISISComputingGroup/ibex_developers_manual/wiki/Common-config-upgrade-steps).
 
