@@ -31,11 +31,7 @@ from src.upgrade_step_noop import UpgradeStepNoOp
 # To add a step which does nothing use UpgradeStepNoOp this is often used to get from the latest dev
 # configuration to the latest production configuration
 
-# Do not consider dropping the previous last entry even if adding a new step that does nothing.
-# Though that version may not have been deployed to any instruments, the config version will exist
-# on a system test build server and probably some developer's machines too
-
-# also make sure that the  config_version.txt  in the master configurations git repository
+# make sure that the  config_version.txt  in the master configurations git repository
 # on control-svcs used for creating a new instrument settings area is at least the lowest
 # versions below or else you will not be able to upgrade a newly created instrument
 
@@ -79,8 +75,13 @@ UPGRADE_STEPS = [
     ("25.2.0", UpgradeStepNoOp()),
     ("25.2.1", UpgradeFrom25p2p1()),
     ("25.2.1.1", UpgradeFrom25p2p1p1()),
+    ("25.2.2", UpgradeStepNoOp()),
     ("25.8.0", None),
     # to add step see README.md
+    ## Do not consider dropping the previous last entry even if adding a new step that does nothing.
+    ## Though that version may not have been deployed to any instruments, the config version will exist
+    ## on system test and build servers and probably some developer's machines too and will cause
+    ## an upgrade to abort as it will not be able to find the starting version to upgrade from
 ]
 
 if __name__ == "__main__":
