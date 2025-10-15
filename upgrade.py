@@ -23,6 +23,7 @@ from src.upgrade_step_from_12p0p3 import UpgradeFrom12p0p3
 from src.upgrade_step_from_15p0p0 import UpgradeFrom15p0p0
 from src.upgrade_step_from_25p2p1 import UpgradeFrom25p2p1
 from src.upgrade_step_from_25p2p1p1 import UpgradeFrom25p2p1p1
+from src.upgrade_step_from_25p8p0 import UpgradeFrom25p8p0
 from src.upgrade_step_noop import UpgradeStepNoOp
 
 # A list of upgrade step tuples tuple is name of version to apply the upgrade to and upgrade class.
@@ -76,7 +77,8 @@ UPGRADE_STEPS = [
     ("25.2.1", UpgradeFrom25p2p1()),
     ("25.2.1.1", UpgradeFrom25p2p1p1()),
     ("25.2.2", UpgradeStepNoOp()),
-    ("25.8.0", None),
+    ("25.8.0", UpgradeFrom25p8p0()),
+    ("25.8.0.1", None),
     # to add step see README.md
     ## Do not consider dropping the previous last entry even if adding a new step that does nothing.
     ## Though that version may not have been deployed to any instruments, the config version will exist
