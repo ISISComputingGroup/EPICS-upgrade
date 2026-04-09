@@ -44,4 +44,4 @@ class UpgradeFrom25p2p1p1(UpgradeStep):
 
         reader.write_file(file)
 
-        return pass_fail 
+        return pass_fail
