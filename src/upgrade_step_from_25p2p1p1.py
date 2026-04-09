@@ -1,5 +1,4 @@
 from src.common_upgrades import change_pv_in_dashboard as dashboard
-from src.common_upgrades.add_to_base_iocs import AddToBaseIOCs
 from src.file_access import FileAccess
 from src.local_logger import LocalLogger
 from src.upgrade_step import UpgradeStep
@@ -45,8 +44,4 @@ class UpgradeFrom25p2p1p1(UpgradeStep):
 
         reader.write_file(file)
 
-        base_ioc_add_success = AddToBaseIOCs("FWDR", "BSKAFKA", XML_TO_ADD).perform(
-            file_access, logger
-        )
-
-        return pass_fail | base_ioc_add_success
+        return pass_fail
