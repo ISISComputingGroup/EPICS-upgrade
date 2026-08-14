@@ -78,7 +78,8 @@ UPGRADE_STEPS = [
     ("25.2.2", UpgradeStepNoOp()),
     ("25.8.0", UpgradeStepNoOp()),
     ("26.2.0", UpgradeStepNoOp()),
-    ("26.8.0", None),
+    ("26.8.0", UpgradeStepNoOp()),
+    ("26.8.1", None),
     # to add step see README.md
     ## Do not consider dropping the previous last entry even if adding a new step that does nothing.
     ## Though that version may not have been deployed to any instruments, the config version will exist
